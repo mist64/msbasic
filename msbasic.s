@@ -1,11 +1,61 @@
 ; da65 V2.12.9 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
 ; Created:    2008-10-05 12:21:17
 
-.ifndef KIM
+.ifdef OSI
 .include "defines_osi.s"
-.else /* KIM */
+.endif
+.ifdef KIM
 .include "defines_kim.s"
-.endif /* KIM */
+.endif
+.ifdef CBM
+.include "defines_cbm.s"
+.endif
+
+.ifdef CBM
+CLOSE	:= $AAAA
+OPEN	:= $AAAA
+SYS	:= $AAAA
+CMD	:= $AAAA
+PRINTH	:= $AAAA
+VERIFY	:= $AAAA
+INPUTH	:= $AAAA
+LFFCC	:= $AAAA
+LC48C	:=	$AAAA
+LFFCF	:=	$AAAA
+LC9C8	:=	$AAAA
+GETLN	:= $AAAA
+LFFE7	:= $AAAA
+LOAD	:= $AAAA
+SAVE	:= $AAAA
+LDC50	:= $AAAA
+L00CF	:= $00AA
+L0071	:= $00AA
+LDB6D	:= $AAAA
+LD9BF	:= $AAAA
+LDADE	:= $AAAA
+LD9B4	:= $AAAA
+LD130	:= $AAAA
+LD57E	:= $AAAA
+LC99F	:= $AAAA
+LFFC9	:= $AAAA
+LCE13	:= $AAAA
+LD676	:= $AAAA
+LFFD2	:= $AAAA
+LE1CC	:= $AAAA
+LE1C2	:= $AAAA
+LFFC6	:= $AAAA
+L00C2	:= $00AA
+LC7F0	:= $AAAA
+LCAF1	:= $AAAA
+LE19B	:= $AAAA
+LE1BC	:= $AAAA
+LDA74	:= $AAAA
+LD353	:= $AAAA
+LDD3A	:= $AAAA
+LE19F	:= $AAAA
+LDB0E	:= $AAAA
+LDB21	:= $AAAA
+.endif
 
 .include "macros.s"
 
@@ -19,6 +69,9 @@ TOKEN_ADDRESS_TABLE:
         .word   FOR-1
         .word   NEXT-1
         .word   DATA-1
+.ifdef CBM
+        .word   INPUTH-1
+.endif
         .word   INPUT-1
         .word   DIM-1
         .word   READ-1
@@ -32,29 +85,43 @@ TOKEN_ADDRESS_TABLE:
         .word   REM-1
         .word   STOP-1
         .word   ON-1
+.ifndef CBM
         .word   NULL-1
+.endif
         .word   WAIT-1
         .word   LOAD-1
         .word   SAVE-1
+.ifdef CBM
+        .word   VERIFY-1
+.endif
         .word   DEF-1
         .word   POKE-1
+.ifdef CBM
+        .word   PRINTH-1
+.endif
         .word   PRINT-1
         .word   CONT-1
         .word   LIST-1
         .word   CLEAR-1
-.ifdef CONFIG_GET
+.ifdef CBM
+		.word	CMD-1
+		.word	SYS-1
+		.word	OPEN-1
+		.word	CLOSE-1
+.endif
+.ifdef CONFIG_11
         .word   GET-1
-.endif /* CONFIG_GET */
+.endif /* CONFIG_11 */
         .word   NEW-1
 UNFNC:
         .addr   SGN
         .addr   INT
         .addr   ABS
-.ifndef KIM
+.ifndef CONFIG_11
         .addr   USR
-.else /* KIM */
+.else /* CONFIG_11 */
         .addr   IQERR
-.endif /* KIM */
+.endif /* CONFIG_11 */
         .addr   FRE
         .addr   POS
         .addr   SQR
@@ -100,6 +167,9 @@ TOKEN_NAME_TABLE:
 	htasc	"FOR"
 	htasc	"NEXT"
 	htasc	"DATA"
+.ifdef CBM
+	htasc	"INPUT#"
+.endif
 	htasc	"INPUT"
 	htasc	"DIM"
 	htasc	"READ"
@@ -113,19 +183,37 @@ TOKEN_NAME_TABLE:
 	htasc	"REM"
 	htasc	"STOP"
 	htasc	"ON"
+.ifndef CBM
 	htasc	"NULL"
+.endif
 	htasc	"WAIT"
 	htasc	"LOAD"
 	htasc	"SAVE"
+.ifdef CBM
+	htasc	"VERIFY"
+.endif
 	htasc	"DEF"
 	htasc	"POKE"
+.ifdef CBM
+	htasc	"PRINT#"
+.endif
 	htasc	"PRINT"
 	htasc	"CONT"
 	htasc	"LIST"
+.ifdef CBM
+	htasc	"CLR"
+.else
 	htasc	"CLEAR"
-.ifdef CONFIG_GET
+.endif
+.ifdef CBM
+	htasc	"CMD"
+	htasc	"SYS"
+	htasc	"OPEN"
+	htasc	"CLOSE"
+.endif
+.ifdef CONFIG_11
 	htasc	"GET"
-.endif /* CONFIG_GET */
+.endif /* CONFIG_11 */
 	htasc	"NEW"
 	htasc	"TAB("
 	htasc	"TO"
@@ -169,7 +257,7 @@ TOKEN_NAME_TABLE:
 	htasc	"MID$"
 	.byte   0
 ERROR_MESSAGES:
-.ifndef KIM
+.ifndef CONFIG_11
 .define ERRSTR_NOFOR "NF"
 .define ERRSTR_SYNTAX "SN"
 .define ERRSTR_NOGOSUB "RG"
@@ -187,7 +275,7 @@ ERROR_MESSAGES:
 .define ERRSTR_FRMCPX "ST"
 .define ERRSTR_CANTCONT "CN"
 .define ERRSTR_UNDEFFN "UF"
-.else /* KIM */
+.else /* CONFIG_11 */
 .define ERRSTR_NOFOR "NEXT WITHOUT FOR"
 .define ERRSTR_SYNTAX "SYNTAX"
 .define ERRSTR_NOGOSUB "RETURN WITHOUT GOSUB"
@@ -202,10 +290,13 @@ ERROR_MESSAGES:
 .define ERRSTR_ILLDIR "ILLEGAL DIRECT"
 .define ERRSTR_BADTYPE "TYPE MISMATCH"
 .define ERRSTR_STRLONG "STRING TOO LONG"
+.ifdef CBM
+.define ERRSTR_BADDATA "BAD DATA"
+.endif
 .define ERRSTR_FRMCPX "FORMULA TOO COMPLEX"
 .define ERRSTR_CANTCONT "CAN'T CONTINUE"
 .define ERRSTR_UNDEFFN "UNDEF'D FUNCTION"
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
 
 ERR_NOFOR	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_NOFOR
@@ -217,6 +308,9 @@ ERR_NODATA	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_NODATA
 ERR_ILLQTY	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_ILLQTY
+.ifdef CBM
+	.byte 0,0,0,0,0
+.endif
 ERR_OVERFLOW	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_OVERFLOW
 ERR_MEMFULL	:= <(*-ERROR_MESSAGES)
@@ -235,6 +329,10 @@ ERR_BADTYPE	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_BADTYPE
 ERR_STRLONG	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_STRLONG
+.ifdef CBM
+ERR_BADDATA	:= <(*-ERROR_MESSAGES)
+	htasc ERRSTR_BADDATA
+.endif
 ERR_FRMCPX	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_FRMCPX
 ERR_CANTCONT	:= <(*-ERROR_MESSAGES)
@@ -249,7 +347,11 @@ QT_IN:
         .byte   $00
 QT_OK:
 		.byte   $0D,$0A
+.ifdef CBM
+        .byte   "READY."
+.else
         .byte   "OK"
+.endif
         .byte   $0D,$0A,$00
 QT_BREAK:
 		.byte $0D,$0A
@@ -374,23 +476,34 @@ MEMERR:
         ldx     #ERR_MEMFULL
 ERROR:
         lsr     Z14
+.ifdef CBM
+        lda     $03
+        beq     L2329
+        jsr     LFFCC
+        lda     #$00
+        sta     $03
+LC366:
+        jsr     LC9D2
+        jsr     OUTDO
+.else
         jsr     CRDO
         jsr     OUTQUES
+.endif
 L2329:
         lda     ERROR_MESSAGES,x
-.ifdef KIM
+.ifdef CONFIG_11
         pha
         and     #$7F
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jsr     OUTDO
-.ifndef KIM
+.ifndef CONFIG_11
         lda     ERROR_MESSAGES+1,x
         jsr     OUTDO
-.else /* KIM */
+.else /* CONFIG_11 */
         inx
         pla
         bpl     L2329
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jsr     STKINI
         lda     #<QT_ERROR
         ldy     #>QT_ERROR
@@ -412,7 +525,7 @@ L2351:
         jsr     CHRGET
 .ifdef KIM
         tax
-.endif /* KIM */
+.endif /* CONFIG_11 */
         beq     L2351
         ldx     #$FF
         stx     CURLIN+1
@@ -527,24 +640,27 @@ L2405:
         sta     INDEX+1
         bcc     L23FA
 L2420:
-.ifndef KIM
+.ifndef CONFIG_11
         jsr     OUTDO
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         dex
         bpl     INLIN2
 L2423:
-.ifndef KIM
+.ifndef CONFIG_11
         jsr     OUTDO
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         jsr     CRDO
 INLIN:
         ldx     #$00
 INLIN2:
         jsr     GETLN
+.ifndef CBM
         cmp     #$07
         beq     L2443
+.endif
         cmp     #$0D
         beq     L2453
+.ifndef CBM
         cmp     #$20
         bcc     INLIN2
         cmp     #$7D
@@ -556,22 +672,31 @@ INLIN2:
 L2443:
         cpx     #$47
         bcs     L244C
+.endif
         sta     INPUTBUFFER,x
         inx
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   $2C
-.else /* KIM */
+.else /* CONFIG_11 */
         bne     INLIN2
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L244C:
+.ifndef CBM
         lda     #$07
         jsr     OUTDO
         bne     INLIN2
+.endif
 L2453:
         jmp     L29B9
+.ifdef CBM
+        jsr     LFFCF
+        ldy     $03
+        bne     L2465
+.else
 GETLN:
         jsr     MONRDKEY
-.ifndef KIM
+.endif
+.ifndef CONFIG_11
         nop
         nop
         nop
@@ -587,7 +712,7 @@ GETLN:
         nop
         nop
         and     #$7F
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         cmp     #$0F
         bne     L2465
         pha
@@ -603,6 +728,14 @@ PARSE_INPUT_LINE:
         sty     DATAFLG
 L246C:
         lda     Z00,x
+.ifdef CBM
+        bpl     LC49E
+        cmp     #$FF
+        beq     L24AC
+        inx
+        bne     L246C
+LC49E:
+.endif
         cmp     #$20
         beq     L24AC
         sta     ENDCHR
@@ -740,12 +873,15 @@ SETPTRS:
         lda     #$00
 CLEAR:
         bne     L256A
-.endif /* KIM */
+.endif /* CONFIG_11 */
 CLEARC:
         lda     MEMSIZ
         ldy     MEMSIZ+1
         sta     FRETOP
         sty     FRETOP+1
+.ifdef CBM
+        jsr     LFFE7
+.endif
         lda     VARTAB
         ldy     VARTAB+1
         sta     ARYTAB
@@ -804,7 +940,7 @@ L25A6:
         ldy     #$01
 .ifndef KIM
         sty     DATAFLG
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         lda     (LOWTR),y
         beq     L25E5
         jsr     ISCNTC
@@ -836,11 +972,11 @@ L25CE:
         eor     #$FF
         sta     DATAFLG
 LA519:
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         iny
 .ifdef KIM
         beq     L25E5
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     (LOWTR),y
         bne     L25E8
         tay
@@ -860,7 +996,7 @@ L25E8:
         beq     L25CE
         bit     DATAFLG
         bmi     L25CE
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         sec
         sbc     #$7F
         tax
@@ -955,9 +1091,9 @@ L2683:
 SYNERR1:
         jmp     SYNERR
 LA5DC:
-.else /* KIM */
+.else /* CONFIG_11 */
         bne     COLON
-.endif /* KIM */
+.endif /* CONFIG_11 */
         ldy     #$02
         lda     (TXTPTR),y
         clc
@@ -981,18 +1117,18 @@ EXECUTE_STATEMENT:
 .ifndef KIM
         beq     RET1
         sec
-.else /* KIM */
+.else /* CONFIG_11 */
         beq     RET2
-.endif /* KIM */
+.endif /* CONFIG_11 */
 EXECUTE_STATEMENT1:
         sbc     #$80
 .ifndef KIM
         bcs     LA609
         jmp     LET
 LA609:
-.else /* KIM */
+.else /* CONFIG_11 */
         bcc     LET1
-.endif /* KIM */
+.endif /* CONFIG_11 */
         cmp     #NUM_TOKENS
         bcs     SYNERR1
         asl     a
@@ -1010,7 +1146,7 @@ COLON:
         beq     NEWSTT2
 SYNERR1:
         jmp     SYNERR
-.endif /* KIM */
+.endif /* CONFIG_11 */
 RESTORE:
         sec
         lda     TXTTAB
@@ -1024,7 +1160,7 @@ SETDA:
 RET2:
         rts
 ISCNTC:
-.ifndef KIM
+.ifdef OSI
         jmp     MONISCNTC
         nop
         nop
@@ -1033,7 +1169,8 @@ ISCNTC:
         lsr     a
         bcc     RET2
         jsr     GETLN
-.else /* KIM */
+.endif
+.ifdef KIM
         lda     #$01
         bit     $1740
         bmi     RET2
@@ -1041,7 +1178,9 @@ ISCNTC:
         lda     #$03
         clc
 .endif /* KIM */
+.ifndef CBM
         cmp     #$03
+.endif
 STOP:
         bcs     END2
 END:
@@ -1101,7 +1240,7 @@ L2739:
 CLEAR:
         bne     RET1
         jmp     CLEARC
-.else /* KIM */
+.else /* CONFIG_11 */
 SAVE:
         tsx
         stx     INPUTFLG
@@ -1160,7 +1299,7 @@ L27C2:
         stx     VARTAB
         sty     VARTAB+1
         jmp     FIX_LINKS
-.endif /* KIM */
+.endif /* CONFIG_11 */
 RUN:
         bne     L27CF
         jmp     SETPTRS
@@ -1270,11 +1409,10 @@ L2866:
 .ifndef KIM
         beq     L285E
         bne     L2866
-.endif /* ! KIM */
-.ifdef KIM
+.else
         bne     L2866
         beq     L285E
-.endif /* KIM */
+.endif /* CONFIG_11 */
 IF:
         jsr     FRMEVL
         jsr     CHRGOT
@@ -1353,10 +1491,10 @@ LET:
         sty     FORPNT+1
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifdef KIM
+.ifdef CONFIG_11
         lda     VALTYP+1
         pha
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     VALTYP
         pha
         jsr     FRMEVL
@@ -1364,7 +1502,7 @@ LET:
         rol     a
         jsr     CHKVAL
         bne     LETSTRING
-.ifdef KIM
+.ifdef CONFIG_11
         pla
 LET2:
         bpl     L2923
@@ -1378,13 +1516,64 @@ LET2:
         sta     (FORPNT),y
         rts
 L2923:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jmp     SETFOR
 LETSTRING:
-.ifdef KIM
+.ifdef CONFIG_11
         pla
 PUTSTR:
-.endif /* KIM */
+.endif /* CONFIG_11 */
+.ifdef CBM
+        ldy     $99
+        cpy     #$D0
+        bne     LC92B
+        jsr     LD57E
+        cmp     #$06
+        beq     LC8E2
+        jmp     LD130
+LC8E2:
+        ldy     #$00
+        sty     $B0
+        sty     $B5
+LC8E8:
+        sty     $C0
+        jsr     LC91C
+        jsr     LD9B4
+        inc     $C0
+        ldy     $C0
+        jsr     LC91C
+        jsr     LDADE
+        tax
+        beq     LC902
+        inx
+        txa
+        jsr     LD9BF
+LC902:
+        ldy     $C0
+        iny
+        cpy     #$06
+        bne     LC8E8
+        jsr     LD9B4
+        jsr     LDB6D
+        ldx     #$02
+        sei
+LC912:
+        lda     $B2,x
+        sta     $0200,x
+        dex
+        bpl     LC912
+        cli
+        rts
+LC91C:
+        lda     (L0071),y
+        jsr     L00CF
+        bcc     LC926
+        jmp     LD130
+LC926:
+        sbc     #$2F
+        jmp     LDC50
+LC92B:
+.endif
         ldy     #$02
         lda     (FAC_LAST-1),y
         cmp     FRETOP+1
@@ -1415,11 +1604,11 @@ L294D:
         sta     STRNG1
         sty     STRNG1+1
         jsr     MOVINS
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #$AC
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$AE
-.endif /* KIM */
+.endif /* CONFIG_11 */
         ldy     #$00
 L2963:
         sta     DSCPTR
@@ -1435,6 +1624,22 @@ L2963:
         lda     (DSCPTR),y
         sta     (FORPNT),y
         rts
+.ifdef CBM
+LC97F:
+        jsr     LC985
+        jmp     LCAD6
+LC985:
+        jsr     LD676
+        beq     LC98F
+        lda     #$2C
+        jsr     LCE13
+LC98F:
+        php
+        jsr     LFFC9
+        stx     $03
+        plp
+        jmp     LC99F
+.endif
 PRSTRING:
         jsr     STRPRT
 L297E:
@@ -1450,7 +1655,7 @@ PRINT2:
         cmp     #','
 .ifdef KIM
         clc
-.endif /* KIM */
+.endif /* CONFIG_11 */
         beq     L29DE
         cmp     #$3B
         beq     L2A0D
@@ -1459,6 +1664,7 @@ PRINT2:
         bmi     PRSTRING
         jsr     FOUT
         jsr     STRLIT
+.ifndef CBM
         ldy     #$00
         lda     (FAC_LAST-1),y
         clc
@@ -1467,24 +1673,42 @@ PRINT2:
         bcc     L29B1
         jsr     CRDO
 L29B1:
+.endif
         jsr     STRPRT
         jsr     OUTSP
         bne     L297E
 L29B9:
         ldy     #$00
         sty     INPUTBUFFER,x
-.ifndef KIM
+.ifdef OSI
         ldx     #$12
-.else /* KIM */
+.endif
+.ifdef KIM
         ldx     #$1A
-.endif /* KIM */
+.endif /* CONFIG_11 */
+.ifdef CBM
+        ldx     #$09
+        lda     $03
+        bne     L29DD
+LC9D2:
+        lda     $03
+        bne     LC9D8
+        sta     $05
+LC9D8:
+.endif
 CRDO:
         lda     #$0D
+.ifndef CBM
         sta     Z16
+.endif
         jsr     OUTDO
         lda     #$0A
         jsr     OUTDO
 PRINTNULLS:
+.ifdef CBM
+        lda     $03
+        bne     L29DD
+.endif
         txa
         pha
         ldx     Z15
@@ -1502,14 +1726,20 @@ L29DD:
         rts
 L29DE:
         lda     Z16
+.ifndef CBM
         cmp     Z18
         bcc     L29EA
         jsr     CRDO
         jmp     L2A0D
 L29EA:
+.endif
         sec
 L29EB:
+.ifdef CBM
+        sbc     #$0A
+.else
         sbc     #$0E
+.endif
         bcs     L29EB
         eor     #$FF
         adc     #$01
@@ -1517,45 +1747,49 @@ L29EB:
 L29F5:
 .ifndef KIM
         pha
-.else /* KIM */
+.else /* CONFIG_11 */
         php
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jsr     GTBYTC
         cmp     #$29
 .ifndef KIM
+.ifdef CBM
+.byte $AA, $AA; XXX fixme
+.else
         bne     L2A00
+.endif
         pla
-        cmp     #$9C
+        cmp     #TOKEN_TAB
         bne     L2A0A
-.else /* KIM */
+.else /* CONFIG_11 */
         beq     @1
         jmp     SYNERR
 @1:
-        plp
+        plp	;; XXX c64 has this
         bcc     L2A09
-.endif /* KIM */
+.endif /* CONFIG_11 */
         txa
         sbc     Z16
         bcc     L2A0D
 .ifndef KIM
         beq     L2A0D
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
 L2A08:
         tax
 .ifdef KIM
 L2A09:
         inx
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L2A0A:
 .ifndef KIM
         jsr     OUTSP
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         dex
 .ifndef KIM
         bne     L2A0A
-.else /* KIM */
+.else /* CONFIG_11 */
         bne     L2A13
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L2A0D:
         jsr     CHRGET
         jmp     PRINT2
@@ -1563,7 +1797,7 @@ L2A0D:
 L2A13:
         jsr     OUTSP
         bne     L2A0A
-.endif /* KIM */
+.endif /* CONFIG_11 */
 STROUT:
         jsr     STRLIT
 STRPRT:
@@ -1582,7 +1816,11 @@ L2A22:
         jsr     PRINTNULLS
         jmp     L2A22
 OUTSP:
+.ifdef CBM
+        lda     #$1D
+.else
         lda     #$20
+.endif
         .byte   $2C
 OUTQUES:
         lda     #$3F
@@ -1590,27 +1828,54 @@ OUTDO:
         bit     Z14
         bmi     L2A56
         pha
+.ifdef CBM
+        cmp     #$1D
+        beq     LCA6A
+        cmp     #$9D
+        beq     LCA5A
+        cmp     #$14
+        bne     LCA64
+LCA5A:
+        lda     $05
+        beq     L2A4E
+        lda     $03
+        bne     L2A4E
+        dec     $05
+LCA64:
+        and     #$7F
+.endif
         cmp     #$20
         bcc     L2A4E
+LCA6A:
+.ifdef CBM
+        lda     $03
+        jsr     LE1CC
+        nop
+.else
         lda     Z16
         cmp     Z17
         bne     L2A4C
         jsr     CRDO
 L2A4C:
         inc     Z16
+.endif
 L2A4E:
         pla
-.ifndef KIM
+.ifdef OSI
         jsr     LFFEE
         nop
         nop
         nop
         nop
-.else /* KIM */
+.endif
+.ifdef KIM
         sty     DIMFLG
         jsr     MONCOUT
         ldy     DIMFLG
-.endif /* KIM */
+.endif
+.ifdef CBM
+        jsr     LFFD2
+.endif
 L2A56:
         and     #$FF
         rts
@@ -1622,15 +1887,27 @@ L2A59:
         ldy     #$FF
         bne     L2A67
 L2A63:
-.endif /* KIM */
+.endif /* CONFIG_11 */
+.ifdef CBM
+        jsr     LE1C2
+		nop
+.else
         lda     Z8C
         ldy     Z8C+1
+.endif
 L2A67:
         sta     CURLIN
         sty     CURLIN+1
 L2A00:
         jmp     SYNERR
 L2A6E:
+.ifdef CBM
+        lda     $03
+        beq     LCA8F
+        ldx     #$C4 ;; XXX
+        jmp     ERROR
+LCA8F:
+.endif
         lda     #<ERRREENTRY
         ldy     #>ERRREENTRY
         jsr     STROUT
@@ -1639,16 +1916,48 @@ L2A6E:
         sta     TXTPTR
         sty     TXTPTR+1
         rts
-.ifdef CONFIG_GET
+.ifdef CONFIG_11
 GET:
         jsr     ERRDIR
+.ifdef CBM
+        cmp     #$23
+        bne     LCAB6
+        jsr     L00C2
+        jsr     LD676
+        lda     #$2C
+        jsr     LCE13
+        jsr     LFFC6
+        stx     $03
+LCAB6:
+.endif
         ldx     #$1C
         ldy     #$00
         sty     $1C
         lda     #$40
         jsr     PROCESS_INPUT_LIST
+.ifdef CBM
+        ldx     $03
+        bne     LCAD8
+.endif
         rts
-.endif /* CONFIG_GET */
+.endif /* CONFIG_G11 */
+.ifdef CBM
+LCAC6:
+        jsr     LD676
+        lda     #$2C
+        jsr     LCE13
+        jsr     LFFC6
+        stx     $03
+        jsr     LCAF1
+LCAD6:
+        lda     $03
+LCAD8:
+        jsr     LFFCC
+        ldx     #$00
+        stx     $03
+        rts
+LCAE0:
+.endif
 INPUT:
         lsr     Z14
         cmp     #$22
@@ -1661,14 +1970,35 @@ L2A9E:
         jsr     ERRDIR
         lda     #$2C
         sta     LINNUM+1
+LCAF8:
         jsr     NXIN
+.ifdef CBM
+        lda     $03
+        beq     LCB0C
+        lda     $020C
+        and     #$02
+        beq     LCB0C
+        jsr     LCAD6
+        jmp     LC7F0
+LCB0C:
+.endif
         lda     INPUTBUFFER
         bne     L2ABE
+.ifdef CBM
+        lda     $03
+        bne     LCAF8
+        jmp     LE19B
+LCB17:
+        lda     $03
+        bne     LCB21
+.else
         clc
         jmp     CONTROL_C_TYPED
+.endif
 NXIN:
         jsr     OUTQUES
         jsr     OUTSP
+LCB21:
         jmp     INLIN
 READ:
         ldx     DATPTR
@@ -1695,7 +2025,7 @@ PROCESS_INPUT_ITEM:
         jsr     CHRGOT
         bne     INSTART
         bit     INPUTFLG
-.ifdef KIM
+.ifdef CONFIG_11
         bvc     L2AF0
         jsr     MONRDKEY
         sta     INPUTBUFFER
@@ -1703,9 +2033,14 @@ PROCESS_INPUT_ITEM:
         ldy     #0
         bne     L2AF8
 L2AF0:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         bmi     FINDATA
+.ifdef CBM
+        lda     $03
+        bne     LCB64
+.endif
         jsr     OUTQUES
+LCB64:
         jsr     NXIN
 L2AF8:
         stx     TXTPTR
@@ -1714,16 +2049,22 @@ INSTART:
         jsr     CHRGET
         bit     VALTYP
         bpl     L2B34
-.ifdef KIM
+.ifdef CONFIG_11
         bit     INPUTFLG
         bvc     L2B10
+.ifdef CBM
+        lda     #$00
+        jsr     LE1BC
+        nop
+.else
         inx
         stx     TXTPTR
         lda     #$00
         sta     CHARAC
         beq     L2B1C
+.endif
 L2B10:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     CHARAC
         cmp     #$22
         beq     L2B1D
@@ -1742,20 +2083,20 @@ L2B1D:
 L2B28:
         jsr     STRLT2
         jsr     POINT
-.ifndef KIM
+.ifndef CONFIG_11
         jsr     LETSTRING
-.else /* KIM */
+.else /* CONFIG_11 */
         jsr     PUTSTR
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jmp     INPUT_MORE
 L2B34:
         jsr     FIN
-.ifndef KIM
+.ifndef CONFIG_11
         jsr     SETFOR
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     VALTYP+1
         jsr     LET2
-.endif /* KIM */
+.endif /* CONFIG_11 */
 INPUT_MORE:
         jsr     CHRGOT
         beq     L2B48
@@ -1802,15 +2143,19 @@ INPDONE:
         lda     INPTR
         ldy     INPTR+1
         ldx     INPUTFLG
-.ifndef KIM
+.ifndef CONFIG_11
         beq     L2B94
-.else /* KIM */
+.else /* CONFIG_11 */
         bpl     L2B94
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jmp     SETDA
 L2B94:
         ldy     #$00
         lda     (INPTR),y
+.ifdef CBM
+        beq     L2BA1
+        lda     $03
+.endif
         beq     L2BA1
         lda     #<ERREXTRA
         ldy     #>ERREXTRA
@@ -1851,9 +2196,9 @@ NEXT3:
         inx
         inx
         inx
-.ifdef KIM
+.ifdef CONFIG_11
         inx
-.endif /* KIM */
+.endif /* CONFIG_11 */
         stx     DEST
         ldy     #>STACK
         jsr     LOAD_FAC_FROM_YA
@@ -2013,10 +2358,10 @@ FRM_STACK2:
         pha
 L2CED:
         jsr     ROUND_FAC
-.ifdef KIM
+.ifdef CONFIG_11
         lda     FAC+4
         pha
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     FAC+3
         pha
         lda     FAC+2
@@ -2050,10 +2395,10 @@ FRM_PERFORM2:
         pla
         sta     ARG+3
         pla
-.ifdef KIM
+.ifdef CONFIG_11
         sta     ARG+4
         pla
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     ARGSIGN
         eor     FACSIGN
         sta     STRNG1
@@ -2071,6 +2416,17 @@ L2D36:
 L2D39:
         jsr     ISLETC
         bcs     FRM_VARIABLE
+.ifdef CBM
+        cmp     #$FF
+        bne     LCDC1
+        lda     #<CON_PI
+        ldy     #>CON_PI
+        jsr     LDA74
+        jmp     L00C2
+CON_PI:
+        .byte   $82,$49,$0f,$DA,$A1
+LCDC1:
+.endif
         cmp     #$2E
         beq     L2D36
         cmp     #TOKEN_MINUS
@@ -2139,11 +2495,32 @@ FRM_VARIABLE:
 FRM_VARIABLE_CALL	= *-1
         sta     FAC_LAST-1
         sty     FAC_LAST
+.ifdef CBM
+        lda     $94
+        ldy     $95
+.endif
         ldx     VALTYP
         beq     L2DB1
+.ifdef CBM
+        jmp     LE19F
+        clc
+LCE3B:
+        cpy     #$C9
+        bne     LCE53
+        jsr     LCE76
+        sty     $AD
+        dey
+        sty     $C0
+        ldy     #$06
+        sty     $AC
+        ldy     #$24
+        jsr     LDD3A
+        jmp     LD353
+LCE53:
+.endif
         rts
 L2DB1:
-.ifdef KIM
+.ifdef CONFIG_11
         ldx     VALTYP+1
         bpl     L2DC2
         ldy     #$00
@@ -2155,8 +2532,37 @@ L2DB1:
         txa
         jmp     GIVAYF
 L2DC2:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jmp     LOAD_FAC_FROM_YA
+.ifdef CBM
+        .byte   $19
+LCE69:
+        cpy     #$49
+        bne     LCE82
+        jsr     LCE76
+        tya
+        ldx     #$A0
+        jmp     LDB21
+LCE76:
+        lda     #$FE
+        ldy     #$01
+        sei
+        jsr     LDA74
+        cli
+        sty     $B1
+        rts
+LCE82:
+        cmp     #$53
+        bne     LCE90
+        cpy     #$54
+        bne     LCE90
+        lda     $020C
+        jmp     LDB0E
+LCE90:
+        lda     $B3
+        ldy     $B4
+        jmp     LDA74
+.endif
 UNARY:
         asl     a
         pha
@@ -2303,9 +2709,9 @@ SYNERR3:
 NAMOK:
         ldx     #$00
         stx     VALTYP
-.ifdef KIM
+.ifdef CONFIG_11
         stx     VALTYP+1
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jsr     CHRGET
         bcc     L2ECD
         jsr     ISLETC
@@ -2319,14 +2725,14 @@ L2ECE:
         bcs     L2ECE
 L2ED8:
         cmp     #$24
-.ifndef KIM
+.ifndef CONFIG_11
         bne     L2EF9
-.else /* KIM */
+.else /* CONFIG_11 */
         bne     L2EE2
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     #$FF
         sta     VALTYP
-.ifdef KIM
+.ifdef CONFIG_11
         bne     L2EF2
 L2EE2:
         cmp     #$25
@@ -2338,7 +2744,7 @@ L2EE2:
         ora     VARNAM
         sta     VARNAM
 L2EF2:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         txa
         ora     #$80
         tax
@@ -2398,13 +2804,32 @@ NAMENOTFOUND:
         lda     STACK+2,x
         cmp     #>FRM_VARIABLE_CALL
         bne     MAKENEWVARIABLE
-.endif /* KIM */
+.endif /* CONFIG_11 */
+LD015:
         lda     #<C_ZERO
         ldy     #>C_ZERO
         rts
 C_ZERO:
         .byte   $00,$00
 MAKENEWVARIABLE:
+.ifdef CBM
+        lda     $94
+        ldy     $95
+        cmp     #$54
+        bne     LD02F
+        cpy     #$C9
+        beq     LD015
+        cpy     #$49
+        bne     LD02F
+LD02C:
+        jmp     SYNERR
+LD02F:
+        cmp     #$53
+        bne     LD037
+        cpy     #$54
+        beq     LD02C
+LD037:
+.endif
         lda     ARYTAB
         ldy     ARYTAB+1
         sta     LOWTR
@@ -2441,10 +2866,10 @@ L2F68:
         sta     (LOWTR),y
         iny
         sta     (LOWTR),y
-.ifdef KIM
+.ifdef CONFIG_11
         iny
         sta     (LOWTR),y
-.endif /* KIM */
+.endif /* CONFIG_11 */
 SET_VARPNT_AND_YA:
         lda     LOWTR
         clc
@@ -2489,9 +2914,9 @@ MI2:
         jmp     QINT
 ARRAY:
         lda     DIMFLG
-.ifdef KIM
+.ifdef CONFIG_11
         ora     VALTYP+1
-.endif /* KIM */
+.endif /* CONFIG_11 */
         pha
         lda     VALTYP
         pha
@@ -2528,10 +2953,10 @@ L2FDE:
         pla
         sta     VALTYP
         pla
-.ifdef KIM
+.ifdef CONFIG_11
         sta     VALTYP+1
         and     #$7F
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     DIMFLG
         ldx     ARYTAB
         lda     ARYTAB+1
@@ -2585,26 +3010,26 @@ MAKE_NEW_ARRAY:
         tay
         sta     STRNG2+1
         ldx     #BYTES_PER_ELEMENT
-.ifndef KIM
+.ifndef CONFIG_11
         stx     STRNG2
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     VARNAM
         sta     (LOWTR),y
-.ifdef KIM
+.ifdef CONFIG_11
         bpl     L3078
         dex
 L3078:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         iny
         lda     VARNAM+1
         sta     (LOWTR),y
-.ifdef KIM
+.ifdef CONFIG_11
         bpl     L3081
         dex
         dex
 L3081:
         stx     STRNG2
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     EOLPNTR
         iny
         iny
@@ -2713,7 +3138,7 @@ L3124:
         stx     STRNG2
         dec     EOLPNTR
         bne     L30F6
-.ifndef KIM
+.ifndef CONFIG_11
         asl     STRNG2
         rol     a
         bcs     GSE
@@ -2722,8 +3147,10 @@ L3124:
         bcs     GSE
         tay
         lda     STRNG2
-.else /* KIM */
+.else /* CONFIG_11 */
+.ifndef CBM
         sta     STRNG2+1
+.endif
         ldx     #$05
         lda     VARNAM
         bpl     L3135
@@ -2738,7 +3165,7 @@ L313B:
         lda     #$00
         jsr     MULTIPLY_SUBS1
         txa
-.endif /* KIM */
+.endif /* CONFIG_11 */
         adc     HIGHDS
         sta     VARPNT
         tya
@@ -2825,9 +3252,9 @@ DEF:
         jsr     CHKCLS
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifdef KIM
+.ifdef CONFIG_11
         pha
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     VARPNT+1
         pha
         lda     VARPNT
@@ -2868,9 +3295,9 @@ L31F3:
         iny
         lda     (FNCNAM),y
         sta     VARPNT+1
-.ifdef KIM
+.ifdef CONFIG_11
         iny
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L3219:
         lda     (VARPNT),y
         pha
@@ -2917,11 +3344,11 @@ L3250:
         pla
         iny
         sta     (FNCNAM),y
-.ifdef KIM
+.ifdef CONFIG_11
         pla
         iny
         sta     (FNCNAM),y
-.endif /* KIM */
+.endif /* CONFIG_11 */
         rts
 STR:
         jsr     CHKNUM
@@ -3094,14 +3521,14 @@ L336B:
 L3376:
         sta     INDEX
         stx     INDEX+1
-.ifndef KIM
+.ifndef CONFIG_11
         ldy     #$01
-.else /* KIM */
+.else /* CONFIG_11 */
         ldy     #$00
         lda     (INDEX),y
         tax
         iny
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     (INDEX),y
         php
         iny
@@ -3114,15 +3541,15 @@ L3376:
         sta     HIGHDS+1
         plp
         bpl     L3367
-.ifdef KIM
+.ifdef CONFIG_11
         txa
         bmi     L3367
-.endif /* KIM */
+.endif /* CONFIG_11 */
         iny
         lda     (INDEX),y
-.ifdef KIM
+.ifdef CONFIG_11
         ldy     #$00
-.endif /* KIM */
+.endif /* CONFIG_11 */
         asl     a
         adc     #$05
         adc     INDEX
@@ -3140,10 +3567,10 @@ L33B1:
         jsr     CHECK_VARIABLE
         beq     L33A9
 CHECK_SIMPLE_VARIABLE:
-.ifdef KIM
+.ifdef CONFIG_11
         lda     (INDEX),y
         bmi     CHECK_BUMP
-.endif /* KIM */
+.endif /* CONFIG_11 */
         iny
         lda     (INDEX),y
         bpl     CHECK_BUMP
@@ -3402,15 +3829,15 @@ L353F:
 SUBSTRING_SETUP:
         jsr     CHKCLS
         pla
-.ifndef KIM
+.ifndef CONFIG_11
         sta     JMPADRS+1
         pla
         sta     JMPADRS+2
-.else /* KIM */
+.else /* CONFIG_11 */
         tay
         pla
         sta     TEMPX
-.endif /* KIM */
+.endif /* CONFIG_11 */
         pla
         pla
         pla
@@ -3419,21 +3846,21 @@ SUBSTRING_SETUP:
         sta     DSCPTR
         pla
         sta     DSCPTR+1
-.ifdef KIM
+.ifdef CONFIG_11
         lda     TEMPX
         pha
         tya
         pha
-.endif /* KIM */
+.endif /* CONFIG_11 */
         ldy     #$00
         txa
         beq     GOIQ
-.ifndef KIM
+.ifndef CONFIG_11
         inc     JMPADRS+1
         jmp     (JMPADRS+1)
-.else /* KIM */
+.else /* CONFIG_11 */
         rts
-.endif /* KIM */
+.endif /* CONFIG_11 */
 LEN:
         jsr     GETSTR
 SNGFLT1:
@@ -3450,11 +3877,11 @@ ASC:
         ldy     #$00
         lda     (INDEX),y
         tay
-.ifndef KIM
+.ifndef CONFIG_11
         jmp     SNGFLT1
-.else /* KIM */
+.else /* CONFIG_11 */
         jmp     SNGFLT
-.endif /* KIM */
+.endif /* CONFIG_11 */
 GOIQ:
         jmp     IQERR
 GTBYTC:
@@ -3615,11 +4042,11 @@ L369B:
         eor     #$FF
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifdef KIM
+.ifdef CONFIG_11
         lda     4,y
         sbc     4,x
         sta     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     GOWARM,y
         sbc     GOWARM,x
         sta     FAC+3
@@ -3643,15 +4070,15 @@ L36C7:
         stx     FAC+1
         ldx     FAC+3
         stx     FAC+2
-.ifndef KIM
+.ifndef CONFIG_11
         ldx     FACEXTENSION
         stx     FAC+3
-.else /* KIM */
+.else /* CONFIG_11 */
         ldx     FAC+4
         stx     FAC+3
         ldx     FACEXTENSION
         stx     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sty     FACEXTENSION
         adc     #$08
         cmp     #MANTISSA_BYTES*8
@@ -3666,11 +4093,11 @@ STA_IN_FAC_SIGN:
 FADD4:
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifdef KIM
+.ifdef CONFIG_11
         lda     FAC+4
         adc     ARG+4
         sta     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     FAC+3
         adc     ARG+3
         sta     FAC+3
@@ -3684,9 +4111,9 @@ FADD4:
 NORMALIZE_FAC3:
         adc     #$01
         asl     FACEXTENSION
-.ifdef KIM
+.ifdef CONFIG_11
         rol     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         rol     FAC+3
         rol     FAC+2
         rol     FAC+1
@@ -3703,12 +4130,12 @@ NORMALIZE_FAC5:
 NORMALIZE_FAC6:
         inc     FAC
         beq     OVERFLOW
-.ifndef KIM
+.ifndef CONFIG_11
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
         ror     FACEXTENSION
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$00
         bcc     L372E
         lda     #$80
@@ -3744,7 +4171,7 @@ L375E:
         lsr     FACEXTENSION
         ora     FACEXTENSION
         sta     FACEXTENSION
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L3764:
         rts
 COMPLEMENT_FAC:
@@ -3761,21 +4188,21 @@ COMPLEMENT_FAC_MANTISSA:
         lda     FAC+3
         eor     #$FF
         sta     FAC+3
-.ifdef KIM
+.ifdef CONFIG_11
         lda     FAC+4
         eor     #$FF
         sta     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     FACEXTENSION
         eor     #$FF
         sta     FACEXTENSION
         inc     FACEXTENSION
         bne     RTS12
 INCREMENT_FAC_MANTISSA:
-.ifdef KIM
+.ifdef CONFIG_11
         inc     FAC+4
         bne     RTS12
-.endif /* KIM */
+.endif /* CONFIG_11 */
         inc     FAC+3
         bne     RTS12
         inc     FAC+2
@@ -3789,16 +4216,16 @@ OVERFLOW:
 SHIFT_RIGHT1:
         ldx     #RESULT-1
 SHIFT_RIGHT2:
-.ifndef KIM
+.ifndef CONFIG_11
         ldy     3,x
-.else /* KIM */
+.else /* CONFIG_11 */
         ldy     4,x
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sty     FACEXTENSION
-.ifdef KIM
+.ifdef CONFIG_11
         ldy     3,x
         sty     4,x
-.endif /* KIM */
+.endif /* CONFIG_11 */
         ldy     2,x
         sty     3,x
         ldy     1,x
@@ -3813,7 +4240,7 @@ SHIFT_RIGHT:
         tay
         lda     FACEXTENSION
         bcs     SHIFT_RIGHT5
-.ifndef KIM
+.ifndef CONFIG_11
 LB588:
         asl     1,x
         bcc     LB58E
@@ -3827,7 +4254,7 @@ SHIFT_RIGHT4:
         ror     a
         iny
         bne     LB588
-.else /* KIM */
+.else /* CONFIG_11 */
 L37C4:
         pha
         lda     1,x
@@ -3868,11 +4295,11 @@ L37EF:
 L37FD:
         iny
         bne     L37C4
-.endif /* KIM */
+.endif /* CONFIG_11 */
 SHIFT_RIGHT5:
         clc
         rts
-.ifndef KIM
+.ifndef CONFIG_11
 CON_ONE:
         .byte   $81,$00,$00,$00
 POLY_LOG:
@@ -3888,7 +4315,7 @@ CON_NEG_HALF:
 		.byte   $80,$80,$00,$00
 CON_LOG_TWO:
 		.byte   $80,$31,$72,$18
-.else /* KIM */
+.else /* CONFIG_11 */
 CON_ONE:
         .byte   $81,$00,$00,$00,$00
 POLY_LOG:
@@ -3905,7 +4332,7 @@ CON_NEG_HALF:
         .byte   $80,$80,$00,$00,$00
 CON_LOG_TWO:
         .byte   $80,$31,$72,$17,$F8
-.endif /* KIM */
+.endif /* CONFIG_11 */
 LOG:
         jsr     SIGN
         beq     GIQ
@@ -3940,27 +4367,27 @@ LOG2:
 FMULT:
         jsr     LOAD_ARG_FROM_YA
 FMULTT:
-.ifndef KIM
+.ifndef CONFIG_11
         beq     L3903
-.else /* KIM */
+.else /* CONFIG_11 */
         bne     L3876
         jmp     L3903
 L3876:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jsr     ADD_EXPONENTS
         lda     #$00
         sta     RESULT
         sta     RESULT+1
         sta     RESULT+2
-.ifdef KIM
+.ifdef CONFIG_11
         sta     RESULT+3
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     FACEXTENSION
         jsr     MULTIPLY1
-.ifdef KIM
+.ifdef CONFIG_11
         lda     FAC+4
         jsr     MULTIPLY1
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     FAC+3
         jsr     MULTIPLY1
         lda     FAC+2
@@ -3978,11 +4405,11 @@ L38A7:
         tay
         bcc     L38C3
         clc
-.ifdef KIM
+.ifdef CONFIG_11
         lda     RESULT+3
         adc     ARG+4
         sta     RESULT+3
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     RESULT+2
         adc     ARG+3
         sta     RESULT+2
@@ -3993,12 +4420,12 @@ L38A7:
         adc     ARG+1
         sta     RESULT
 L38C3:
-.ifndef KIM
+.ifndef CONFIG_11
         ror     RESULT
         ror     RESULT+1
         ror     RESULT+2
         ror     FACEXTENSION
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$00
         bcc     L38C9
         lda     #$80
@@ -4034,7 +4461,7 @@ L38F9:
         lsr     FACEXTENSION
         ora     FACEXTENSION
         sta     FACEXTENSION
-.endif /* KIM */
+.endif /* CONFIG_11 */
         tya
         lsr     a
         bne     L38A7
@@ -4044,11 +4471,11 @@ LOAD_ARG_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #BYTES_FP-1
-.ifdef KIM
+.ifdef CONFIG_11
         lda     (INDEX),y
         sta     ARG+4
         dey
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     (INDEX),y
         sta     ARG+3
         dey
@@ -4112,11 +4539,11 @@ MUL10:
 L3970:
         rts
 CONTEN:
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   $84,$20,$00,$00
-.else /* KIM */
+.else /* CONFIG_11 */
         .byte   $84,$20,$00,$00,$00
-.endif /* KIM */
+.endif /* CONFIG_11 */
 DIV10:
         jsr     COPY_FAC_TO_ARG_ROUNDED
         lda     #<CONTEN
@@ -4149,11 +4576,11 @@ L39A1:
         bne     L39B7
         ldy     ARG+3
         cpy     FAC+3
-.ifdef KIM
+.ifdef CONFIG_11
         bne     L39B7
         ldy     ARG+4
         cpy     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L39B7:
         php
         rol     a
@@ -4168,9 +4595,9 @@ L39C4:
         bcs     L39D5
 L39C7:
         asl     ARG_LAST
-.ifdef KIM
+.ifdef CONFIG_11
         rol     ARG+3
-.endif /* KIM */
+.endif /* CONFIG_11 */
         rol     ARG+2
         rol     ARG+1
         bcs     L39B7
@@ -4178,11 +4605,11 @@ L39C7:
         bpl     L39B7
 L39D5:
         tay
-.ifdef KIM
+.ifdef CONFIG_11
         lda     ARG+4
         sbc     FAC+4
         sta     ARG+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     ARG+3
         sbc     FAC+3
         sta     ARG+3
@@ -4208,11 +4635,11 @@ L39F6:
         plp
         jmp     COPY_RESULT_INTO_FAC
 L3A02:
-.ifndef KIM
+.ifndef CONFIG_11
         ldx     #ERR_ZERODIV
-.else /* KIM */
+.else /* CONFIG_11 */
         ldx     #ERR_ZERODIV
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jmp     ERROR
 COPY_RESULT_INTO_FAC:
         lda     RESULT
@@ -4221,20 +4648,20 @@ COPY_RESULT_INTO_FAC:
         sta     FAC+2
         lda     RESULT+2
         sta     FAC+3
-.ifdef KIM
+.ifdef CONFIG_11
         lda     RESULT+3
         sta     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jmp     NORMALIZE_FAC2
 LOAD_FAC_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifdef KIM
+.ifdef CONFIG_11
         lda     (INDEX),y
         sta     FAC+4
         dey
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     (INDEX),y
         sta     FAC+3
         dey
@@ -4265,11 +4692,11 @@ STORE_FAC_AT_YX_ROUNDED:
         stx     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifdef KIM
+.ifdef CONFIG_11
         lda     FAC+4
         sta     (INDEX),y
         dey
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     FAC+3
         sta     (INDEX),y
         dey
@@ -4343,9 +4770,9 @@ FLOAT1:
         rol     a
 FLOAT2:
         lda     #$00
-.ifdef KIM
+.ifdef CONFIG_11
         sta     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     FAC+3
         stx     FAC
         sta     FACEXTENSION
@@ -4377,12 +4804,12 @@ FCOMP2:
         cmp     FAC+2
         bne     L3B0A
         iny
-.ifdef KIM
+.ifdef CONFIG_11
         lda     (DEST),y
         cmp     FAC+3
         bne     L3B0A
         iny
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     #$7F
         cmp     FACEXTENSION
         lda     (DEST),y
@@ -4443,9 +4870,9 @@ QINT3:
         sta     FAC+1
         sta     FAC+2
         sta     FAC+3
-.ifdef KIM
+.ifdef CONFIG_11
         sta     FAC+4
-.endif /* KIM */
+.endif /* CONFIG_11 */
         tay
 RTS17:
         rts
@@ -4485,9 +4912,9 @@ FIN3:
         beq     FIN4
         bne     FIN6
 L3BA6:
-.ifndef KIM
+.ifndef CONFIG_11
         ror     EXPSGN
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$00
         bcc     L3BAC
         lda     #$80
@@ -4495,7 +4922,7 @@ L3BAC:
         lsr     EXPSGN
         ora     EXPSGN
         sta     EXPSGN
-.endif /* KIM */
+.endif /* CONFIG_11 */
 FIN4:
         jsr     CHRGET
 FIN5:
@@ -4508,9 +4935,9 @@ FIN6:
         sbc     EXPON
         jmp     FIN8
 FIN10:
-.ifndef KIM
+.ifndef CONFIG_11
         ror     LOWTR
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$00
         bcc     L3BC9
         lda     #$80
@@ -4518,7 +4945,7 @@ L3BC9:
         lsr     LOWTR
         ora     LOWTR
         sta     LOWTR
-.endif /* KIM */
+.endif /* CONFIG_11 */
         bit     LOWTR
         bvc     FIN1
 FIN7:
@@ -4588,7 +5015,7 @@ L3C2C:
 L3C3A:
         sta     EXPON
         jmp     FIN4
-.ifndef KIM
+.ifndef CONFIG_11
 ; these values are /1000 of what the labels say
 CON_99999999_9:
         .byte   $91,$43,$4F,$F8
@@ -4596,14 +5023,14 @@ CON_999999999:
 		.byte   $94,$74,$23,$F7
 CON_BILLION:
         .byte   $94,$74,$24,$00
-.else /* KIM */
+.else /* CONFIG_11 */
 CON_99999999_9:
         .byte   $9B,$3E,$BC,$1F,$FD
 CON_999999999:
         .byte   $9E,$6E,$6B,$27,$FD
 CON_BILLION:
         .byte   $9E,$6E,$6B,$28,$00
-.endif /* KIM */
+.endif /* CONFIG_11 */
 INPRT:
         lda     #<QT_IN
         ldy     #>QT_IN
@@ -4644,11 +5071,11 @@ L3C8C:
         lda     #<CON_BILLION
         ldy     #>CON_BILLION
         jsr     FMULT
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #-6
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #-9
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L3C95:
         sta     INDX
 L3C97:
@@ -4678,17 +5105,17 @@ L3CBE:
         ldx     #$01
         lda     INDX
         clc
-.ifndef KIM
+.ifndef CONFIG_11
         adc     #$07
-.else /* KIM */
+.else /* CONFIG_11 */
         adc     #$0A
-.endif /* KIM */
+.endif /* CONFIG_11 */
         bmi     L3CD3
-.ifndef KIM
+.ifndef CONFIG_11
         cmp     #$08
-.else /* KIM */
+.else /* CONFIG_11 */
         cmp     #$0B
-.endif /* KIM */
+.endif /* CONFIG_11 */
         bcs     L3CD4
         adc     #$FF
         tax
@@ -4720,11 +5147,11 @@ L3CF2:
 L3CF6:
         lda     FAC_LAST
         clc
-.ifdef KIM
+.ifdef CONFIG_11
         adc     DECTBL+3,y
         sta     FAC+4
         lda     FAC+3
-.endif /* KIM */
+.endif /* CONFIG_11 */
         adc     DECTBL+2,y
         sta     FAC+3
         lda     FAC+2
@@ -4749,9 +5176,9 @@ L3D23:
         iny
         iny
         iny
-.ifdef KIM
+.ifdef CONFIG_11
         iny
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sty     VARPNT
         ldy     STRNG2
         iny
@@ -4818,7 +5245,7 @@ L3D94:
         lda     #$00
         ldy     #$01
         rts
-.ifndef KIM
+.ifndef CONFIG_11
 CON_HALF:
         .byte   $80,$00,$00,$00
 DECTBL:
@@ -4829,7 +5256,7 @@ DECTBL:
 		.byte	$FF,$FF,$F6 ; -10
 		.byte	$00,$00,$01 ; 1
 DECTBL_END:
-.else /* KIM */
+.else /* CONFIG_11 */
 CON_HALF:
         .byte   $80,$00,$00,$00,$00
 DECTBL:
@@ -4839,7 +5266,7 @@ DECTBL:
         .byte   $FF,$FF,$FF,$9C,$00,$00,$00,$0A
         .byte   $FF,$FF,$FF,$FF
 DECTBL_END:
-.endif /* KIM */
+.endif /* CONFIG_11 */
 SQR:
         jsr     COPY_FAC_TO_ARG_ROUNDED
         lda     #<CON_HALF
@@ -4883,7 +5310,7 @@ NEGOP:
         sta     FACSIGN
 L3E0F:
         rts
-.ifndef KIM
+.ifndef CONFIG_11
 CON_LOG_E:
         .byte   $81,$38,$AA,$3B
 POLY_EXP:
@@ -4895,7 +5322,7 @@ POLY_EXP:
 		.byte	$7E,$75,$FE,$D0
 		.byte	$80,$31,$72,$15
 		.byte	$81,$00,$00,$00
-.else /* KIM */
+.else /* CONFIG_11 */
 CON_LOG_E:
         .byte   $81,$38,$AA,$3B,$29
 POLY_EXP:
@@ -4908,7 +5335,7 @@ POLY_EXP:
 		.byte	$7E,$75,$FD,$E7,$C6
 		.byte	$80,$31,$72,$18,$10
 		.byte	$81,$00,$00,$00,$00
-.endif /* KIM */
+.endif /* CONFIG_11 */
 EXP:
         lda     #<CON_LOG_E
         ldy     #>CON_LOG_E
@@ -5028,11 +5455,11 @@ L3F01:
         lda     #$80
         sta     FAC
         jsr     NORMALIZE_FAC2
-.ifndef KIM
+.ifndef CONFIG_11
         ldx     #$D4
-.else /* KIM */
+.else /* CONFIG_11 */
         ldx     #$D8
-.endif /* KIM */
+.endif /* CONFIG_11 */
         ldy     #$00
 GOMOVMF:
         jmp     STORE_FAC_AT_YX_ROUNDED
@@ -5098,7 +5525,7 @@ TAN:
 TAN1:
         pha
         jmp     SIN1
-.ifndef KIM
+.ifndef CONFIG_11
 CON_PI_HALF:
         .byte   $81,$49,$0F,$DB
 CON_PI_DOUB:
@@ -5124,7 +5551,7 @@ POLY_SIN:
 MICROSOFT:
         .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
         .byte   $CE,$CA
-.endif /* KIM */
+.endif /* CONFIG_11 */
 ATN:
         lda     FACSIGN
         pha
@@ -5155,7 +5582,7 @@ L3FFC:
 L4002:
         rts
 POLY_ATN:
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   $08
 		.byte	$78,$3A,$C5,$37
 		.byte	$7B,$83,$A2,$5C
@@ -5166,7 +5593,7 @@ POLY_ATN:
 		.byte	$7E,$4C,$B9,$73
 		.byte	$7F,$AA,$AA,$53
 		.byte	$81,$00,$00,$00
-.else /* KIM */
+.else /* CONFIG_11 */
         .byte   $0B
 		.byte	$76,$B3,$83,$BD,$D3
 		.byte	$79,$1E,$F4,$A6,$F5
@@ -5181,7 +5608,7 @@ POLY_ATN:
 		.byte	$7F,$AA,$AA,$AA,$13
         .byte   $81,$00,$00,$00,$00
 		.byte	$00 ; XXX
-.endif /* KIM */
+.endif /* CONFIG_11 */
 RAMSTART1:
 GENERIC_CHRGET:
         inc     TXTPTR
@@ -5199,73 +5626,73 @@ L4047:
         sbc     #$D0
 L4058:
         rts
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   $80,$4F,$C7,$52
-.else /* KIM */
+.else /* CONFIG_11 */
         .byte   $80,$4F,$C7,$52,$58
-.endif /* KIM */
+.endif /* CONFIG_11 */
 GENERIC_CHRGET_END:
 COLD_START:
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #$4E
         ldy     #$BE
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$DB
         ldy     #$41
-.endif /* KIM */
+.endif /* CONFIG_11 */
         jsr     STROUT
         ldx     #$FF
         stx     CURLIN+1
         txs
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #$11
         ldy     #$BD
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$65
         ldy     #$40
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     L0001
         sty     L0002
         sta     GOWARM+1
         sty     GOWARM+2
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #$05
         ldy     #$AE
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$C2
         ldy     #$2F
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     GOSTROUT
         sty     GOSTROUT+1
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #$C1
         ldy     #$AF
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #$95
         ldy     #$31
-.endif /* KIM */
+.endif /* CONFIG_11 */
         sta     GOGIVEAYF
         sty     GOGIVEAYF+1
         lda     #$4C
         sta     Z00
         sta     GOWARM
         sta     JMPADRS
-.ifndef KIM
+.ifndef CONFIG_11
         sta     USR
         lda     #$88
         ldy     #$AE
         sta     $0B
         sty     $0C
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         lda     #$48
         sta     Z17
         lda     #$38
         sta     Z18
-.ifndef KIM
+.ifndef CONFIG_11
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
-.else /* KIM */
+.else /* CONFIG_11 */
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET-1 ; XXX
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L4098:
         lda     GENERIC_CHRGET-1,x
         sta     STRNG2+1,x
@@ -5275,17 +5702,17 @@ L4098:
         sta     SHIFTSIGNEXT
         sta     LASTPT+1
         sta     Z15
-.ifndef KIM
+.ifndef CONFIG_11
         sta     Z16
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         pha
         sta     Z14
         lda     #$03
         sta     DSCLEN
-.ifndef KIM
+.ifndef CONFIG_11
         lda     #$2C
         sta     LINNUM+1
-.endif /* ! KIM */
+.endif /* ! CONFIG_11 */
         jsr     CRDO
         ldx     #TEMPST
         stx     TEMPPT
@@ -5317,13 +5744,13 @@ L40DD:
         asl     a
         sta     (LINNUM),y
         cmp     (LINNUM),y
-.ifndef KIM
+.ifndef CONFIG_11
         beq     L40D7
         bne     L40FA
 .else
         bne     L40FA
         beq     L40D7
-.endif /* KIM */
+.endif /* CONFIG_11 */
 L40EE:
         jsr     CHRGOT
         jsr     LINGET
@@ -5363,10 +5790,10 @@ L4129:
         adc     Z17
         sta     Z18
 L4136:
-.ifndef KIM
+.ifndef CONFIG_11
         ldx     #$00
         ldy     #$03
-.else /* KIM */
+.else /* CONFIG_11 */
         lda     #<QT_WANT
         ldy     #>QT_WANT
         jsr     STROUT
@@ -5402,7 +5829,7 @@ L4157:
         ldx     #<SIN_COS_TAN_ATN
         ldy     #>SIN_COS_TAN_ATN
 L4183:
-.endif /* KIM */
+.endif /* CONFIG_11 */
         stx     TXTTAB
         sty     TXTTAB+1
         ldy     #$00
@@ -5426,16 +5853,16 @@ L4192:
         lda     #<QT_BYTES_FREE
         ldy     #>QT_BYTES_FREE
         jsr     STROUT
-.ifdef KIM
+.ifdef CONFIG_11
         jsr     SCRTCH
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     #<STROUT
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.ifndef KIM
+.ifndef CONFIG_11
         jsr     SCRTCH
-.endif /* KIM */
+.endif /* CONFIG_11 */
         lda     #<RESTART
         ldy     #>RESTART
         sta     L0001
@@ -5446,11 +5873,11 @@ QT_WANT:
         .byte   $00
 QT_WRITTEN_BY:
         .byte   $0D,$0A,$0C
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   "WRITTEN BY RICHARD W. WEILAND."
-.else /* KIM */
+.else /* CONFIG_11 */
         .byte   "WRITTEN BY WEILAND & GATES"
-.endif /* KIM */
+.endif /* CONFIG_11 */
         .byte   $0D,$0A,$00
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
@@ -5461,17 +5888,17 @@ QT_TERMINAL_WIDTH:
 QT_BYTES_FREE:
         .byte   " BYTES FREE"
         .byte   $0D,$0A,$0D,$0A
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   "OSI 6502 BASIC VERSION 1.0 REV "
         .byte   "3.2"
-.else /* KIM */
+.else /* CONFIG_11 */
         .byte   "MOS TECH 6502 BASIC V1.1"
-.endif /* KIM */
+.endif /* CONFIG_11 */
         .byte   $0D,$0A
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
         .byte   $0D,$0A,$00
 
-.ifndef KIM
+.ifndef CONFIG_11
         .byte   $00,$00
 LBEE4:
         lda     LBF05
@@ -5635,8 +6062,8 @@ LBFFB:
         brk
         brk
         brk
-.else /* KIM */
+.else /* CONFIG_11 */
 RAMSTART2:
         .byte   $08,$29,$25,$20,$60,$2A,$E5,$E4
         .byte   $20,$66,$24,$65,$AC,$04,$A4
-.endif /* KIM */
+.endif /* CONFIG_11 */
