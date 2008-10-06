@@ -55,6 +55,7 @@ LDD3A	:= $AAAA
 LE19F	:= $AAAA
 LDB0E	:= $AAAA
 LDB21	:= $AAAA
+LE7F3	:= $AAAA
 .endif
 
 .include "macros.s"
@@ -3547,11 +3548,15 @@ L3376:
 .endif /* CONFIG_11 */
         iny
         lda     (INDEX),y
+.ifdef CBM
+        jsr     LE7F3
+.else
 .ifdef CONFIG_11
         ldy     #$00
 .endif /* CONFIG_11 */
         asl     a
         adc     #$05
+.endif
         adc     INDEX
         sta     INDEX
         bcc     L33A7
@@ -3951,8 +3956,16 @@ GETADR:
 PEEK:
         jsr     GETADR
         ldy     #$00
+.ifdef CBM
+        cmp     #$C0
+        bcc     LD6F3
+        cmp     #$E1
+        bcc     LD6F6
+LD6F3:
+.endif
         lda     (LINNUM),y
         tay
+LD6F6:
         jmp     SNGFLT
 POKE:
         jsr     GTNUM
@@ -4130,10 +4143,13 @@ NORMALIZE_FAC5:
 NORMALIZE_FAC6:
         inc     FAC
         beq     OVERFLOW
-.ifndef CONFIG_11
+.ifndef KIM
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
+.ifdef CBM
+        ror     FAC+4
+.endif
         ror     FACEXTENSION
 .else /* CONFIG_11 */
         lda     #$00
@@ -4240,7 +4256,7 @@ SHIFT_RIGHT:
         tay
         lda     FACEXTENSION
         bcs     SHIFT_RIGHT5
-.ifndef CONFIG_11
+.ifndef KIM
 LB588:
         asl     1,x
         bcc     LB58E
@@ -4251,6 +4267,9 @@ LB58E:
 SHIFT_RIGHT4:
         ror     2,x
         ror     3,x
+.ifdef CBM
+        ror     4,x
+.endif
         ror     a
         iny
         bne     LB588
@@ -4367,7 +4386,7 @@ LOG2:
 FMULT:
         jsr     LOAD_ARG_FROM_YA
 FMULTT:
-.ifndef CONFIG_11
+.ifndef KIM
         beq     L3903
 .else /* CONFIG_11 */
         bne     L3876
@@ -4420,10 +4439,13 @@ L38A7:
         adc     ARG+1
         sta     RESULT
 L38C3:
-.ifndef CONFIG_11
+.ifndef KIM
         ror     RESULT
         ror     RESULT+1
         ror     RESULT+2
+.ifdef CBM
+        ror     RESULT+3
+.endif
         ror     FACEXTENSION
 .else /* CONFIG_11 */
         lda     #$00
@@ -4912,7 +4934,7 @@ FIN3:
         beq     FIN4
         bne     FIN6
 L3BA6:
-.ifndef CONFIG_11
+.ifndef KIM
         ror     EXPSGN
 .else /* CONFIG_11 */
         lda     #$00
@@ -4935,7 +4957,7 @@ FIN6:
         sbc     EXPON
         jmp     FIN8
 FIN10:
-.ifndef CONFIG_11
+.ifndef KIM
         ror     LOWTR
 .else /* CONFIG_11 */
         lda     #$00
@@ -4995,12 +5017,22 @@ ADDACC:
         jmp     FADDT
 GETEXP:
         lda     EXPON
+.ifdef CBM
+        cmp     #$0C
+        bcc     L3C2C
+        bit     EXPSGN
+        bmi     LDC70
+        jmp     OVERFLOW
+LDC70:
+        lda     #$0B
+.else
         cmp     #$0A
         bcc     L3C2C
         lda     #$64
         bit     EXPSGN
         bmi     L3C3A
         jmp     OVERFLOW
+.endif
 L3C2C:
         asl     a
         asl     a
@@ -5198,7 +5230,12 @@ L3D3E:
         and     #$80
         tax
         cpy     #DECTBL_END-DECTBL
+.ifdef CBM
+        beq     LDD96
+        cpy     #$3C
+.endif
         bne     L3CF6
+LDD96:
         ldy     STRNG2
 L3D4E:
         lda     $FF,y
@@ -5265,6 +5302,14 @@ DECTBL:
         .byte   $FF,$FF,$D8,$F0,$00,$00,$03,$E8
         .byte   $FF,$FF,$FF,$9C,$00,$00,$00,$0A
         .byte   $FF,$FF,$FF,$FF
+.ifdef CBM
+		.byte	$FF,$DF,$0A,$80 ; TI$
+		.byte	$00,$03,$4B,$C0
+		.byte	$FF,$FF,$73,$60
+		.byte	$00,$00,$0E,$10
+		.byte	$FF,$FF,$FD,$A8
+		.byte	$00,$00,$00,$3C
+.endif
 DECTBL_END:
 .endif /* CONFIG_11 */
 SQR:
@@ -5430,13 +5475,30 @@ CONRND2:
         .byte   $68,$28,$B1,$46
 RND:
         jsr     SIGN
+.ifdef CBM
+        bmi     L3F01
+        bne     LDF63
+        lda     $9044
+        sta     $B1
+        lda     $9048
+        sta     $B2
+        lda     $9045
+        sta     $B3
+        lda     $9049
+        sta     $B4
+        jmp     LDF88
+LDF63:
+.else
         tax
         bmi     L3F01
+.endif
         lda     #<RNDSEED
         ldy     #$00
         jsr     LOAD_FAC_FROM_YA
+.ifndef CBM
         txa
         beq     L3EDA
+.endif
         lda     #<CONRND1
         ldy     #>CONRND1
         jsr     FMULT
@@ -5448,6 +5510,13 @@ L3F01:
         lda     FAC+1
         sta     FAC_LAST
         stx     FAC+1
+.ifdef CBM
+        ldx     $B2
+        lda     $B3
+        sta     $B2
+        stx     $B3
+LDF88:
+.endif
         lda     #$00
         sta     FACSIGN
         lda     FAC
@@ -5548,9 +5617,11 @@ POLY_SIN:
         .byte   $07,$FB,$F8,$87,$99,$68,$89,$01
         .byte   $87,$23,$35,$DF,$E1,$86,$A5,$5D
         .byte   $E7,$28,$83,$49,$0F,$DA,$A2
+.ifndef CBM
 MICROSOFT:
         .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
         .byte   $CE,$CA
+.endif
 .endif /* CONFIG_11 */
 ATN:
         lda     FACSIGN
