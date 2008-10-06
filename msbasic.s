@@ -56,6 +56,7 @@ LE19F	:= $AAAA
 LDB0E	:= $AAAA
 LDB21	:= $AAAA
 LE7F3	:= $AAAA
+LC38B	:= $AAAA
 .endif
 
 .include "macros.s"
@@ -5678,7 +5679,9 @@ POLY_ATN:
 		.byte	$7E,$4C,$CC,$91,$C7
 		.byte	$7F,$AA,$AA,$AA,$13
         .byte   $81,$00,$00,$00,$00
+.ifndef CBM
 		.byte	$00 ; XXX
+.endif
 .endif /* CONFIG_11 */
 RAMSTART1:
 GENERIC_CHRGET:
@@ -5697,57 +5700,51 @@ L4047:
         sbc     #$D0
 L4058:
         rts
-.ifndef CONFIG_11
+.ifdef OSI
         .byte   $80,$4F,$C7,$52
-.else /* CONFIG_11 */
+.endif
+.ifdef KIM
         .byte   $80,$4F,$C7,$52,$58
-.endif /* CONFIG_11 */
+.endif
+.ifdef CBM
+        .byte   $80,$4F,$C7,$52,$59
+.endif
 GENERIC_CHRGET_END:
 COLD_START:
-.ifndef CONFIG_11
-        lda     #$4E
-        ldy     #$BE
-.else /* CONFIG_11 */
-        lda     #$DB
-        ldy     #$41
-.endif /* CONFIG_11 */
+.ifndef CBM
+        lda     #<QT_WRITTEN_BY
+        ldy     #>QT_WRITTEN_BY
         jsr     STROUT
+.endif
+COLD_START2:
         ldx     #$FF
         stx     CURLIN+1
         txs
-.ifndef CONFIG_11
-        lda     #$11
-        ldy     #$BD
-.else /* CONFIG_11 */
-        lda     #$65
-        ldy     #$40
-.endif /* CONFIG_11 */
+.ifndef CBM
+        lda     #<COLD_START2
+        ldy     #>COLD_START2
         sta     L0001
         sty     L0002
         sta     GOWARM+1
         sty     GOWARM+2
-.ifndef CONFIG_11
-        lda     #$05
-        ldy     #$AE
-.else /* CONFIG_11 */
-        lda     #$C2
-        ldy     #$2F
-.endif /* CONFIG_11 */
+        lda     #<AYINT
+        ldy     #>AYINT
         sta     GOSTROUT
         sty     GOSTROUT+1
-.ifndef CONFIG_11
-        lda     #$C1
-        ldy     #$AF
-.else /* CONFIG_11 */
-        lda     #$95
-        ldy     #$31
-.endif /* CONFIG_11 */
+        lda     #<GIVAYF
+        ldy     #>GIVAYF
         sta     GOGIVEAYF
         sty     GOGIVEAYF+1
+.endif
         lda     #$4C
+.ifdef CBM
+        sta     JMPADRS
+        sta     Z00
+.else
         sta     Z00
         sta     GOWARM
         sta     JMPADRS
+.endif
 .ifndef CONFIG_11
         sta     USR
         lda     #$88
@@ -5771,22 +5768,26 @@ L4098:
         bne     L4098
         txa
         sta     SHIFTSIGNEXT
+.ifdef CBM
+        sta     $03
+.endif
         sta     LASTPT+1
         sta     Z15
-.ifndef CONFIG_11
+.ifndef KIM
         sta     Z16
 .endif /* ! CONFIG_11 */
         pha
         sta     Z14
         lda     #$03
         sta     DSCLEN
-.ifndef CONFIG_11
+.ifndef KIM
         lda     #$2C
         sta     LINNUM+1
 .endif /* ! CONFIG_11 */
         jsr     CRDO
         ldx     #TEMPST
         stx     TEMPPT
+.ifndef CBM
         lda     #<QT_MEMORY_SIZE
         ldy     #>QT_MEMORY_SIZE
         jsr     STROUT
@@ -5798,6 +5799,7 @@ L4098:
         beq     COLD_START
         tay
         bne     L40EE
+.endif
         lda     #<RAMSTART2
         ldy     #>RAMSTART2
         sta     LINNUM
@@ -5807,6 +5809,11 @@ L40D7:
         inc     LINNUM
         bne     L40DD
         inc     LINNUM+1
+.ifdef CBM
+        lda     $09
+        cmp     #$80
+        beq     L40FA
+.endif
 L40DD:
         lda     #$92
         sta     (LINNUM),y
@@ -5815,19 +5822,25 @@ L40DD:
         asl     a
         sta     (LINNUM),y
         cmp     (LINNUM),y
-.ifndef CONFIG_11
+.ifdef CBM
+        beq     L40D7
+.endif
+.ifdef OSI
         beq     L40D7
         bne     L40FA
-.else
+.endif
+.ifdef KIM
         bne     L40FA
         beq     L40D7
-.endif /* CONFIG_11 */
+.endif
 L40EE:
+.ifndef CBM
         jsr     CHRGOT
         jsr     LINGET
         tay
         beq     L40FA
         jmp     SYNERR
+.endif
 L40FA:
         lda     LINNUM
         ldy     LINNUM+1
@@ -5836,6 +5849,7 @@ L40FA:
         sta     FRETOP
         sty     FRETOP+1
 L4106:
+.ifndef CBM
         lda     #<QT_TERMINAL_WIDTH
         ldy     #>QT_TERMINAL_WIDTH
         jsr     STROUT
@@ -5861,9 +5875,10 @@ L4129:
         adc     Z17
         sta     Z18
 L4136:
-.ifndef CONFIG_11
-        ldx     #$00
-        ldy     #$03
+.endif
+.ifndef KIM
+        ldx     #<RAMSTART3
+        ldy     #>RAMSTART3
 .else /* CONFIG_11 */
         lda     #<QT_WANT
         ldy     #>QT_WANT
@@ -5927,6 +5942,9 @@ L4192:
 .ifdef CONFIG_11
         jsr     SCRTCH
 .endif /* CONFIG_11 */
+.ifdef CBM
+        jmp     LC38B
+.else
         lda     #<STROUT
         ldy     #>STROUT
         sta     GOWARM+1
@@ -5939,6 +5957,7 @@ L4192:
         sta     L0001
         sty     L0002
         jmp     (L0001)
+.endif
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
         .byte   $00
@@ -5969,7 +5988,7 @@ QT_BYTES_FREE:
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
         .byte   $0D,$0A,$00
 
-.ifndef CONFIG_11
+.ifdef OSI
         .byte   $00,$00
 LBEE4:
         lda     LBF05
@@ -6133,8 +6152,9 @@ LBFFB:
         brk
         brk
         brk
-.else /* CONFIG_11 */
+.endif /* OSI */
+.ifdef KIM
 RAMSTART2:
         .byte   $08,$29,$25,$20,$60,$2A,$E5,$E4
         .byte   $20,$66,$24,$65,$AC,$04,$A4
-.endif /* CONFIG_11 */
+.endif /* KIM */
