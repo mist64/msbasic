@@ -1528,9 +1528,9 @@ L29F5:
         cmp     #$9C
         bne     L2A0A
 .else /* KIM */
-        beq     L2A00
+        beq     @1
         jmp     SYNERR
-L2A00:
+@1:
         plp
         bcc     L2A09
 .endif /* KIM */
@@ -1625,14 +1625,10 @@ L2A63:
 .endif /* KIM */
         lda     Z8C
         ldy     Z8C+1
-.ifdef KIM
 L2A67:
-.endif /* KIM */
         sta     CURLIN
         sty     CURLIN+1
-.ifndef KIM
 L2A00:
-.endif /* ! KIM */
         jmp     SYNERR
 L2A6E:
         lda     #<ERRREENTRY
@@ -1680,9 +1676,7 @@ READ:
         .byte   $A9
 L2ABE:
         tya
-.ifdef KIM
 PROCESS_INPUT_LIST:
-.endif /* KIM */
         sta     INPUTFLG
         stx     INPTR
         sty     INPTR+1
@@ -1705,17 +1699,15 @@ PROCESS_INPUT_ITEM:
         bvc     L2AF0
         jsr     MONRDKEY
         sta     INPUTBUFFER
-        ldx     #$1A
-        ldy     #$00
+        ldx     #<INPUTBUFFER-1
+        ldy     #0
         bne     L2AF8
 L2AF0:
 .endif /* KIM */
         bmi     FINDATA
         jsr     OUTQUES
         jsr     NXIN
-.ifdef KIM
 L2AF8:
-.endif /* KIM */
         stx     TXTPTR
         sty     TXTPTR+1
 INSTART:
@@ -1738,9 +1730,7 @@ L2B10:
         lda     #$3A
         sta     CHARAC
         lda     #$2C
-.ifdef KIM
 L2B1C:
-.endif /* KIM */
         clc
 L2B1D:
         sta     ENDCHR
@@ -1790,11 +1780,7 @@ FINDATA:
         iny
         tax
         bne     L2B7C
-.ifndef KIM
-        ldx     #$06
-.else /* KIM */
-        ldx     #$2A
-.endif /* KIM */
+        ldx     #ERR_NODATA
         iny
         lda     (TXTPTR),y
         beq     GERR
@@ -1869,60 +1855,34 @@ NEXT3:
         inx
 .endif /* KIM */
         stx     DEST
-        ldy     #$01
+        ldy     #>STACK
         jsr     LOAD_FAC_FROM_YA
         tsx
-.ifndef KIM
-        lda     STACK+8,x
-.else /* KIM */
-        lda     STACK+9,x
-.endif /* KIM */
+        lda     STACK+BYTES_FP+4,x
         sta     FACSIGN
         lda     FORPNT
         ldy     FORPNT+1
         jsr     FADD
         jsr     SETFOR
-        ldy     #$01
+        ldy     #>STACK
         jsr     FCOMP2
         tsx
         sec
-.ifndef KIM
-        sbc     STACK+8,x
-.else /* KIM */
-        sbc     STACK+9,x
-.endif /* KIM */
+        sbc     STACK+BYTES_FP+4,x
         beq     L2C22
-.ifndef KIM
-        lda     STACK+13,x
-.else /* KIM */
-        lda     STACK+15,x
-.endif /* KIM */
+        lda     STACK+2*BYTES_FP+5,x
         sta     CURLIN
-.ifndef KIM
-        lda     STACK+14,x
+        lda     STACK+2*BYTES_FP+6,x
         sta     CURLIN+1
-.endif /* ! KIM */
-        lda     STACK+16,x
-.ifdef KIM
-        sta     CURLIN+1
-        lda     STACK+18,x
-.endif /* KIM */
+        lda     STACK+2*BYTES_FP+8,x
         sta     TXTPTR
-.ifndef KIM
-        lda     STACK+15,x
-.else /* KIM */
-        lda     STACK+17,x
-.endif /* KIM */
+        lda     STACK+2*BYTES_FP+7,x
         sta     TXTPTR+1
 L2C1F:
         jmp     NEWSTT
 L2C22:
         txa
-.ifndef KIM
-        adc     #$0F
-.else /* KIM */
-        adc     #$11
-.endif /* KIM */
+        adc     #2*BYTES_FP+7
         tax
         txs
         jsr     CHRGOT
@@ -1946,11 +1906,7 @@ L2C40:
 L2C41:
         bcs     L2C40
 L2C43:
-.ifndef KIM
-        ldx     #$18
-.else /* KIM */
-        ldx     #$A3
-.endif /* KIM */
+        ldx     #ERR_BADTYPE
 JERROR:
         jmp     ERROR
 FRMEVL:
@@ -1974,11 +1930,7 @@ FRMEVL2:
         jsr     CHRGOT
 L2C65:
         sec
-.ifndef KIM
-        sbc     #$AA
-.else /* KIM */
-        sbc     #$AB
-.endif /* KIM */
+        sbc     #TOKEN_GREATER
         bcc     L2C81
         cmp     #$03
         bcs     L2C81
@@ -2121,17 +2073,9 @@ L2D39:
         bcs     FRM_VARIABLE
         cmp     #$2E
         beq     L2D36
-.ifndef KIM
-        cmp     #$A4
-.else /* KIM */
-        cmp     #$A5
-.endif /* KIM */
+        cmp     #TOKEN_MINUS
         beq     MIN
-.ifndef KIM
-        cmp     #$A3
-.else /* KIM */
-        cmp     #$A4
-.endif /* KIM */
+        cmp     #TOKEN_PLUS
         beq     L2D31
         cmp     #$22
         bne     NOT_
@@ -2145,11 +2089,7 @@ L2D57:
         jsr     STRLIT
         jmp     POINT
 NOT_:
-.ifndef KIM
-        cmp     #$A1
-.else /* KIM */
-        cmp     #$A2
-.endif /* KIM */
+        cmp     #TOKEN_NOT
         bne     L2D74
         ldy     #$18
         bne     EQUL
@@ -2162,19 +2102,11 @@ L2D65:
         eor     #$FF
         jmp     GIVAYF
 L2D74:
-.ifndef KIM
-        cmp     #$9E
-.else /* KIM */
-        cmp     #$9F
-.endif /* KIM */
+        cmp     #TOKEN_FN
         bne     L2D7B
         jmp     L31F3
 L2D7B:
-.ifndef KIM
-        cmp     #$AD
-.else /* KIM */
-        cmp     #$AE
-.endif /* KIM */
+        cmp     #TOKEN_SGN
         bcc     PARCHK
         jmp     UNARY
 PARCHK:
@@ -2194,11 +2126,7 @@ SYNCHR:
         bne     SYNERR
         jmp     CHRGET
 SYNERR:
-.ifndef KIM
-        ldx     #$02
-.else /* KIM */
-        ldx     #$10
-.endif /* KIM */
+        ldx     #ERR_SYNTAX
         jmp     ERROR
 MIN:
         ldy     #$15
@@ -2234,11 +2162,7 @@ UNARY:
         pha
         tax
         jsr     CHRGET
-.ifndef KIM
-        cpx     #$81
-.else /* KIM */
-        cpx     #$83
-.endif /* KIM */
+        cpx     #<(TOKEN_LEFTSTR*2-1)
         bcc     L2DEF
         jsr     CHKOPN
         jsr     FRMEVL
@@ -2263,17 +2187,9 @@ L2DEF:
         pla
         tay
 L2DF4:
-.ifndef KIM
-        lda     $9FDE,y
-.else /* KIM */
-        lda     $1FDE,y
-.endif /* KIM */
+        lda     UNFNC-TOKEN_SGN-TOKEN_SGN+$100,y
         sta     JMPADRS+1
-.ifndef KIM
-        lda     $9FDF,y
-.else /* KIM */
-        lda     $1FDF,y
-.endif /* KIM */
+        lda     UNFNC-TOKEN_SGN-TOKEN_SGN+$101,y
         sta     ARGEXTENSION
         jsr     JMPADRS
         jmp     CHKNUM
