@@ -20,6 +20,7 @@ Z16             := $0016
 Z17             := $0017
 Z18             := $0018
 LINNUM          := $0019
+TXPSV           := $0019
 INPUTBUFFER     := $001B
 TEMPPT          := $0063
 LASTPT          := $0064

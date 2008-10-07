@@ -547,7 +547,7 @@ L23AD:
 PUT_NEW_LINE:
 .ifdef CBM2
         jsr     SETPTRS
-        jsr     FIX_LINKS
+        jsr     LC442
         lda     $0200
         beq     L2351
         clc
@@ -602,8 +602,10 @@ LC442:
 L23FA:
         ldy     #$01
         lda     (INDEX),y
+.ifdef CBM2
+        beq     LC46E
+.else
         bne     L2403
-.ifndef CBM2
         jmp     L2351
 .endif
 L2403:
@@ -630,6 +632,7 @@ L2420:
         jsr     OUTDO
 .endif
 .ifdef CBM2
+LC46E:
 		rts
 .else
         dex
@@ -1180,7 +1183,11 @@ LA609:
         bcc     LET1
 .endif
         cmp     #NUM_TOKENS
+.ifdef CBM2
+        bcs     LC721
+.else
         bcs     SYNERR1
+.endif
         asl     a
         tay
         lda     TOKEN_ADDRESS_TABLE+1,y
@@ -1198,6 +1205,7 @@ SYNERR1:
         jmp     SYNERR
 .endif
 .ifdef CBM2
+LC721:
         cmp     #$4B
         bne     SYNERR1
         jsr     CHRGET
@@ -1427,7 +1435,11 @@ L281E:
 POP:
         bne     L281E
         lda     #$FF
+.ifdef CBM2
+        sta     FORPNT+1 ; bugfix
+.else
         sta     FORPNT
+.endif
         jsr     GTFORPNT
         txs
 .ifdef CBM
@@ -1606,8 +1618,12 @@ LETSTRING:
 PUTSTR:
 .endif
 .ifdef CBM
-        ldy     $99
+        ldy     FORPNT+1
+.ifdef CBM1
         cpy     #$D0
+.else
+        cpy     #$DE
+.endif
         bne     LC92B
         jsr     FREFAC
         cmp     #$06
@@ -1619,14 +1635,14 @@ PUTSTR:
 LC8E2:
 .endif
         ldy     #$00
-        sty     $B0
-        sty     $B5
+        sty     FAC
+        sty     FACSIGN
 LC8E8:
-        sty     $C0
+        sty     STRNG2
         jsr     LC91C
         jsr     MUL10
-        inc     $C0
-        ldy     $C0
+        inc     STRNG2
+        ldy     STRNG2
         jsr     LC91C
         jsr     COPY_FAC_TO_ARG_ROUNDED
         tax
@@ -1635,7 +1651,7 @@ LC8E8:
         txa
         jsr     LD9BF
 LC902:
-        ldy     $C0
+        ldy     STRNG2
         iny
         cpy     #$06
         bne     LC8E8
@@ -1644,10 +1660,11 @@ LC902:
         ldx     #$02
         sei
 LC912:
-        lda     $B2,x
 .ifdef CBM2
+        lda     $60,x
         sta     $8D,x
 .else
+        lda     $B2,x
         sta     $0200,x
 .endif
         dex
@@ -1701,8 +1718,11 @@ L294D:
 .ifdef KIM
         lda     #$AE
 .endif
-.ifdef CBM
+.ifdef CBM1
         lda     #$B0
+.endif
+.ifdef CBM2
+        lda     #$5E
 .endif
         ldy     #$00
 L2963:
@@ -2024,7 +2044,7 @@ L2A6E:
 .ifdef CBM
         lda     Z03
         beq     LCA8F
-        ldx     #$C4 ;; XXX
+        ldx     #ERR_BADDATA
         jmp     ERROR
 LCA8F:
 .endif
@@ -2157,8 +2177,8 @@ PROCESS_INPUT_ITEM:
         sty     FORPNT+1
         lda     TXTPTR
         ldy     TXTPTR+1
-        sta     LINNUM
-        sty     LINNUM+1
+        sta     TXPSV
+        sty     TXPSV+1
         ldx     INPTR
         ldy     INPTR+1
         stx     TXTPTR
@@ -2254,8 +2274,8 @@ L2B48:
         ldy     TXTPTR+1
         sta     INPTR
         sty     INPTR+1
-        lda     LINNUM
-        ldy     LINNUM+1
+        lda     TXPSV
+        ldy     TXPSV+1
         sta     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGOT
@@ -2653,8 +2673,8 @@ FRM_VARIABLE_CALL	= *-1
         sta     FAC_LAST-1
         sty     FAC_LAST
 .ifdef CBM
-        lda     $94
-        ldy     $95
+        lda     VARNAM
+        ldy     VARNAM+1
 .endif
         ldx     VALTYP
         beq     L2DB1
@@ -2674,11 +2694,11 @@ LCE3B:
         cpy     #$C9
         bne     LCE53
         jsr     LCE76
-        sty     $AD
+        sty     EXPON
         dey
-        sty     $C0
+        sty     STRNG2
         ldy     #$06
-        sty     $AC
+        sty     INDX
         ldy     #$24
         jsr     LDD3A
         jmp     LD353
@@ -2707,7 +2727,7 @@ L2DC2:
 .endif
 .ifdef CBM2
         bit     $62
-        bpl     LCE82
+        bpl     LCE90
         cmp     #$54
         bne     LCE82
 .endif
@@ -2717,18 +2737,27 @@ L2DC2:
 .ifdef CBM
 LCE69:
         cpy     #$49
+.ifdef CBM1
         bne     LCE82
+.else
+        bne     LCE90
+.endif
         jsr     LCE76
         tya
         ldx     #$A0
         jmp     LDB21
 LCE76:
+.ifdef CBM1
         lda     #$FE
         ldy     #$01
+.else
+        lda     #$8B
+        ldy     #$00
+.endif
         sei
         jsr     LOAD_FAC_FROM_YA
         cli
-        sty     $B1
+        sty     FAC+1
         rts
 LCE82:
         cmp     #$53
@@ -2742,8 +2771,8 @@ LCE82:
 .endif
         jmp     FLOAT
 LCE90:
-        lda     $B3
-        ldy     $B4
+        lda     FAC+3
+        ldy     FAC+4
         jmp     LOAD_FAC_FROM_YA
 .endif
 UNARY:
@@ -2992,14 +3021,14 @@ LD015:
         lda     #<C_ZERO
         ldy     #>C_ZERO
         rts
-C_ZERO:
 .ifndef CBM2
+C_ZERO:
         .byte   $00,$00
 .endif
 MAKENEWVARIABLE:
 .ifdef CBM
-        lda     $94
-        ldy     $95
+        lda     VARNAM
+        ldy     VARNAM+1
         cmp     #$54
         bne     LD02F
         cpy     #$C9
@@ -3082,14 +3111,18 @@ NEG32768:
         .byte   $90,$80,$00,$00
 MAKINT:
         jsr     CHRGET
+.ifdef CBM2
+        jsr     FRMEVL
+.else
         jsr     FRMNUM
+.endif
 MKINT:
-        lda     FACSIGN
-        bmi     MI1
-AYINT:
 .ifdef CBM2
         jsr     CHKNUM
 .endif
+        lda     FACSIGN
+        bmi     MI1
+AYINT:
         lda     FAC
         cmp     #$90
         bcc     MI2
@@ -4225,7 +4258,11 @@ WAIT:
         stx     FORPNT
         ldx     #$00
         jsr     CHRGOT
+.ifdef CBM2
+        beq     LD745
+.else
         beq     L3628
+.endif
         jsr     COMBYTE
 L3628:
         stx     FORPNT+1
@@ -4980,9 +5017,9 @@ STORE_FAC_IN_TEMP2_ROUNDED:
         .byte   $2C
 STORE_FAC_IN_TEMP1_ROUNDED:
 .ifdef CBM
-        ldx     #$A6 ; XXX TEMP1
+        ldx     #TEMP1
 .else
-        ldx     #$A4
+        ldx     #$A4; XXX
 .endif
         ldy     #$00
         beq     STORE_FAC_AT_YX_ROUNDED
@@ -5309,7 +5346,11 @@ GETEXP:
         lda     #$64
 .endif
         bit     EXPSGN
+.ifdef CBM2
+        bmi     L3C3A
+.else
         bmi     LDC70
+.endif
         jmp     OVERFLOW
 LDC70:
 .ifdef CBM1
@@ -5591,6 +5632,9 @@ DECTBL_END:
 .else
 CON_HALF:
         .byte   $80,$00,$00,$00,$00
+.ifdef CBM2
+C_ZERO = CON_HALF + 2
+.endif
 DECTBL:
         .byte   $FA,$0A,$1F,$00,$00,$98,$96,$80
         .byte   $FF,$F0,$BD,$C0,$00,$01,$86,$A0
@@ -5726,14 +5770,14 @@ POLYNOMIAL_ODD:
         sty     STRNG2+1
         jsr     STORE_FAC_IN_TEMP1_ROUNDED
 .ifdef CBM
-        lda     #$A6
+        lda     #TEMP1
 .else
         lda     #$A4
 .endif
         jsr     FMULT
         jsr     SERMAIN
 .ifdef CBM
-        lda     #$A6
+        lda     #TEMP1
 .else
         lda     #$A4
 .endif
@@ -5781,14 +5825,14 @@ RND:
 .ifdef CBM
         bmi     L3F01
         bne     LDF63
-        lda     $9044
-        sta     $B1
-        lda     $9048
-        sta     $B2
-        lda     $9045
-        sta     $B3
-        lda     $9049
-        sta     $B4
+        lda     ENTROPY
+        sta     FAC+1
+        lda     ENTROPY+4
+        sta     FAC+2
+        lda     ENTROPY+1
+        sta     FAC+3
+        lda     ENTROPY+5
+        sta     FAC+4
         jmp     LDF88
 LDF63:
 .else
@@ -5814,10 +5858,10 @@ L3F01:
         sta     FAC_LAST
         stx     FAC+1
 .ifdef CBM
-        ldx     $B2
-        lda     $B3
-        sta     $B2
-        stx     $B3
+        ldx     FAC+2
+        lda     FAC+3
+        sta     FAC+2
+        stx     FAC+3
 LDF88:
 .endif
         lda     #$00
@@ -6165,7 +6209,11 @@ L40D7:
         bmi     L40FA
 .endif
 L40DD:
+.ifdef CBM2
+        lda     #$55
+.else
         lda     #$92
+.endif
         sta     (LINNUM),y
         cmp     (LINNUM),y
         bne     L40FA

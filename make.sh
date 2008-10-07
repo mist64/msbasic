@@ -22,9 +22,9 @@ diff -u kb9.bin.txt kb9-new.bin.txt | head
 # 2
 ca65 -D CBM -D CBM2 -D CONFIG_2 msbasic.s -o cbmbasic2.o &&
 ld65 -C cbmbasic.cfg cbmbasic2.o -o cbmbasic2-new.bin && 
-#xxd -g 1 cbmbasic2.bin > cbmbasic2.bin.txt
-#xxd -g 1 cbmbasic2-new.bin > cbmbasic2-new.bin.txt
-#diff -u cbmbasic2.bin.txt cbmbasic2-new.bin.txt | head
+xxd -g 1 cbmbasic2.bin > cbmbasic2.bin.txt
+xxd -g 1 cbmbasic2-new.bin > cbmbasic2-new.bin.txt
+diff -u cbmbasic2.bin.txt cbmbasic2-new.bin.txt | head
 
-da65 --info cbmbasic2-temp.txt 
+#da65 --info cbmbasic2-temp.txt 
 #opendiff ../cbmbasic2.s cbmbasic2-new.s

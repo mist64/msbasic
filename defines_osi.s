@@ -11,6 +11,7 @@ Z16             := $000E
 Z17             := $000F
 Z18             := $0010
 LINNUM          := $0011
+TXPSV           := $0011
 INPUTBUFFER     := $0013
 CHARAC          := $005B
 ENDCHR          := $005C

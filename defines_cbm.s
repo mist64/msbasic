@@ -21,6 +21,7 @@ Z16             := $0005
 Z17             := $0006
 Z18             := $0007
 LINNUM          := $0008
+TXPSV			:= $0008
 INPUTBUFFER     := $000A
 TEMPPT          := $0065
 LASTPT          := $0066
@@ -85,11 +86,12 @@ L0001           := $0001
 L0002           := $0002
 GOWARM          := $0003
 Z15             := $0004
-Z16             := $0005
+Z16             := $00C6;05
 Z17             := $0006
 GOSTROUT        := $0006
 Z18             := $0007
 LINNUM          := $0011;0008
+TXPSV			:= $0048
 GOGIVEAYF       := $0008
 INPUTBUFFER     := $0200;00A
 Z03				:= $000E;3 ; same
@@ -163,7 +165,11 @@ RNDSEED			:= $00DA-82
 .endif
 
 BYTES_PER_FRAME := $12
+.ifdef CBM1
 SPACE_FOR_GOSUB := $36
+.else
+SPACE_FOR_GOSUB := $3E
+.endif
 FOR_STACK1		:= $0F
 FOR_STACK2		:= $09
 NUM_TOKENS		:= $23
@@ -215,5 +221,9 @@ MONCOUT	:= CHROUT
 MONRDKEY := GETIN
 
 
-
+.ifdef CBM1
+ENTROPY = $9044
+.else
+ENTROPY = $E844
+.endif
 
