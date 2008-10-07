@@ -63,9 +63,9 @@ TOKEN_ADDRESS_TABLE:
 		.word	OPEN-1
 		.word	CLOSE-1
 .endif
-.ifdef CONFIG_11
+.ifndef OSI
         .word   GET-1
-.endif /* CONFIG_11 */
+.endif
         .word   NEW-1
 UNFNC:
         .addr   SGN
@@ -169,9 +169,9 @@ TOKEN_NAME_TABLE:
 	htasc	"OPEN"
 	htasc	"CLOSE"
 .endif
-.ifdef CONFIG_11
+.ifndef OSI
 	htasc	"GET"
-.endif /* CONFIG_11 */
+.endif
 	htasc	"NEW"
 	htasc	"TAB("
 	htasc	"TO"
@@ -218,7 +218,7 @@ TOKEN_NAME_TABLE:
 .endif
 	.byte   0
 ERROR_MESSAGES:
-.ifndef CONFIG_11
+.ifdef OSI
 .define ERRSTR_NOFOR "NF"
 .define ERRSTR_SYNTAX "SN"
 .define ERRSTR_NOGOSUB "RG"
@@ -236,7 +236,7 @@ ERROR_MESSAGES:
 .define ERRSTR_FRMCPX "ST"
 .define ERRSTR_CANTCONT "CN"
 .define ERRSTR_UNDEFFN "UF"
-.else /* CONFIG_11 */
+.else
 .define ERRSTR_NOFOR "NEXT WITHOUT FOR"
 .define ERRSTR_SYNTAX "SYNTAX"
 .define ERRSTR_NOGOSUB "RETURN WITHOUT GOSUB"
@@ -452,19 +452,19 @@ LC366:
         jsr     OUTQUES
 L2329:
         lda     ERROR_MESSAGES,x
-.ifdef CONFIG_11
+.ifndef OSI
         pha
         and     #$7F
-.endif /* CONFIG_11 */
+.endif
         jsr     OUTDO
-.ifndef CONFIG_11
+.ifdef OSI
         lda     ERROR_MESSAGES+1,x
         jsr     OUTDO
-.else /* CONFIG_11 */
+.else
         inx
         pla
         bpl     L2329
-.endif /* CONFIG_11 */
+.endif
         jsr     STKINI
         lda     #<QT_ERROR
         ldy     #>QT_ERROR
@@ -490,7 +490,7 @@ L2351:
         jsr     CHRGET
 .ifdef KIM
         tax
-.endif /* CONFIG_11 */
+.endif
         beq     L2351
         ldx     #$FF
         stx     CURLIN+1
@@ -605,13 +605,13 @@ L2405:
         sta     INDEX+1
         bcc     L23FA
 L2420:
-.ifndef CONFIG_11
+.ifdef OSI
         jsr     OUTDO
 .endif /* ! CONFIG_11 */
         dex
         bpl     INLIN2
 L2423:
-.ifndef CONFIG_11
+.ifdef OSI
         jsr     OUTDO
 .endif /* ! CONFIG_11 */
         jsr     CRDO
@@ -640,11 +640,11 @@ L2443:
 .endif
         sta     INPUTBUFFER,x
         inx
-.ifndef CONFIG_11
+.ifdef OSI
         .byte   $2C
-.else /* CONFIG_11 */
+.else
         bne     INLIN2
-.endif /* CONFIG_11 */
+.endif
 L244C:
 .ifndef CBM
         lda     #$07
@@ -661,7 +661,7 @@ GETLN:
 .else
         jsr     MONRDKEY
 .endif
-.ifndef CONFIG_11
+.ifdef OSI
         nop
         nop
         nop
@@ -846,7 +846,7 @@ SETPTRS:
         lda     #$00
 CLEAR:
         bne     L256A
-.endif /* CONFIG_11 */
+.endif
 CLEARC:
         lda     MEMSIZ
         ldy     MEMSIZ+1
@@ -949,7 +949,7 @@ LA519:
         iny
 .ifdef KIM
         beq     L25E5
-.endif /* CONFIG_11 */
+.endif
         lda     (LOWTR),y
         bne     L25E8
         tay
@@ -1064,9 +1064,9 @@ L2683:
 SYNERR1:
         jmp     SYNERR
 LA5DC:
-.else /* CONFIG_11 */
+.else
         bne     COLON
-.endif /* CONFIG_11 */
+.endif
         ldy     #$02
         lda     (TXTPTR),y
         clc
@@ -1090,18 +1090,18 @@ EXECUTE_STATEMENT:
 .ifndef KIM
         beq     RET1
         sec
-.else /* CONFIG_11 */
+.else
         beq     RET2
-.endif /* CONFIG_11 */
+.endif
 EXECUTE_STATEMENT1:
         sbc     #$80
 .ifndef KIM
         bcs     LA609
         jmp     LET
 LA609:
-.else /* CONFIG_11 */
+.else
         bcc     LET1
-.endif /* CONFIG_11 */
+.endif
         cmp     #NUM_TOKENS
         bcs     SYNERR1
         asl     a
@@ -1119,7 +1119,7 @@ COLON:
         beq     NEWSTT2
 SYNERR1:
         jmp     SYNERR
-.endif /* CONFIG_11 */
+.endif
 RESTORE:
         sec
         lda     TXTTAB
@@ -1215,7 +1215,7 @@ L2739:
 CLEAR:
         bne     RET1
         jmp     CLEARC
-.else /* CONFIG_11 */
+.else
 SAVE:
         tsx
         stx     INPUTFLG
@@ -1276,7 +1276,7 @@ L27C2:
         stx     VARTAB
         sty     VARTAB+1
         jmp     FIX_LINKS
-.endif /* CONFIG_11 */
+.endif
 RUN:
         bne     L27CF
         jmp     SETPTRS
@@ -1397,7 +1397,7 @@ L2866:
 .else
         bne     L2866
         beq     L285E
-.endif /* CONFIG_11 */
+.endif
 IF:
         jsr     FRMEVL
         jsr     CHRGOT
@@ -1480,10 +1480,10 @@ LET:
         sty     FORPNT+1
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifdef CONFIG_11
+.ifndef OSI
         lda     VALTYP+1
         pha
-.endif /* CONFIG_11 */
+.endif
         lda     VALTYP
         pha
         jsr     FRMEVL
@@ -1491,7 +1491,7 @@ LET:
         rol     a
         jsr     CHKVAL
         bne     LETSTRING
-.ifdef CONFIG_11
+.ifndef OSI
         pla
 LET2:
         bpl     L2923
@@ -1505,13 +1505,13 @@ LET2:
         sta     (FORPNT),y
         rts
 L2923:
-.endif /* CONFIG_11 */
+.endif
         jmp     SETFOR
 LETSTRING:
-.ifdef CONFIG_11
+.ifndef OSI
         pla
 PUTSTR:
-.endif /* CONFIG_11 */
+.endif
 .ifdef CBM
         ldy     $99
         cpy     #$D0
@@ -1648,7 +1648,7 @@ PRINT2:
         cmp     #','
 .ifdef KIM
         clc
-.endif /* CONFIG_11 */
+.endif
         beq     L29DE
         cmp     #$3B
         beq     L2A0D
@@ -1678,7 +1678,7 @@ L29B9:
 .endif
 .ifdef KIM
         ldx     #$1A
-.endif /* CONFIG_11 */
+.endif
 .ifdef CBM
         ldx     #$09
         lda     Z03
@@ -1742,9 +1742,9 @@ L29EB:
 L29F5:
 .ifndef KIM
         pha
-.else /* CONFIG_11 */
+.else
         php
-.endif /* CONFIG_11 */
+.endif
         jsr     GTBYTC
         cmp     #$29
 .ifndef KIM
@@ -1752,13 +1752,13 @@ L29F5:
         pla
         cmp     #TOKEN_TAB
         bne     L2A0A
-.else /* CONFIG_11 */
+.else
         beq     @1
         jmp     SYNERR
 @1:
         plp	;; XXX c64 has this
         bcc     L2A09
-.endif /* CONFIG_11 */
+.endif
         txa
         sbc     Z16
         bcc     L2A0D
@@ -1770,7 +1770,7 @@ L2A08:
 .ifdef KIM
 L2A09:
         inx
-.endif /* CONFIG_11 */
+.endif
 L2A0A:
 .ifndef KIM
         jsr     OUTSP
@@ -1778,9 +1778,9 @@ L2A0A:
         dex
 .ifndef KIM
         bne     L2A0A
-.else /* CONFIG_11 */
+.else
         bne     L2A13
-.endif /* CONFIG_11 */
+.endif
 L2A0D:
         jsr     CHRGET
         jmp     PRINT2
@@ -1788,7 +1788,7 @@ L2A0D:
 L2A13:
         jsr     OUTSP
         bne     L2A0A
-.endif /* CONFIG_11 */
+.endif
 STROUT:
         jsr     STRLIT
 STRPRT:
@@ -1876,7 +1876,7 @@ L2A59:
         ldy     #$FF
         bne     L2A67
 L2A63:
-.endif /* CONFIG_11 */
+.endif
 .ifdef CBM
         jsr     PATCH5
 		nop
@@ -1905,7 +1905,7 @@ LCA8F:
         sta     TXTPTR
         sty     TXTPTR+1
         rts
-.ifdef CONFIG_11
+.ifndef OSI
 GET:
         jsr     ERRDIR
 .ifdef CBM
@@ -2014,7 +2014,7 @@ PROCESS_INPUT_ITEM:
         jsr     CHRGOT
         bne     INSTART
         bit     INPUTFLG
-.ifdef CONFIG_11
+.ifndef OSI
         bvc     L2AF0
         jsr     MONRDKEY
         sta     INPUTBUFFER
@@ -2027,7 +2027,7 @@ PROCESS_INPUT_ITEM:
 .endif
         bne     L2AF8
 L2AF0:
-.endif /* CONFIG_11 */
+.endif
         bmi     FINDATA
 .ifdef CBM
         lda     Z03
@@ -2043,7 +2043,7 @@ INSTART:
         jsr     CHRGET
         bit     VALTYP
         bpl     L2B34
-.ifdef CONFIG_11
+.ifndef OSI
         bit     INPUTFLG
         bvc     L2B10
 .ifdef CBM
@@ -2058,7 +2058,7 @@ INSTART:
         beq     L2B1C
 .endif
 L2B10:
-.endif /* CONFIG_11 */
+.endif
         sta     CHARAC
         cmp     #$22
         beq     L2B1D
@@ -2077,20 +2077,20 @@ L2B1D:
 L2B28:
         jsr     STRLT2
         jsr     POINT
-.ifndef CONFIG_11
+.ifdef OSI
         jsr     LETSTRING
-.else /* CONFIG_11 */
+.else
         jsr     PUTSTR
-.endif /* CONFIG_11 */
+.endif
         jmp     INPUT_MORE
 L2B34:
         jsr     FIN
-.ifndef CONFIG_11
+.ifdef OSI
         jsr     SETFOR
-.else /* CONFIG_11 */
+.else
         lda     VALTYP+1
         jsr     LET2
-.endif /* CONFIG_11 */
+.endif
 INPUT_MORE:
         jsr     CHRGOT
         beq     L2B48
@@ -2137,11 +2137,11 @@ INPDONE:
         lda     INPTR
         ldy     INPTR+1
         ldx     INPUTFLG
-.ifndef CONFIG_11
+.ifdef OSI
         beq     L2B94
-.else /* CONFIG_11 */
+.else
         bpl     L2B94
-.endif /* CONFIG_11 */
+.endif
         jmp     SETDA
 L2B94:
         ldy     #$00
@@ -2190,9 +2190,9 @@ NEXT3:
         inx
         inx
         inx
-.ifdef CONFIG_11
+.ifndef OSI
         inx
-.endif /* CONFIG_11 */
+.endif
         stx     DEST
         ldy     #>STACK
         jsr     LOAD_FAC_FROM_YA
@@ -2352,10 +2352,10 @@ FRM_STACK2:
         pha
 L2CED:
         jsr     ROUND_FAC
-.ifdef CONFIG_11
+.ifndef OSI
         lda     FAC+4
         pha
-.endif /* CONFIG_11 */
+.endif
         lda     FAC+3
         pha
         lda     FAC+2
@@ -2389,10 +2389,10 @@ FRM_PERFORM2:
         pla
         sta     ARG+3
         pla
-.ifdef CONFIG_11
+.ifndef OSI
         sta     ARG+4
         pla
-.endif /* CONFIG_11 */
+.endif
         sta     ARGSIGN
         eor     FACSIGN
         sta     STRNG1
@@ -2514,7 +2514,7 @@ LCE53:
 .endif
         rts
 L2DB1:
-.ifdef CONFIG_11
+.ifndef OSI
         ldx     VALTYP+1
         bpl     L2DC2
         ldy     #$00
@@ -2526,7 +2526,7 @@ L2DB1:
         txa
         jmp     GIVAYF
 L2DC2:
-.endif /* CONFIG_11 */
+.endif
 .ifdef CBM
         jmp     PATCH3
 .else
@@ -2707,9 +2707,9 @@ SYNERR3:
 NAMOK:
         ldx     #$00
         stx     VALTYP
-.ifdef CONFIG_11
+.ifndef OSI
         stx     VALTYP+1
-.endif /* CONFIG_11 */
+.endif
         jsr     CHRGET
         bcc     L2ECD
         jsr     ISLETC
@@ -2723,14 +2723,14 @@ L2ECE:
         bcs     L2ECE
 L2ED8:
         cmp     #$24
-.ifndef CONFIG_11
+.ifdef OSI
         bne     L2EF9
-.else /* CONFIG_11 */
+.else
         bne     L2EE2
-.endif /* CONFIG_11 */
+.endif
         lda     #$FF
         sta     VALTYP
-.ifdef CONFIG_11
+.ifndef OSI
         bne     L2EF2
 L2EE2:
         cmp     #$25
@@ -2742,7 +2742,7 @@ L2EE2:
         ora     VARNAM
         sta     VARNAM
 L2EF2:
-.endif /* CONFIG_11 */
+.endif
         txa
         ora     #$80
         tax
@@ -2802,7 +2802,7 @@ NAMENOTFOUND:
         lda     STACK+2,x
         cmp     #>FRM_VARIABLE_CALL
         bne     MAKENEWVARIABLE
-.endif /* CONFIG_11 */
+.endif
 LD015:
         lda     #<C_ZERO
         ldy     #>C_ZERO
@@ -2864,10 +2864,10 @@ L2F68:
         sta     (LOWTR),y
         iny
         sta     (LOWTR),y
-.ifdef CONFIG_11
+.ifndef OSI
         iny
         sta     (LOWTR),y
-.endif /* CONFIG_11 */
+.endif
 SET_VARPNT_AND_YA:
         lda     LOWTR
         clc
@@ -2912,9 +2912,9 @@ MI2:
         jmp     QINT
 ARRAY:
         lda     DIMFLG
-.ifdef CONFIG_11
+.ifndef OSI
         ora     VALTYP+1
-.endif /* CONFIG_11 */
+.endif
         pha
         lda     VALTYP
         pha
@@ -2951,10 +2951,10 @@ L2FDE:
         pla
         sta     VALTYP
         pla
-.ifdef CONFIG_11
+.ifndef OSI
         sta     VALTYP+1
         and     #$7F
-.endif /* CONFIG_11 */
+.endif
         sta     DIMFLG
         ldx     ARYTAB
         lda     ARYTAB+1
@@ -3008,26 +3008,26 @@ MAKE_NEW_ARRAY:
         tay
         sta     STRNG2+1
         ldx     #BYTES_PER_ELEMENT
-.ifndef CONFIG_11
+.ifdef OSI
         stx     STRNG2
-.endif /* CONFIG_11 */
+.endif
         lda     VARNAM
         sta     (LOWTR),y
-.ifdef CONFIG_11
+.ifndef OSI
         bpl     L3078
         dex
 L3078:
-.endif /* CONFIG_11 */
+.endif
         iny
         lda     VARNAM+1
         sta     (LOWTR),y
-.ifdef CONFIG_11
+.ifndef OSI
         bpl     L3081
         dex
         dex
 L3081:
         stx     STRNG2
-.endif /* CONFIG_11 */
+.endif
         lda     EOLPNTR
         iny
         iny
@@ -3136,7 +3136,7 @@ L3124:
         stx     STRNG2
         dec     EOLPNTR
         bne     L30F6
-.ifndef CONFIG_11
+.ifdef OSI
         asl     STRNG2
         rol     a
         bcs     GSE
@@ -3145,7 +3145,7 @@ L3124:
         bcs     GSE
         tay
         lda     STRNG2
-.else /* CONFIG_11 */
+.else
 .ifndef CBM
         sta     STRNG2+1
 .endif
@@ -3163,7 +3163,7 @@ L313B:
         lda     #$00
         jsr     MULTIPLY_SUBS1
         txa
-.endif /* CONFIG_11 */
+.endif
         adc     HIGHDS
         sta     VARPNT
         tya
@@ -3250,9 +3250,9 @@ DEF:
         jsr     CHKCLS
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifdef CONFIG_11
+.ifndef OSI
         pha
-.endif /* CONFIG_11 */
+.endif
         lda     VARPNT+1
         pha
         lda     VARPNT
@@ -3293,9 +3293,9 @@ L31F3:
         iny
         lda     (FNCNAM),y
         sta     VARPNT+1
-.ifdef CONFIG_11
+.ifndef OSI
         iny
-.endif /* CONFIG_11 */
+.endif
 L3219:
         lda     (VARPNT),y
         pha
@@ -3342,11 +3342,11 @@ L3250:
         pla
         iny
         sta     (FNCNAM),y
-.ifdef CONFIG_11
+.ifndef OSI
         pla
         iny
         sta     (FNCNAM),y
-.endif /* CONFIG_11 */
+.endif
         rts
 STR:
         jsr     CHKNUM
@@ -3520,14 +3520,14 @@ L336B:
 L3376:
         sta     INDEX
         stx     INDEX+1
-.ifndef CONFIG_11
+.ifdef OSI
         ldy     #$01
-.else /* CONFIG_11 */
+.else
         ldy     #$00
         lda     (INDEX),y
         tax
         iny
-.endif /* CONFIG_11 */
+.endif
         lda     (INDEX),y
         php
         iny
@@ -3540,18 +3540,18 @@ L3376:
         sta     HIGHDS+1
         plp
         bpl     L3367
-.ifdef CONFIG_11
+.ifndef OSI
         txa
         bmi     L3367
-.endif /* CONFIG_11 */
+.endif
         iny
         lda     (INDEX),y
 .ifdef CBM
         jsr     LE7F3
 .else
-.ifdef CONFIG_11
+.ifndef OSI
         ldy     #$00
-.endif /* CONFIG_11 */
+.endif
         asl     a
         adc     #$05
 .endif
@@ -3570,10 +3570,10 @@ L33B1:
         jsr     CHECK_VARIABLE
         beq     L33A9
 CHECK_SIMPLE_VARIABLE:
-.ifdef CONFIG_11
+.ifndef OSI
         lda     (INDEX),y
         bmi     CHECK_BUMP
-.endif /* CONFIG_11 */
+.endif
         iny
         lda     (INDEX),y
         bpl     CHECK_BUMP
@@ -3840,11 +3840,11 @@ SUBSTRING_SETUP:
         sta     JMPADRS+1
         pla
         sta     JMPADRS+2
-.else /* CONFIG_11 */
+.else
         tay
         pla
         sta     TEMPX
-.endif /* CONFIG_11 */
+.endif
         pla
         pla
         pla
@@ -3858,16 +3858,16 @@ SUBSTRING_SETUP:
         pha
         tya
         pha
-.endif /* CONFIG_11 */
+.endif
         ldy     #$00
         txa
         beq     GOIQ
 .ifndef KIM
         inc     JMPADRS+1
         jmp     (JMPADRS+1)
-.else /* CONFIG_11 */
+.else
         rts
-.endif /* CONFIG_11 */
+.endif
 LEN:
         jsr     GETSTR
 SNGFLT1:
@@ -3886,9 +3886,9 @@ ASC:
         tay
 .ifndef KIM
         jmp     SNGFLT1
-.else /* CONFIG_11 */
+.else
         jmp     SNGFLT
-.endif /* CONFIG_11 */
+.endif
 GOIQ:
         jmp     IQERR
 GTBYTC:
@@ -4057,11 +4057,11 @@ L369B:
         eor     #$FF
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifdef CONFIG_11
+.ifndef OSI
         lda     4,y
         sbc     4,x
         sta     FAC+4
-.endif /* CONFIG_11 */
+.endif
         lda     GOWARM,y
         sbc     GOWARM,x
         sta     FAC+3
@@ -4085,15 +4085,15 @@ L36C7:
         stx     FAC+1
         ldx     FAC+3
         stx     FAC+2
-.ifndef CONFIG_11
+.ifdef OSI
         ldx     FACEXTENSION
         stx     FAC+3
-.else /* CONFIG_11 */
+.else
         ldx     FAC+4
         stx     FAC+3
         ldx     FACEXTENSION
         stx     FAC+4
-.endif /* CONFIG_11 */
+.endif
         sty     FACEXTENSION
         adc     #$08
         cmp     #MANTISSA_BYTES*8
@@ -4108,11 +4108,11 @@ STA_IN_FAC_SIGN:
 FADD4:
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifdef CONFIG_11
+.ifndef OSI
         lda     FAC+4
         adc     ARG+4
         sta     FAC+4
-.endif /* CONFIG_11 */
+.endif
         lda     FAC+3
         adc     ARG+3
         sta     FAC+3
@@ -4126,9 +4126,9 @@ FADD4:
 NORMALIZE_FAC3:
         adc     #$01
         asl     FACEXTENSION
-.ifdef CONFIG_11
+.ifndef OSI
         rol     FAC+4
-.endif /* CONFIG_11 */
+.endif
         rol     FAC+3
         rol     FAC+2
         rol     FAC+1
@@ -4153,7 +4153,7 @@ NORMALIZE_FAC6:
         ror     FAC+4
 .endif
         ror     FACEXTENSION
-.else /* CONFIG_11 */
+.else
         lda     #$00
         bcc     L372E
         lda     #$80
@@ -4189,7 +4189,7 @@ L375E:
         lsr     FACEXTENSION
         ora     FACEXTENSION
         sta     FACEXTENSION
-.endif /* CONFIG_11 */
+.endif
 L3764:
         rts
 COMPLEMENT_FAC:
@@ -4206,21 +4206,21 @@ COMPLEMENT_FAC_MANTISSA:
         lda     FAC+3
         eor     #$FF
         sta     FAC+3
-.ifdef CONFIG_11
+.ifndef OSI
         lda     FAC+4
         eor     #$FF
         sta     FAC+4
-.endif /* CONFIG_11 */
+.endif
         lda     FACEXTENSION
         eor     #$FF
         sta     FACEXTENSION
         inc     FACEXTENSION
         bne     RTS12
 INCREMENT_FAC_MANTISSA:
-.ifdef CONFIG_11
+.ifndef OSI
         inc     FAC+4
         bne     RTS12
-.endif /* CONFIG_11 */
+.endif
         inc     FAC+3
         bne     RTS12
         inc     FAC+2
@@ -4234,16 +4234,16 @@ OVERFLOW:
 SHIFT_RIGHT1:
         ldx     #RESULT-1
 SHIFT_RIGHT2:
-.ifndef CONFIG_11
+.ifdef OSI
         ldy     3,x
-.else /* CONFIG_11 */
+.else
         ldy     4,x
-.endif /* CONFIG_11 */
+.endif
         sty     FACEXTENSION
-.ifdef CONFIG_11
+.ifndef OSI
         ldy     3,x
         sty     4,x
-.endif /* CONFIG_11 */
+.endif
         ldy     2,x
         sty     3,x
         ldy     1,x
@@ -4275,7 +4275,7 @@ SHIFT_RIGHT4:
         ror     a
         iny
         bne     LB588
-.else /* CONFIG_11 */
+.else
 L37C4:
         pha
         lda     1,x
@@ -4316,11 +4316,11 @@ L37EF:
 L37FD:
         iny
         bne     L37C4
-.endif /* CONFIG_11 */
+.endif
 SHIFT_RIGHT5:
         clc
         rts
-.ifndef CONFIG_11
+.ifdef OSI
 CON_ONE:
         .byte   $81,$00,$00,$00
 POLY_LOG:
@@ -4336,7 +4336,7 @@ CON_NEG_HALF:
 		.byte   $80,$80,$00,$00
 CON_LOG_TWO:
 		.byte   $80,$31,$72,$18
-.else /* CONFIG_11 */
+.else
 CON_ONE:
         .byte   $81,$00,$00,$00,$00
 POLY_LOG:
@@ -4353,7 +4353,7 @@ CON_NEG_HALF:
         .byte   $80,$80,$00,$00,$00
 CON_LOG_TWO:
         .byte   $80,$31,$72,$17,$F8
-.endif /* CONFIG_11 */
+.endif
 LOG:
         jsr     SIGN
         beq     GIQ
@@ -4390,25 +4390,25 @@ FMULT:
 FMULTT:
 .ifndef KIM
         beq     L3903
-.else /* CONFIG_11 */
+.else
         bne     L3876
         jmp     L3903
 L3876:
-.endif /* CONFIG_11 */
+.endif
         jsr     ADD_EXPONENTS
         lda     #$00
         sta     RESULT
         sta     RESULT+1
         sta     RESULT+2
-.ifdef CONFIG_11
+.ifndef OSI
         sta     RESULT+3
-.endif /* CONFIG_11 */
+.endif
         lda     FACEXTENSION
         jsr     MULTIPLY1
-.ifdef CONFIG_11
+.ifndef OSI
         lda     FAC+4
         jsr     MULTIPLY1
-.endif /* CONFIG_11 */
+.endif
         lda     FAC+3
         jsr     MULTIPLY1
         lda     FAC+2
@@ -4426,11 +4426,11 @@ L38A7:
         tay
         bcc     L38C3
         clc
-.ifdef CONFIG_11
+.ifndef OSI
         lda     RESULT+3
         adc     ARG+4
         sta     RESULT+3
-.endif /* CONFIG_11 */
+.endif
         lda     RESULT+2
         adc     ARG+3
         sta     RESULT+2
@@ -4449,7 +4449,7 @@ L38C3:
         ror     RESULT+3
 .endif
         ror     FACEXTENSION
-.else /* CONFIG_11 */
+.else
         lda     #$00
         bcc     L38C9
         lda     #$80
@@ -4485,7 +4485,7 @@ L38F9:
         lsr     FACEXTENSION
         ora     FACEXTENSION
         sta     FACEXTENSION
-.endif /* CONFIG_11 */
+.endif
         tya
         lsr     a
         bne     L38A7
@@ -4495,11 +4495,11 @@ LOAD_ARG_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #BYTES_FP-1
-.ifdef CONFIG_11
+.ifndef OSI
         lda     (INDEX),y
         sta     ARG+4
         dey
-.endif /* CONFIG_11 */
+.endif
         lda     (INDEX),y
         sta     ARG+3
         dey
@@ -4564,11 +4564,11 @@ LD9BF:
 L3970:
         rts
 CONTEN:
-.ifndef CONFIG_11
+.ifdef OSI
         .byte   $84,$20,$00,$00
-.else /* CONFIG_11 */
+.else
         .byte   $84,$20,$00,$00,$00
-.endif /* CONFIG_11 */
+.endif
 DIV10:
         jsr     COPY_FAC_TO_ARG_ROUNDED
         lda     #<CONTEN
@@ -4601,11 +4601,11 @@ L39A1:
         bne     L39B7
         ldy     ARG+3
         cpy     FAC+3
-.ifdef CONFIG_11
+.ifndef OSI
         bne     L39B7
         ldy     ARG+4
         cpy     FAC+4
-.endif /* CONFIG_11 */
+.endif
 L39B7:
         php
         rol     a
@@ -4620,9 +4620,9 @@ L39C4:
         bcs     L39D5
 L39C7:
         asl     ARG_LAST
-.ifdef CONFIG_11
+.ifndef OSI
         rol     ARG+3
-.endif /* CONFIG_11 */
+.endif
         rol     ARG+2
         rol     ARG+1
         bcs     L39B7
@@ -4630,11 +4630,11 @@ L39C7:
         bpl     L39B7
 L39D5:
         tay
-.ifdef CONFIG_11
+.ifndef OSI
         lda     ARG+4
         sbc     FAC+4
         sta     ARG+4
-.endif /* CONFIG_11 */
+.endif
         lda     ARG+3
         sbc     FAC+3
         sta     ARG+3
@@ -4660,11 +4660,11 @@ L39F6:
         plp
         jmp     COPY_RESULT_INTO_FAC
 L3A02:
-.ifndef CONFIG_11
+.ifdef OSI
         ldx     #ERR_ZERODIV
-.else /* CONFIG_11 */
+.else
         ldx     #ERR_ZERODIV
-.endif /* CONFIG_11 */
+.endif
         jmp     ERROR
 COPY_RESULT_INTO_FAC:
         lda     RESULT
@@ -4673,20 +4673,20 @@ COPY_RESULT_INTO_FAC:
         sta     FAC+2
         lda     RESULT+2
         sta     FAC+3
-.ifdef CONFIG_11
+.ifndef OSI
         lda     RESULT+3
         sta     FAC+4
-.endif /* CONFIG_11 */
+.endif
         jmp     NORMALIZE_FAC2
 LOAD_FAC_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifdef CONFIG_11
+.ifndef OSI
         lda     (INDEX),y
         sta     FAC+4
         dey
-.endif /* CONFIG_11 */
+.endif
         lda     (INDEX),y
         sta     FAC+3
         dey
@@ -4721,11 +4721,11 @@ STORE_FAC_AT_YX_ROUNDED:
         stx     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifdef CONFIG_11
+.ifndef OSI
         lda     FAC+4
         sta     (INDEX),y
         dey
-.endif /* CONFIG_11 */
+.endif
         lda     FAC+3
         sta     (INDEX),y
         dey
@@ -4799,9 +4799,9 @@ FLOAT1:
         rol     a
 FLOAT2:
         lda     #$00
-.ifdef CONFIG_11
+.ifndef OSI
         sta     FAC+4
-.endif /* CONFIG_11 */
+.endif
         sta     FAC+3
 LDB21:
         stx     FAC
@@ -4834,12 +4834,12 @@ FCOMP2:
         cmp     FAC+2
         bne     L3B0A
         iny
-.ifdef CONFIG_11
+.ifndef OSI
         lda     (DEST),y
         cmp     FAC+3
         bne     L3B0A
         iny
-.endif /* CONFIG_11 */
+.endif
         lda     #$7F
         cmp     FACEXTENSION
         lda     (DEST),y
@@ -4900,9 +4900,9 @@ QINT3:
         sta     FAC+1
         sta     FAC+2
         sta     FAC+3
-.ifdef CONFIG_11
+.ifndef OSI
         sta     FAC+4
-.endif /* CONFIG_11 */
+.endif
         tay
 RTS17:
         rts
@@ -4944,7 +4944,7 @@ FIN3:
 L3BA6:
 .ifndef KIM
         ror     EXPSGN
-.else /* CONFIG_11 */
+.else
         lda     #$00
         bcc     L3BAC
         lda     #$80
@@ -4952,7 +4952,7 @@ L3BAC:
         lsr     EXPSGN
         ora     EXPSGN
         sta     EXPSGN
-.endif /* CONFIG_11 */
+.endif
 FIN4:
         jsr     CHRGET
 FIN5:
@@ -4967,7 +4967,7 @@ FIN6:
 FIN10:
 .ifndef KIM
         ror     LOWTR
-.else /* CONFIG_11 */
+.else
         lda     #$00
         bcc     L3BC9
         lda     #$80
@@ -4975,7 +4975,7 @@ L3BC9:
         lsr     LOWTR
         ora     LOWTR
         sta     LOWTR
-.endif /* CONFIG_11 */
+.endif
         bit     LOWTR
         bvc     FIN1
 FIN7:
@@ -5055,7 +5055,7 @@ L3C2C:
 L3C3A:
         sta     EXPON
         jmp     FIN4
-.ifndef CONFIG_11
+.ifdef OSI
 ; these values are /1000 of what the labels say
 CON_99999999_9:
         .byte   $91,$43,$4F,$F8
@@ -5063,7 +5063,7 @@ CON_999999999:
 		.byte   $94,$74,$23,$F7
 CON_BILLION:
         .byte   $94,$74,$24,$00
-.else /* CONFIG_11 */
+.else
 CON_99999999_9:
         .byte   $9B,$3E,$BC,$1F,$FD
 CON_999999999:
@@ -5074,7 +5074,7 @@ CON_999999999:
 .endif
 CON_BILLION:
         .byte   $9E,$6E,$6B,$28,$00
-.endif /* CONFIG_11 */
+.endif
 INPRT:
         lda     #<QT_IN
         ldy     #>QT_IN
@@ -5115,11 +5115,11 @@ L3C8C:
         lda     #<CON_BILLION
         ldy     #>CON_BILLION
         jsr     FMULT
-.ifndef CONFIG_11
+.ifdef OSI
         lda     #-6
-.else /* CONFIG_11 */
+.else
         lda     #-9
-.endif /* CONFIG_11 */
+.endif
 L3C95:
         sta     INDX
 L3C97:
@@ -5149,17 +5149,17 @@ L3CBE:
         ldx     #$01
         lda     INDX
         clc
-.ifndef CONFIG_11
+.ifdef OSI
         adc     #$07
-.else /* CONFIG_11 */
+.else
         adc     #$0A
-.endif /* CONFIG_11 */
+.endif
         bmi     L3CD3
-.ifndef CONFIG_11
+.ifdef OSI
         cmp     #$08
-.else /* CONFIG_11 */
+.else
         cmp     #$0B
-.endif /* CONFIG_11 */
+.endif
         bcs     L3CD4
         adc     #$FF
         tax
@@ -5192,11 +5192,11 @@ LDD3A:
 L3CF6:
         lda     FAC_LAST
         clc
-.ifdef CONFIG_11
+.ifndef OSI
         adc     DECTBL+3,y
         sta     FAC+4
         lda     FAC+3
-.endif /* CONFIG_11 */
+.endif
         adc     DECTBL+2,y
         sta     FAC+3
         lda     FAC+2
@@ -5221,9 +5221,9 @@ L3D23:
         iny
         iny
         iny
-.ifdef CONFIG_11
+.ifndef OSI
         iny
-.endif /* CONFIG_11 */
+.endif
         sty     VARPNT
         ldy     STRNG2
         iny
@@ -5295,7 +5295,7 @@ L3D94:
         lda     #$00
         ldy     #$01
         rts
-.ifndef CONFIG_11
+.ifdef OSI
 CON_HALF:
         .byte   $80,$00,$00,$00
 DECTBL:
@@ -5306,7 +5306,7 @@ DECTBL:
 		.byte	$FF,$FF,$F6 ; -10
 		.byte	$00,$00,$01 ; 1
 DECTBL_END:
-.else /* CONFIG_11 */
+.else
 CON_HALF:
         .byte   $80,$00,$00,$00,$00
 DECTBL:
@@ -5324,7 +5324,7 @@ DECTBL_END:
 		.byte	$FF,$FF,$FD,$A8
 		.byte	$00,$00,$00,$3C
 .endif
-.endif /* CONFIG_11 */
+.endif
 SQR:
         jsr     COPY_FAC_TO_ARG_ROUNDED
         lda     #<CON_HALF
@@ -5368,7 +5368,7 @@ NEGOP:
         sta     FACSIGN
 L3E0F:
         rts
-.ifndef CONFIG_11
+.ifdef OSI
 CON_LOG_E:
         .byte   $81,$38,$AA,$3B
 POLY_EXP:
@@ -5380,7 +5380,7 @@ POLY_EXP:
 		.byte	$7E,$75,$FE,$D0
 		.byte	$80,$31,$72,$15
 		.byte	$81,$00,$00,$00
-.else /* CONFIG_11 */
+.else
 CON_LOG_E:
         .byte   $81,$38,$AA,$3B,$29
 POLY_EXP:
@@ -5393,7 +5393,7 @@ POLY_EXP:
 		.byte	$7E,$75,$FD,$E7,$C6
 		.byte	$80,$31,$72,$18,$10
 		.byte	$81,$00,$00,$00,$00
-.endif /* CONFIG_11 */
+.endif
 EXP:
         lda     #<CON_LOG_E
         ldy     #>CON_LOG_E
@@ -5598,7 +5598,7 @@ TAN:
         ldx     #TEMP3
         ldy     #$00
         jsr     GOMOVMF
-.ifdef CONFIG_11
+.ifndef OSI
         lda     #TEMP1
 .else
         lda     #$A4
@@ -5615,7 +5615,7 @@ TAN:
 TAN1:
         pha
         jmp     SIN1
-.ifndef CONFIG_11
+.ifdef OSI
 CON_PI_HALF:
         .byte   $81,$49,$0F,$DB
 CON_PI_DOUB:
@@ -5643,7 +5643,7 @@ MICROSOFT:
         .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
         .byte   $CE,$CA
 .endif
-.endif /* CONFIG_11 */
+.endif
 ATN:
         lda     FACSIGN
         pha
@@ -5674,7 +5674,7 @@ L3FFC:
 L4002:
         rts
 POLY_ATN:
-.ifndef CONFIG_11
+.ifdef OSI
         .byte   $08
 		.byte	$78,$3A,$C5,$37
 		.byte	$7B,$83,$A2,$5C
@@ -5685,7 +5685,7 @@ POLY_ATN:
 		.byte	$7E,$4C,$B9,$73
 		.byte	$7F,$AA,$AA,$53
 		.byte	$81,$00,$00,$00
-.else /* CONFIG_11 */
+.else
         .byte   $0B
 		.byte	$76,$B3,$83,$BD,$D3
 		.byte	$79,$1E,$F4,$A6,$F5
@@ -5702,7 +5702,7 @@ POLY_ATN:
 .ifndef CBM
 		.byte	$00 ; XXX
 .endif
-.endif /* CONFIG_11 */
+.endif
 RAMSTART1:
 GENERIC_CHRGET:
         inc     TXTPTR
@@ -5765,7 +5765,7 @@ COLD_START2:
         sta     GOWARM
         sta     JMPADRS
 .endif
-.ifndef CONFIG_11
+.ifdef OSI
         sta     USR
         lda     #$88
         ldy     #$AE
@@ -5783,11 +5783,11 @@ COLD_START2:
         lda     #$38
         sta     Z18
 .endif
-.ifndef CONFIG_11
+.ifdef OSI
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
-.else /* CONFIG_11 */
+.else
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET-1 ; XXX
-.endif /* CONFIG_11 */
+.endif
 L4098:
         lda     GENERIC_CHRGET-1,x
         sta     STRNG2+1,x
@@ -5906,7 +5906,7 @@ L4136:
 .ifndef KIM
         ldx     #<RAMSTART3
         ldy     #>RAMSTART3
-.else /* CONFIG_11 */
+.else
         lda     #<QT_WANT
         ldy     #>QT_WANT
         jsr     STROUT
@@ -5942,7 +5942,7 @@ L4157:
         ldx     #<SIN_COS_TAN_ATN
         ldy     #>SIN_COS_TAN_ATN
 L4183:
-.endif /* CONFIG_11 */
+.endif
         stx     TXTTAB
         sty     TXTTAB+1
         ldy     #$00
@@ -5966,9 +5966,9 @@ L4192:
         lda     #<QT_BYTES_FREE
         ldy     #>QT_BYTES_FREE
         jsr     STROUT
-.ifdef CONFIG_11
+.ifndef OSI
         jsr     SCRTCH
-.endif /* CONFIG_11 */
+.endif
 .ifdef CBM
         jmp     RESTART
 .else
@@ -5976,9 +5976,9 @@ L4192:
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.ifndef CONFIG_11
+.ifdef OSI
         jsr     SCRTCH
-.endif /* CONFIG_11 */
+.endif
         lda     #<RESTART
         ldy     #>RESTART
         sta     L0001
@@ -5991,11 +5991,11 @@ QT_WANT:
         .byte   $00
 QT_WRITTEN_BY:
         .byte   $0D,$0A,$0C
-.ifndef CONFIG_11
+.ifdef OSI
         .byte   "WRITTEN BY RICHARD W. WEILAND."
-.else /* CONFIG_11 */
+.else
         .byte   "WRITTEN BY WEILAND & GATES"
-.endif /* CONFIG_11 */
+.endif
         .byte   $0D,$0A,$00
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
