@@ -717,7 +717,11 @@ PARSE_INPUT_LINE:
         ldy     #$04
         sty     DATAFLG
 L246C:
+.ifdef CBM2
+        lda     $0200,x
+.else
         lda     Z00,x
+.endif
 .ifdef CBM
         bpl     LC49E
         cmp     #$FF
@@ -758,8 +762,10 @@ L2496:
 L2497:
         inx
 L2498:
+.ifdef CBM2
+        lda     $0200,x
+.else
         lda     Z00,x
-.ifndef CBM2
         cmp     #$20
         beq     L2497
 .endif
@@ -3322,7 +3328,7 @@ L3124:
         tay
         lda     STRNG2
 .else
-.ifndef CBM
+.ifndef CBM1
         sta     STRNG2+1
 .endif
         ldx     #$05
@@ -3413,6 +3419,11 @@ ERRDIR:
         inx
         bne     RTS9
         ldx     #ERR_ILLDIR
+.ifdef CBM2
+        .byte   $2C
+LD288:
+        ldx     #ERR_UNDEFFN
+.endif
 L31AF:
         jmp     ERROR
 DEF:
@@ -3461,13 +3472,20 @@ L31F3:
         pla
         sta     FNCNAM+1
         ldy     #$02
+.ifndef CBM2
         ldx     #ERR_UNDEFFN
+.endif
         lda     (FNCNAM),y
+.ifndef CBM2
         beq     L31AF
+.endif
         sta     VARPNT
         tax
         iny
         lda     (FNCNAM),y
+.ifdef CBM2
+        beq     LD288
+.endif
         sta     VARPNT+1
 .ifndef OSI
         iny
@@ -3579,7 +3597,12 @@ L32AA:
 L32B6:
         stx     STRNG2+1
         lda     STRNG1+1
+.ifdef CBM2
+        beq     LD399
+        cmp     #$02
+.endif
         bne     PUTNEW
+LD399:
         tya
         jsr     STRINI
         ldx     STRNG1
@@ -3602,6 +3625,9 @@ PUTEMP:
         ldy     #$00
         stx     FAC_LAST-1
         sty     FAC_LAST
+.ifdef CBM2
+        sty     $6D
+.endif
         dey
         sty     VALTYP
         stx     LASTPT
@@ -3651,6 +3677,9 @@ FINDHIGHESTSTRING:
         sta     FRETOP+1
         ldy     #$00
         sty     FNCNAM+1
+.ifdef CBM2
+        sty     $4B
+.endif
         lda     STREND
         ldx     STREND+1
         sta     LOWTR
@@ -3722,7 +3751,7 @@ L3376:
 .endif
         iny
         lda     (INDEX),y
-.ifdef CBM
+.ifdef CBM1
         jsr     LE7F3
 .else
 .ifndef OSI
@@ -3794,10 +3823,15 @@ L33FA:
         ldy     #$00
         rts
 MOVE_HIGHEST_STRING_TO_TOP:
+.ifdef CBM2
+        lda     FNCNAM+1
+        ora     $4B
+.else
         ldx     FNCNAM+1
+.endif
         beq     L33FA
         lda     JMPADRS+1
-.ifdef CBM
+.ifdef CBM1
         sbc     #$03
 .else
         and     #$04
@@ -3997,6 +4031,9 @@ MIDSTR:
         jsr     GETBYT
 L353F:
         jsr     SUBSTRING_SETUP
+.ifdef CBM2
+        beq     GOIQ
+.endif
         dex
         txa
         pha
@@ -4037,7 +4074,9 @@ SUBSTRING_SETUP:
 .endif
         ldy     #$00
         txa
+.ifndef CBM2
         beq     GOIQ
+.endif
 .ifndef CONFIG_2
         inc     JMPADRS+1
         jmp     (JMPADRS+1)
@@ -4132,17 +4171,39 @@ GETADR:
         sta     LINNUM+1
         rts
 PEEK:
+.ifdef CBM2
+        lda     $12
+        pha
+        lda     $11
+        pha
+.endif
         jsr     GETADR
         ldy     #$00
-.ifdef CBM
+.ifdef CBM1
         cmp     #$C0
         bcc     LD6F3
         cmp     #$E1
         bcc     LD6F6
 LD6F3:
 .endif
+.ifdef CBM2
+		nop
+		nop
+		nop
+		nop
+		nop
+		nop
+		nop
+		nop
+.endif
         lda     (LINNUM),y
         tay
+.ifdef CBM2
+        pla
+        sta     $11
+        pla
+        sta     $12
+.endif
 LD6F6:
         jmp     SNGFLT
 POKE:
@@ -4182,6 +4243,34 @@ FSUBT:
         sta     STRNG1
         lda     FAC
         jmp     FADDT
+.ifdef CBM2
+LD745:
+        lda     $11
+        cmp     #$66
+        bne     L3628
+        lda     $12
+        sbc     #$19
+        bne     L3628
+        sta     $11
+        tay
+        lda     #$80
+        sta     $12
+LD758:
+        ldx     #$0A
+LD75A:
+        lda     MICROSOFT-1,x
+        and     #$3F
+        sta     ($11),y
+        iny
+        bne     LD766
+        inc     $12
+LD766:
+        dex
+        bne     LD75A
+        dec     $46
+        bne     LD758
+        rts
+.endif
 FADD1:
         jsr     SHIFT_RIGHT
         bcc     FADD3
@@ -4321,7 +4410,7 @@ NORMALIZE_FAC5:
 NORMALIZE_FAC6:
         inc     FAC
         beq     OVERFLOW
-.ifndef CONFIG_2
+.ifndef KIM
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
@@ -4434,7 +4523,7 @@ SHIFT_RIGHT:
         tay
         lda     FACEXTENSION
         bcs     SHIFT_RIGHT5
-.ifndef CONFIG_2
+.ifndef KIM
 LB588:
         asl     1,x
         bcc     LB58E
@@ -4617,7 +4706,7 @@ L38A7:
         adc     ARG+1
         sta     RESULT
 L38C3:
-.ifndef CONFIG_2
+.ifndef KIM
         ror     RESULT
         ror     RESULT+1
         ror     RESULT+2
@@ -5118,7 +5207,7 @@ FIN3:
         beq     FIN4
         bne     FIN6
 L3BA6:
-.ifndef CONFIG_2
+.ifndef KIM
         ror     EXPSGN
 .else
         lda     #$00
@@ -5141,7 +5230,7 @@ FIN6:
         sbc     EXPON
         jmp     FIN8
 FIN10:
-.ifndef CONFIG_2
+.ifndef KIM
         ror     LOWTR
 .else
         lda     #$00
@@ -5202,13 +5291,22 @@ ADDACC:
 GETEXP:
         lda     EXPON
 .ifdef CBM
+.ifdef CBM2
+        cmp     #$0A
+.else
         cmp     #$0C
+.endif
         bcc     L3C2C
+.ifdef CBM2
+        lda     #$64
+.endif
         bit     EXPSGN
         bmi     LDC70
         jmp     OVERFLOW
 LDC70:
+.ifdef CBM1
         lda     #$0B
+.endif
 .else
         cmp     #$0A
         bcc     L3C2C
@@ -5243,7 +5341,7 @@ CON_BILLION:
 CON_99999999_9:
         .byte   $9B,$3E,$BC,$1F,$FD
 CON_999999999:
-.ifdef CBM
+.ifdef CBM1
         .byte   $9E,$6E,$6B,$27,$FE
 .else
         .byte   $9E,$6E,$6B,$27,$FD
@@ -5819,6 +5917,11 @@ MICROSOFT:
         .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
         .byte   $CE,$CA
 .endif
+.ifdef CBM2
+MICROSOFT:
+        .byte   $A1,$54,$46,$8F,$13,$8F,$52
+        .byte   $43,$89,$CD
+.endif
 .endif
 ATN:
         lda     FACSIGN
@@ -5896,13 +5999,14 @@ L4047:
         sbc     #$D0
 L4058:
         rts
+; random number seed
 .ifdef OSI
         .byte   $80,$4F,$C7,$52
 .endif
 .ifdef CONFIG_2
         .byte   $80,$4F,$C7,$52,$58
 .endif
-.ifdef CBM
+.ifdef CBM1
         .byte   $80,$4F,$C7,$52,$59
 .endif
 GENERIC_CHRGET_END:
@@ -5913,8 +6017,12 @@ COLD_START:
         jsr     STROUT
 .endif
 COLD_START2:
+.ifdef CBM2
+        ldx     #$FB
+.else
         ldx     #$FF
         stx     CURLIN+1
+.endif
         txs
 .ifndef CBM
         lda     #<COLD_START2
