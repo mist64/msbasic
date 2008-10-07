@@ -571,7 +571,7 @@ L23D6:
         sty     HIGHDS+1
         jsr     BLTU
 .ifdef CBM2
-        lda     L0011
+        lda     $11
         ldy     $12
         sta     $01FE
         sty     $01FF
@@ -591,7 +591,7 @@ FIX_LINKS:
         jsr     SETPTRS
 .ifdef CBM2
         jsr     LC442
-        jmp     $AAAA; XXX LC392
+        jmp     L2351
 LC442:
 .endif
         lda     TXTTAB
@@ -800,7 +800,11 @@ L24C1:
         bne     L246C
         sta     ENDCHR
 L24C8:
+.ifdef CBM2
+        lda     $0200,x
+.else
         lda     Z00,x
+.endif
         beq     L24AC
         cmp     ENDCHR
         beq     L24AC
@@ -818,7 +822,11 @@ L24DB:
         bpl     L24DB
         lda     TOKEN_NAME_TABLE,y
         bne     L2498
+.ifdef CBM2
+        lda     $0200,x
+.else
         lda     Z00,x
+.endif
         bpl     L24AA
 L24EA:
         sta     INPUTBUFFER-3,y
@@ -6067,6 +6075,12 @@ COLD_START2:
         lda     #$38
         sta     Z18
 .endif
+.ifdef CBM2
+        lda     #$28
+        sta     $0F
+        lda     #$1E
+        sta     $10
+.endif
 .ifdef OSI
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
 .else
@@ -6077,25 +6091,37 @@ L4098:
         sta     STRNG2+1,x
         dex
         bne     L4098
+.ifdef CBM2
+        lda     #$03
+        sta     DSCLEN
+.endif
         txa
         sta     SHIFTSIGNEXT
 .ifdef CBM
         sta     Z03
 .endif
         sta     LASTPT+1
+.ifndef CBM2
         sta     Z15
+.endif
 .ifndef CONFIG_2
         sta     Z16
 .endif
         pha
         sta     Z14
+.ifdef CBM2
+        inx
+        stx     $01FD
+        stx     $01FC
+.else
         lda     #$03
         sta     DSCLEN
-.ifndef CONFIG_2
+.ifndef KIM
         lda     #$2C
         sta     LINNUM+1
 .endif
         jsr     CRDO
+.endif
         ldx     #TEMPST
         stx     TEMPPT
 .ifndef CBM
@@ -6111,19 +6137,32 @@ L4098:
         tay
         bne     L40EE
 .endif
+.ifndef CBM2
         lda     #<RAMSTART2
+.endif
         ldy     #>RAMSTART2
+ .ifdef CBM2
+        sta     $28
+        sty     $29
+.endif
         sta     LINNUM
         sty     LINNUM+1
+.ifdef CBM2
+		tay
+.else
         ldy     #$00
+.endif
 L40D7:
         inc     LINNUM
         bne     L40DD
         inc     LINNUM+1
-.ifdef CBM
+.ifdef CBM1
         lda     $09
         cmp     #$80
         beq     L40FA
+.endif
+.ifdef CBM2
+        bmi     L40FA
 .endif
 L40DD:
         lda     #$92
@@ -6140,7 +6179,7 @@ L40DD:
         beq     L40D7
         bne     L40FA
 .endif
-.ifdef CONFIG_2
+.ifdef KIM
         bne     L40FA
         beq     L40D7
 .endif
@@ -6233,13 +6272,21 @@ L4183:
         tya
         sta     (TXTTAB),y
         inc     TXTTAB
+.ifndef CBM2
         bne     L4192
         inc     TXTTAB+1
 L4192:
+.endif
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
+.ifdef CBM2
+        lda     #<QT_BASIC
+        ldy     #>QT_BASIC
+        jsr     STROUT
+.else
         jsr     CRDO
+.endif
         lda     MEMSIZ
         sec
         sbc     TXTTAB
@@ -6293,6 +6340,10 @@ QT_BYTES_FREE:
 .ifndef CBM
         .byte   $0D,$0A,$0D,$0A
 .endif
+.ifdef CBM2
+        .byte   $0D,$00
+.endif
+QT_BASIC:
 .ifdef OSI
         .byte   "OSI 6502 BASIC VERSION 1.0 REV "
         .byte   "3.2"
@@ -6300,11 +6351,16 @@ QT_BYTES_FREE:
 .ifdef KIM
         .byte   "MOS TECH 6502 BASIC V1.1"
 .endif
-.ifdef CBM
+.ifdef CBM1
         .byte   $13
         .byte   "*** COMMODORE BASIC ***"
         .byte   $11,$11,$11,$00
-.else
+.endif
+.ifdef CBM2
+        .byte   "### COMMODORE BASIC ###"
+        .byte   $0D,$0D,$00
+.endif
+.ifndef CBM
         .byte   $0D,$0A
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
         .byte   $0D,$0A,$00
