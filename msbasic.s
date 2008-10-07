@@ -213,6 +213,9 @@ TOKEN_NAME_TABLE:
 	htasc	"LEFT$"
 	htasc	"RIGHT$"
 	htasc	"MID$"
+.ifdef CBM2
+	htasc	"GO"
+.endif
 	.byte   0
 ERROR_MESSAGES:
 .ifndef CONFIG_11
@@ -248,8 +251,11 @@ ERROR_MESSAGES:
 .define ERRSTR_ILLDIR "ILLEGAL DIRECT"
 .define ERRSTR_BADTYPE "TYPE MISMATCH"
 .define ERRSTR_STRLONG "STRING TOO LONG"
-.ifdef CBM
+.ifdef CBM1
 .define ERRSTR_BADDATA "BAD DATA"
+.endif
+.ifdef CBM2
+.define ERRSTR_BADDATA "FILE DATA"
 .endif
 .define ERRSTR_FRMCPX "FORMULA TOO COMPLEX"
 .define ERRSTR_CANTCONT "CAN'T CONTINUE"
@@ -266,7 +272,7 @@ ERR_NODATA	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_NODATA
 ERR_ILLQTY	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_ILLQTY
-.ifdef CBM
+.ifdef CBM1
 	.byte 0,0,0,0,0
 .endif
 ERR_OVERFLOW	:= <(*-ERROR_MESSAGES)
