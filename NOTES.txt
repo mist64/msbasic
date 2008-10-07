@@ -1,0 +1,5 @@
+Name                 Year   MS Version    ROM   9digit   extensions
+Commodore BASIC 1    1977                  Y      Y         CBM
+OSI BASIC            1977   1.0 REV 3.2    Y      N          -
+KIM BASIC            1977   1.1            N      Y          -
+Commodore BASIC 2    1979                  Y      Y         CBM

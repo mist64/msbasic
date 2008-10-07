@@ -71,14 +71,10 @@ UNFNC:
         .addr   SGN
         .addr   INT
         .addr   ABS
-.ifdef OSI
-        .addr   USR
-.endif
 .ifdef KIM
         .addr   IQERR
-.endif
-.ifdef CBM
-        .addr   Z00
+.else
+        .addr   USR
 .endif
         .addr   FRE
         .addr   POS
@@ -488,7 +484,7 @@ L2351:
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
-.ifdef CONFIG_2
+.ifdef CONFIG_11
         tax
 .endif
         beq     L2351
@@ -894,7 +890,7 @@ SCRTCH:
         sta     VARTAB+1
 SETPTRS:
         jsr     STXTPT
-.ifdef CONFIG_2
+.ifdef CONFIG_11
         lda     #$00
 CLEAR:
         bne     L256A
@@ -1014,7 +1010,7 @@ L25CE:
 LA519:
 .endif
         iny
-.ifdef CONFIG_2
+.ifdef CONFIG_11
         beq     L25E5
 .endif
         lda     (LOWTR),y
@@ -1131,7 +1127,7 @@ LC6D4:
         ldy     #$00
 L2683:
         lda     (TXTPTR),y
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         beq     LA5DC
         cmp     #$3A
         beq     NEWSTT2
@@ -1167,7 +1163,7 @@ NEWSTT2:
         jsr     EXECUTE_STATEMENT
         jmp     NEWSTT
 EXECUTE_STATEMENT:
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         beq     RET1
         sec
 .else
@@ -1175,7 +1171,7 @@ EXECUTE_STATEMENT:
 .endif
 EXECUTE_STATEMENT1:
         sbc     #$80
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         bcs     LA609
         jmp     LET
 LA609:
@@ -1195,7 +1191,7 @@ LA609:
         lda     TOKEN_ADDRESS_TABLE,y
         pha
         jmp     CHRGET
-.ifdef CONFIG_2
+.ifdef CONFIG_11
 LET1:
         jmp     LET
 COLON:
@@ -1311,7 +1307,7 @@ NULL:
 L2739:
         jmp     IQERR
 .endif
-.ifndef CONFIG_2
+.ifndef CONFIG_11
 CLEAR:
         bne     RET1
         jmp     CLEARC
@@ -1496,7 +1492,7 @@ L2866:
         beq     L2852
         iny
         cmp     #$22
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         beq     L285E
         bne     L2866
 .else
@@ -1712,18 +1708,7 @@ L294D:
         sta     STRNG1
         sty     STRNG1+1
         jsr     MOVINS
-.ifdef OSI
-        lda     #$AC
-.endif
-.ifdef KIM
-        lda     #$AE
-.endif
-.ifdef CBM1
-        lda     #$B0
-.endif
-.ifdef CBM2
-        lda     #$5E
-.endif
+        lda     #FAC
         ldy     #$00
 L2963:
         sta     DSCPTR
@@ -1805,14 +1790,8 @@ L29B9:
         ldy     #$00
         sty     INPUTBUFFER,x
 .endif
-.ifdef OSI
-        ldx     #$12
-.endif
-.ifdef KIM
-        ldx     #$1A
-.endif
-.ifdef CBM1
-        ldx     #$09
+.ifndef CBM2
+        ldx     #LINNUM+1
 .endif
 .ifdef CBM
         lda     Z03
@@ -1878,14 +1857,14 @@ L29EB:
         adc     #$01
         bne     L2A08
 L29F5:
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         pha
 .else
         php
 .endif
         jsr     GTBYTC
         cmp     #$29
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         bne     SYNERR4
         pla
         cmp     #TOKEN_TAB
@@ -1904,21 +1883,21 @@ L29F5:
         txa
         sbc     Z16
         bcc     L2A0D
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         beq     L2A0D
 .endif
 L2A08:
         tax
-.ifdef CONFIG_2
+.ifdef CONFIG_11
 L2A09:
         inx
 .endif
 L2A0A:
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         jsr     OUTSP
 .endif
         dex
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         bne     L2A0A
 .else
         bne     L2A13
@@ -1926,7 +1905,7 @@ L2A0A:
 L2A0D:
         jsr     CHRGET
         jmp     PRINT2
-.ifdef CONFIG_2
+.ifdef CONFIG_11
 L2A13:
         jsr     OUTSP
         bne     L2A0A
@@ -2022,7 +2001,7 @@ L2A56:
 L2A59:
         lda     INPUTFLG
         beq     L2A6E
-.ifdef CONFIG_2
+.ifdef CONFIG_11
         bmi     L2A63
         ldy     #$FF
         bne     L2A67
@@ -4090,7 +4069,7 @@ L353F:
 SUBSTRING_SETUP:
         jsr     CHKCLS
         pla
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         sta     JMPADRS+1
         pla
         sta     JMPADRS+2
@@ -4107,7 +4086,7 @@ SUBSTRING_SETUP:
         sta     DSCPTR
         pla
         sta     DSCPTR+1
-.ifdef CONFIG_2
+.ifdef CONFIG_11
         lda     TEMPX
         pha
         tya
@@ -4118,7 +4097,7 @@ SUBSTRING_SETUP:
 .ifndef CBM2
         beq     GOIQ
 .endif
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         inc     JMPADRS+1
         jmp     (JMPADRS+1)
 .else
@@ -4140,7 +4119,7 @@ ASC:
         ldy     #$00
         lda     (INDEX),y
         tay
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         jmp     SNGFLT1
 .else
         jmp     SNGFLT
@@ -4698,7 +4677,7 @@ LOG2:
 FMULT:
         jsr     LOAD_ARG_FROM_YA
 FMULTT:
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         beq     L3903
 .else
         bne     L3876
@@ -6055,7 +6034,7 @@ L4058:
 .ifdef OSI
         .byte   $80,$4F,$C7,$52
 .endif
-.ifdef CONFIG_2
+.ifdef CONFIG_11
         .byte   $80,$4F,$C7,$52,$58
 .endif
 .ifdef CBM1
@@ -6148,7 +6127,7 @@ L4098:
 .ifndef CBM2
         sta     Z15
 .endif
-.ifndef CONFIG_2
+.ifndef CONFIG_11
         sta     Z16
 .endif
         pha
@@ -6393,8 +6372,7 @@ QT_BYTES_FREE:
 .endif
 QT_BASIC:
 .ifdef OSI
-        .byte   "OSI 6502 BASIC VERSION 1.0 REV "
-        .byte   "3.2"
+        .byte   "OSI 6502 BASIC VERSION 1.0 REV 3.2"
 .endif
 .ifdef KIM
         .byte   "MOS TECH 6502 BASIC V1.1"
