@@ -24,6 +24,7 @@ LINNUM          := $0008
 INPUTBUFFER     := $000A
 TEMPPT          := $0065
 LASTPT          := $0066
+TEMPST			:= $0068
 INDEX           := $0071
 DEST            := $0073
 RESULT          := $0075
@@ -79,31 +80,32 @@ TXTPTR          := $00C9
 L00CF			:= $00CF
 RNDSEED			:= $00DA
 .else
-Z00             := $0000
+Z00             := $0200;0000
 L0001           := $0001
 L0002           := $0002
 GOWARM          := $0003
-Z03				:= $000E;3 ; same
-GOSTROUT        := $0006
-GOGIVEAYF       := $0008
-CHARAC          := $005A
-ENDCHR          := $005B
-EOLPNTR         := $005C
-DIMFLG          := $005D
-VALTYP          := $005E
-DATAFLG         := $0060
-SUBFLG          := $0061
-INPUTFLG        := $0062
-CPRMASK         := $0063
-Z14             := $000D;64                        ; Ctrl+O flag
 Z15             := $0004
 Z16             := $0005
 Z17             := $0006
+GOSTROUT        := $0006
 Z18             := $0007
-LINNUM          := $0008
-INPUTBUFFER     := $000A
+LINNUM          := $0011;0008
+GOGIVEAYF       := $0008
+INPUTBUFFER     := $0200;00A
+Z03				:= $000E;3 ; same
+CHARAC          := $005A-82-5
+ENDCHR          := $005B-82-5
+EOLPNTR         := $005C-82-5
+DIMFLG          := $005D-82-5
+VALTYP          := $005E-82-5
+DATAFLG         := $0060-82-5
+SUBFLG          := $0061-82-5
+INPUTFLG        := $0062-82-5
+CPRMASK         := $0063-82-5
+Z14             := $0064-82-5                        ; Ctrl+O flag
 TEMPPT          := $0065-82
 LASTPT          := $0066-82
+TEMPST			:= $0068-82
 INDEX           := $0071-82
 DEST            := $0073-82
 RESULT          := $0075-82
@@ -162,7 +164,6 @@ RNDSEED			:= $00DA-82
 
 BYTES_PER_FRAME := $12
 SPACE_FOR_GOSUB := $36
-TEMPST			:= $68
 FOR_STACK1		:= $0F
 FOR_STACK2		:= $09
 NUM_TOKENS		:= $23
@@ -212,3 +213,10 @@ LE7F3	:= $E7F3
 
 MONCOUT	:= CHROUT
 MONRDKEY := GETIN
+
+
+
+
+L0011 := $AA
+LC392 := $AAAAA
+LC71E := $AAAAA
