@@ -3,3 +3,4 @@
 * use C enum for zero page
 * convert messy init code into completely different
   files without ifdefs (not much in common!)
+* generate keyword and pointer list together

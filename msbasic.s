@@ -1,6 +1,9 @@
 ; da65 V2.12.9 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
 ; Created:    2008-10-05 12:21:17
 
+.ifdef KBD
+.include "defines_kbd.s"
+.endif
 .ifdef OSI
 .include "defines_osi.s"
 .endif
@@ -17,6 +20,11 @@
         .segment "BASIC"
 
 STACK           := $0100
+
+.ifdef KBD
+        jmp     LE68C
+        .byte   $00,$13,$56
+.endif
 
 TOKEN_ADDRESS_TABLE:
         .word   END-1
@@ -39,17 +47,28 @@ TOKEN_ADDRESS_TABLE:
         .word   REM-1
         .word   STOP-1
         .word   ON-1
-.ifndef CBM
+.ifndef CBM_KBD
         .word   NULL-1
 .endif
+.ifdef KBD
+        .word   PLOD-1
+        .word   PSAV-1
+        .word   VLOD-1
+        .word   VSAV-1
+.else
         .word   WAIT-1
         .word   LOAD-1
         .word   SAVE-1
 .ifdef CBM
         .word   VERIFY-1
 .endif
+.endif
         .word   DEF-1
+.ifdef KBD
+        .word   SLOD-1
+.else
         .word   POKE-1
+.endif
 .ifdef CBM
         .word   PRINTH-1
 .endif
@@ -63,8 +82,11 @@ TOKEN_ADDRESS_TABLE:
 		.word	OPEN-1
 		.word	CLOSE-1
 .endif
-.ifndef OSI
+.ifndef OSI_KBD
         .word   GET-1
+.endif
+.ifdef KBD
+        .word   PRT-1
 .endif
         .word   NEW-1
 UNFNC:
@@ -74,7 +96,11 @@ UNFNC:
 .ifdef KIM
         .addr   IQERR
 .else
+.ifdef KBD
+        .addr   VER
+.else
         .addr   USR
+.endif
 .endif
         .addr   FRE
         .addr   POS
@@ -86,7 +112,11 @@ UNFNC:
         .addr   SIN
         .addr   TAN
         .addr   ATN
+.ifdef KBD
+        .addr   GETC
+.else
         .addr   PEEK
+.endif
         .addr   LEN
         .addr   STR
         .addr   VAL
@@ -137,17 +167,28 @@ TOKEN_NAME_TABLE:
 	htasc	"REM"
 	htasc	"STOP"
 	htasc	"ON"
-.ifndef CBM
+.ifndef CBM_KBD
 	htasc	"NULL"
 .endif
+.ifdef KBD
+	htasc	"PLOD"
+	htasc	"PSAV"
+	htasc	"VLOD"
+	htasc	"VSAV"
+.else
 	htasc	"WAIT"
 	htasc	"LOAD"
 	htasc	"SAVE"
 .ifdef CBM
 	htasc	"VERIFY"
 .endif
+.endif
 	htasc	"DEF"
+.ifdef KBD
+	htasc	"SLOD"
+.else
 	htasc	"POKE"
+.endif
 .ifdef CBM
 	htasc	"PRINT#"
 .endif
@@ -165,8 +206,11 @@ TOKEN_NAME_TABLE:
 	htasc	"OPEN"
 	htasc	"CLOSE"
 .endif
-.ifndef OSI
+.ifndef OSI_KBD
 	htasc	"GET"
+.endif
+.ifdef KBD
+	htasc	"PRT"
 .endif
 	htasc	"NEW"
 	htasc	"TAB("
@@ -180,7 +224,11 @@ TOKEN_NAME_TABLE:
 	htasc	"-"
 	htasc	"*"
 	htasc	"/"
+.ifdef KBD
+	htasc	"#"
+.else
 	htasc	"^"
+.endif
 	htasc	"AND"
 	htasc	"OR"
 	htasc	">"
@@ -189,7 +237,11 @@ TOKEN_NAME_TABLE:
 	htasc	"SGN"
 	htasc	"INT"
 	htasc	"ABS"
+.ifdef KBD
+	htasc	"VER"
+.else
 	htasc	"USR"
+.endif
 	htasc	"FRE"
 	htasc	"POS"
 	htasc	"SQR"
@@ -200,7 +252,11 @@ TOKEN_NAME_TABLE:
 	htasc	"SIN"
 	htasc	"TAN"
 	htasc	"ATN"
+.ifdef KBD
+	htasc	"GETC"
+.else
 	htasc	"PEEK"
+.endif
 	htasc	"LEN"
 	htasc	"STR$"
 	htasc	"VAL"
@@ -209,12 +265,12 @@ TOKEN_NAME_TABLE:
 	htasc	"LEFT$"
 	htasc	"RIGHT$"
 	htasc	"MID$"
-.ifdef CBM2
+.ifdef CBM2_KBD
 	htasc	"GO"
 .endif
 	.byte   0
 ERROR_MESSAGES:
-.ifdef OSI
+.ifdef OSI_KBD
 .define ERRSTR_NOFOR "NF"
 .define ERRSTR_SYNTAX "SN"
 .define ERRSTR_NOGOSUB "RG"
@@ -300,23 +356,47 @@ ERR_CANTCONT	:= <(*-ERROR_MESSAGES)
 ERR_UNDEFFN	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_UNDEFFN
 QT_ERROR:
+.ifdef KBD
+        .byte   " err"
+.else
         .byte   " ERROR"
+.endif
         .byte   $00
 QT_IN:
+.ifdef KBD
+		htasc	"TR"
+LE19A:
+		jsr     LDE42
+.else
         .byte   " IN "
         .byte   $00
+.endif
 QT_OK:
+.ifdef KBD
+        .byte   $0D,$0D
+        .byte   ">>"
+.else
 		.byte   $0D,$0A
 .ifdef CBM
         .byte   "READY."
 .else
         .byte   "OK"
 .endif
+.endif
         .byte   $0D,$0A,$00
 QT_BREAK:
+.ifdef KBD
+        .byte   "`"
+        .byte   $EA,$0D,$0A
+        .byte   " Brk"
+        .byte   $00
+        .byte   "T"
+        .byte   $D0
+.else
 		.byte $0D,$0A
         .byte   "BREAK"
         .byte   $00
+.endif
 GTFORPNT:
         tsx
         inx
@@ -448,13 +528,16 @@ LC366:
         jsr     OUTQUES
 L2329:
         lda     ERROR_MESSAGES,x
-.ifndef OSI
+.ifndef OSI_KBD
         pha
         and     #$7F
 .endif
         jsr     OUTDO
-.ifdef OSI
+.ifdef OSI_KBD
         lda     ERROR_MESSAGES+1,x
+.ifdef KBD
+        and     #$7F
+.endif
         jsr     OUTDO
 .else
         inx
@@ -471,6 +554,16 @@ PRINT_ERROR_LINNUM:
         beq     RESTART
         jsr     INPRT
 RESTART:
+.ifdef KBD
+        jsr     CRDO
+        nop
+L2351:
+        jsr     LE19A
+LE28B:
+        jsr     LFDDA
+LE28E:
+        bpl     RESTART
+.else
         lsr     Z14
         lda     #<QT_OK
         ldy     #>QT_OK
@@ -481,6 +574,7 @@ RESTART:
 .endif
 L2351:
         jsr     INLIN
+.endif
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
@@ -498,6 +592,56 @@ NUMBERED_LINE:
         jsr     PARSE_INPUT_LINE
         sty     EOLPNTR
         jsr     FNDLIN
+.ifdef KBD
+        lda     JMPADRS+1
+        sta     LOWTR
+        sta     $96
+        lda     JMPADRS+2
+        sta     LOWTR+1
+        sta     $97
+        lda     $13
+        sta     $06FE
+        lda     $14
+        sta     $06FF
+        inc     $13
+        bne     LE2D2
+        inc     $14
+        bne     LE2D2
+        jmp     SYNERR
+LE2D2:
+        jsr     LF457
+        ldx     #$96
+        jsr     LE4D4
+        bcs     LE2FD
+LE2DC:
+        ldx     #$00
+        lda     (JMPADRS+1,x)
+        sta     ($96,x)
+        inc     JMPADRS+1
+        bne     LE2E8
+        inc     JMPADRS+2
+LE2E8:
+        inc     $96
+        bne     LE2EE
+        inc     $97
+LE2EE:
+        ldx     #$2B
+        jsr     LE4D4
+        bne     LE2DC
+        lda     $96
+        sta     VARTAB
+        lda     $97
+        sta     VARTAB+1
+LE2FD:
+        jsr     SETPTRS
+        jsr     LE33D
+        lda     Z00
+LE306:
+        beq     LE28E
+        cmp     #$A5
+        beq     LE306
+        clc
+.else
         bcc     PUT_NEW_LINE
         ldy     #$01
         lda     (LOWTR),y
@@ -555,6 +699,7 @@ PUT_NEW_LINE:
         sta     FRETOP
         sty     FRETOP+1
 .endif
+.endif
         lda     VARTAB
         sta     HIGHTR
         adc     EOLPNTR
@@ -567,10 +712,10 @@ L23D6:
         sty     HIGHDS+1
         jsr     BLTU
 .ifdef CBM2
-        lda     $11
-        ldy     $12
-        sta     $01FE
-        sty     $01FF
+        lda     LINNUM
+        ldy     LINNUM+1
+        sta     INPUTBUFFER-2 ; exists in AppleSoft!
+        sty     INPUTBUFFER-1
 .endif
         lda     STREND
         ldy     STREND+1
@@ -585,7 +730,7 @@ L23E6:
         bpl     L23E6
 FIX_LINKS:
         jsr     SETPTRS
-.ifdef CBM2
+.ifdef CBM2_KBD
         jsr     LC442
         jmp     L2351
 LC442:
@@ -598,8 +743,12 @@ LC442:
 L23FA:
         ldy     #$01
         lda     (INDEX),y
-.ifdef CBM2
+.ifdef CBM2_KBD
+.ifdef KBD
+.byte $ea,$ea; xxx
+.else
         beq     LC46E
+.endif
 .else
         bne     L2403
         jmp     L2351
@@ -623,6 +772,45 @@ L2405:
         stx     INDEX
         sta     INDEX+1
         bcc     L23FA
+.ifdef KBD
+SLOD:
+        ldx     #$01
+        .byte   $2C
+PLOD:
+        ldx     #$00
+        ldy     CURLIN+1
+        iny
+        sty     JMPADRS
+        jsr     LFFD3
+        jsr     LF422
+        ldx     #$02
+        jsr     LFF64
+        ldx     #$6F
+        ldy     #$00
+        jsr     LE39A
+        jsr     LE33D
+        jmp     CLEARC
+        .byte   $FF
+        .byte   $FF
+        .byte   $FF
+VER:
+        lda     #$13
+        ldx     FAC
+        beq     LE397
+        lda     $DFF9
+LE397:
+        jmp     FLOAT
+LE39A:
+        lda     VARTAB,x
+        clc
+        adc     $051B,y
+        sta     VARTAB,y
+        lda     VARTAB+1,x
+        adc     $051C,y
+        sta     VARTAB+1,y
+LE3AB:
+        rts
+.else
 L2420:
 .ifdef OSI
         jsr     OUTDO
@@ -711,12 +899,13 @@ GETLN:
         pla
 L2465:
         rts
+.endif /* KBD */
 PARSE_INPUT_LINE:
         ldx     TXTPTR
         ldy     #$04
         sty     DATAFLG
 L246C:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $0200,x
 .else
         lda     Z00,x
@@ -761,7 +950,7 @@ L2496:
 L2497:
         inx
 L2498:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $0200,x
 .else
         lda     Z00,x
@@ -799,7 +988,7 @@ L24C1:
         bne     L246C
         sta     ENDCHR
 L24C8:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $0200,x
 .else
         lda     Z00,x
@@ -821,7 +1010,7 @@ L24DB:
         bpl     L24DB
         lda     TOKEN_NAME_TABLE,y
         bne     L2498
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $0200,x
 .else
         lda     Z00,x
@@ -829,7 +1018,7 @@ L24DB:
         bpl     L24AA
 L24EA:
         sta     INPUTBUFFER-3,y
-.ifdef CBM2
+.ifdef CBM2_KBD
         dec     TXTPTR+1
         lda     #$FF
 .else
@@ -838,6 +1027,32 @@ L24EA:
         sta     TXTPTR
         rts
 FNDLIN:
+.ifdef KBD
+        jsr     CHRGET
+        jmp     LE444
+LE440:
+        php
+        jsr     LINGET
+LE444:
+        jsr     LF457
+        ldx     #$FF
+        plp
+        beq     LE464
+        jsr     CHRGOT
+        beq     L2520
+        cmp     #$A5
+        bne     L2520
+        jsr     CHRGET
+        beq     LE464
+        bcs     LE461
+        jsr     LINGET
+        beq     L2520
+LE461:
+        jmp     SYNERR
+LE464:
+        stx     $13
+        stx     $14
+.else
         lda     TXTTAB
         ldx     TXTTAB+1
 FL1:
@@ -869,6 +1084,7 @@ L2516:
         bcs     FL1
 L251F:
         clc
+.endif
 L2520:
         rts
 NEW:
@@ -880,7 +1096,7 @@ SCRTCH:
         iny
         sta     (TXTTAB),y
         lda     TXTTAB
-.ifdef CBM2
+.ifdef CBM2_KBD
 		clc
 .endif
         adc     #$02
@@ -914,22 +1130,22 @@ STKINI:
         ldx     #TEMPST
         stx     TEMPPT
         pla
-.ifdef CBM2
+.ifdef CBM2_KBD
 		tay
 .else
         sta     STACK+253
 .endif
         pla
-.ifndef CBM2
+.ifndef CBM2_KBD
         sta     STACK+254
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
         ldx     #$FA
 .else
         ldx     #$FC
 .endif
         txs
-.ifdef CBM2
+.ifdef CBM2_KBD
         pha
         tya
         pha
@@ -948,6 +1164,33 @@ STXTPT:
         adc     #$FF
         sta     TXTPTR+1
         rts
+.ifdef KBD
+        ldy     #$44
+        ldx     #$E4
+LE4C4:
+        jsr     LFFD6
+        jsr     LFFED
+        lda     $0504
+        clc
+        adc     #$08
+        sta     $0504
+        rts
+LE4D4:
+        lda     $01,x
+        cmp     JMPADRS+2
+        bne     LE4DE
+        lda     $00,x
+        cmp     JMPADRS+1
+LE4DE:
+        rts
+LIST:
+        jsr     LE440
+        bne     LE4DE
+        pla
+        pla
+L25A6:
+        jsr     CRDO
+.else
 LIST:
         bcc     L2581
         beq     L2581
@@ -973,14 +1216,17 @@ L2598:
         sta     LINNUM
         sta     LINNUM+1
 L25A6:
+.endif
         ldy     #$01
-.ifndef KIM
+.ifndef KIM_KBD
         sty     DATAFLG
 .endif
         lda     (LOWTR),y
         beq     L25E5
         jsr     ISCNTC
+.ifndef KBD
         jsr     CRDO
+.endif
         iny
         lda     (LOWTR),y
         tax
@@ -1001,7 +1247,7 @@ L25CA:
         and     #$7F
 L25CE:
         jsr     OUTDO
-.ifndef KIM
+.ifndef KIM_KBD
         cmp     #$22
         bne     LA519
         lda     DATAFLG
@@ -1027,7 +1273,7 @@ L25E5:
         jmp     RESTART
 L25E8:
         bpl     L25CE
-.ifndef KIM
+.ifndef KIM_KBD
         cmp     #$FF
         beq     L25CE
         bit     DATAFLG
@@ -1114,7 +1360,7 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2
+.ifdef CBM2_KBD
         cpy     #$02
         nop
         beq     LC6D4
@@ -1140,7 +1386,7 @@ LA5DC:
         ldy     #$02
         lda     (TXTPTR),y
         clc
-.ifdef CBM2
+.ifdef CBM2_KBD
         bne     LC6E4
         jmp     L2701
 LC6E4:
@@ -1179,7 +1425,7 @@ LA609:
         bcc     LET1
 .endif
         cmp     #NUM_TOKENS
-.ifdef CBM2
+.ifdef CBM2_KBD
         bcs     LC721
 .else
         bcs     SYNERR1
@@ -1200,7 +1446,7 @@ COLON:
 SYNERR1:
         jmp     SYNERR
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
 LC721:
         cmp     #$4B
         bne     SYNERR1
@@ -1225,7 +1471,7 @@ RET2:
 .ifndef CBM
 ISCNTC:
 .endif
-.ifdef OSI
+.ifdef OSI_KBD
         jmp     MONISCNTC
         nop
         nop
@@ -1254,7 +1500,7 @@ END2:
         bne     RET1
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2
+.ifdef CBM2_KBD
         ldx     $37
         inx
 .endif
@@ -1294,7 +1540,7 @@ L271C:
         sty     CURLIN+1
 RET1:
         rts
-.ifndef CBM2
+.ifndef CBM2_KBD
 NULL:
         jsr     GETBYT
         bne     RET1
@@ -1431,7 +1677,7 @@ L281E:
 POP:
         bne     L281E
         lda     #$FF
-.ifdef CBM2
+.ifdef CBM2_KBD
         sta     FORPNT+1 ; bugfix
 .else
         sta     FORPNT
@@ -1581,7 +1827,7 @@ LET:
         sty     FORPNT+1
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifndef OSI
+.ifndef OSI_KBD
         lda     VALTYP+1
         pha
 .endif
@@ -1592,7 +1838,7 @@ LET:
         rol     a
         jsr     CHKVAL
         bne     LETSTRING
-.ifndef OSI
+.ifndef OSI_KBD
         pla
 LET2:
         bpl     L2923
@@ -1609,7 +1855,7 @@ L2923:
 .endif
         jmp     SETFOR
 LETSTRING:
-.ifndef OSI
+.ifndef OSI_KBD
         pla
 PUTSTR:
 .endif
@@ -1623,7 +1869,7 @@ PUTSTR:
         bne     LC92B
         jsr     FREFAC
         cmp     #$06
-.ifdef CBM2
+.ifdef CBM2_KBD
         bne     IQERR1
 .else
         beq     LC8E2
@@ -1656,7 +1902,7 @@ LC902:
         ldx     #$02
         sei
 LC912:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $60,x
         sta     $8D,x
 .else
@@ -1751,7 +1997,7 @@ PRINT2:
         cmp     #TOKEN_TAB
         beq     L29F5
         cmp     #TOKEN_SPC
-.ifdef CBM2
+.ifdef CBM2_KBD
         clc
 .endif
         beq     L29F5
@@ -1761,7 +2007,11 @@ PRINT2:
 .endif
         beq     L29DE
         cmp     #$3B
+.ifdef KBD
+.byte $ea,$ea; XXX
+.else
         beq     L2A0D
+.endif
         jsr     FRMEVL
         bit     VALTYP
         bmi     PRSTRING
@@ -1781,7 +2031,7 @@ L29B1:
         jsr     OUTSP
         bne     L297E
 L29B9:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$00
         sta     $0200,x
         ldx     #$FF
@@ -1790,7 +2040,7 @@ L29B9:
         ldy     #$00
         sty     INPUTBUFFER,x
 .endif
-.ifndef CBM2
+.ifndef CBM2_KBD
         ldx     #LINNUM+1
 .endif
 .ifdef CBM
@@ -1870,7 +2120,7 @@ L29F5:
         cmp     #TOKEN_TAB
         bne     L2A0A
 .else
-.ifdef CBM2
+.ifdef CBM2_KBD
         bne     SYNERR4
 .else
         beq     @1
@@ -1946,7 +2196,7 @@ OUTQUES:
 OUTDO:
         bit     Z14
         bmi     L2A56
-.ifndef CBM2
+.ifndef CBM2_KBD
         pha
 .ifdef CBM
         cmp     #$1D
@@ -1989,7 +2239,7 @@ L2A4E:
 .ifdef KIM
         ldy     DIMFLG
 .endif
-.ifdef OSI
+.ifdef OSI_KBD
         nop
         nop
         nop
@@ -2035,7 +2285,7 @@ LCA8F:
         sta     TXTPTR
         sty     TXTPTR+1
         rts
-.ifndef OSI
+.ifndef OSI_KBD
 GET:
         jsr     ERRDIR
 .ifdef CBM
@@ -2051,7 +2301,7 @@ LCAB6:
 .endif
         ldx     #<(INPUTBUFFER+1)
         ldy     #>(INPUTBUFFER+1)
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$00
         sta     INPUTBUFFER+1
 .else
@@ -2099,7 +2349,7 @@ LCAF8:
 .ifdef CBM
         lda     Z03
         beq     LCB0C
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $96
 .else
         lda     $020C
@@ -2115,7 +2365,7 @@ LCB0C:
 .ifdef CBM
         lda     Z03
         bne     LCAF8
-.ifdef CBM2
+.ifdef CBM2_KBD
         clc
         jmp     CONTROL_C_TYPED
 .else
@@ -2136,7 +2386,7 @@ LCB21:
 READ:
         ldx     DATPTR
         ldy     DATPTR+1
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$98
         .byte   $2C
 L2ABE:
@@ -2165,7 +2415,7 @@ PROCESS_INPUT_ITEM:
         jsr     CHRGOT
         bne     INSTART
         bit     INPUTFLG
-.ifndef OSI
+.ifndef OSI_KBD
         bvc     L2AF0
         jsr     MONRDKEY
         sta     INPUTBUFFER
@@ -2194,7 +2444,7 @@ INSTART:
         jsr     CHRGET
         bit     VALTYP
         bpl     L2B34
-.ifndef OSI
+.ifndef OSI_KBD
         bit     INPUTFLG
         bvc     L2B10
 .ifdef CBM1
@@ -2228,7 +2478,7 @@ L2B1D:
 L2B28:
         jsr     STRLT2
         jsr     POINT
-.ifdef OSI
+.ifdef OSI_KBD
         jsr     LETSTRING
 .else
         jsr     PUTSTR
@@ -2236,7 +2486,7 @@ L2B28:
         jmp     INPUT_MORE
 L2B34:
         jsr     FIN
-.ifdef OSI
+.ifdef OSI_KBD
         jsr     SETFOR
 .else
         lda     VALTYP+1
@@ -2288,7 +2538,7 @@ INPDONE:
         lda     INPTR
         ldy     INPTR+1
         ldx     INPUTFLG
-.ifdef OSI
+.ifdef OSI_KBD
         beq     L2B94
 .else
         bpl     L2B94
@@ -2331,14 +2581,14 @@ GERR:
         beq     JERROR
 NEXT3:
         txs
-.ifndef CBM2
+.ifndef CBM2_KBD
         inx
         inx
         inx
         inx
 .endif
         txa
-.ifdef CBM2
+.ifdef CBM2_KBD
         clc
         adc     #$04
         pha
@@ -2351,7 +2601,7 @@ NEXT3:
         inx
         inx
         inx
-.ifndef OSI
+.ifndef OSI_KBD
         inx
 .endif
         stx     DEST
@@ -2514,7 +2764,7 @@ FRM_STACK2:
         pha
 L2CED:
         jsr     ROUND_FAC
-.ifndef OSI
+.ifndef OSI_KBD
         lda     FAC+4
         pha
 .endif
@@ -2551,7 +2801,7 @@ FRM_PERFORM2:
         pla
         sta     ARG+3
         pla
-.ifndef OSI
+.ifndef OSI_KBD
         sta     ARG+4
         pla
 .endif
@@ -2685,7 +2935,7 @@ LCE53:
 .endif
         rts
 L2DB1:
-.ifndef OSI
+.ifndef OSI_KBD
         ldx     VALTYP+1
         bpl     L2DC2
         ldy     #$00
@@ -2743,7 +2993,7 @@ LCE82:
         bne     LCE90
         cpy     #$54
         bne     LCE90
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $96
 .else
         lda     $020C
@@ -2900,7 +3150,7 @@ SYNERR3:
 NAMOK:
         ldx     #$00
         stx     VALTYP
-.ifndef OSI
+.ifndef OSI_KBD
         stx     VALTYP+1
 .endif
         jsr     CHRGET
@@ -2916,14 +3166,14 @@ L2ECE:
         bcs     L2ECE
 L2ED8:
         cmp     #$24
-.ifdef OSI
+.ifdef OSI_KBD
         bne     L2EF9
 .else
         bne     L2EE2
 .endif
         lda     #$FF
         sta     VALTYP
-.ifndef OSI
+.ifndef OSI_KBD
         bne     L2EF2
 L2EE2:
         cmp     #$25
@@ -3059,7 +3309,7 @@ L2F68:
         sta     (LOWTR),y
         iny
         sta     (LOWTR),y
-.ifndef OSI
+.ifndef OSI_KBD
         iny
         sta     (LOWTR),y
 .endif
@@ -3090,13 +3340,13 @@ NEG32768:
         .byte   $90,$80,$00,$00
 MAKINT:
         jsr     CHRGET
-.ifdef CBM2
+.ifdef CBM2_KBD
         jsr     FRMEVL
 .else
         jsr     FRMNUM
 .endif
 MKINT:
-.ifdef CBM2
+.ifdef CBM2_KBD
         jsr     CHKNUM
 .endif
         lda     FACSIGN
@@ -3114,7 +3364,7 @@ MI2:
         jmp     QINT
 ARRAY:
         lda     DIMFLG
-.ifndef OSI
+.ifndef OSI_KBD
         ora     VALTYP+1
 .endif
         pha
@@ -3153,7 +3403,7 @@ L2FDE:
         pla
         sta     VALTYP
         pla
-.ifndef OSI
+.ifndef OSI_KBD
         sta     VALTYP+1
         and     #$7F
 .endif
@@ -3210,12 +3460,12 @@ MAKE_NEW_ARRAY:
         tay
         sta     STRNG2+1
         ldx     #BYTES_PER_ELEMENT
-.ifdef OSI
+.ifdef OSI_KBD
         stx     STRNG2
 .endif
         lda     VARNAM
         sta     (LOWTR),y
-.ifndef OSI
+.ifndef OSI_KBD
         bpl     L3078
         dex
 L3078:
@@ -3223,7 +3473,7 @@ L3078:
         iny
         lda     VARNAM+1
         sta     (LOWTR),y
-.ifndef OSI
+.ifndef OSI_KBD
         bpl     L3081
         dex
         dex
@@ -3338,7 +3588,7 @@ L3124:
         stx     STRNG2
         dec     EOLPNTR
         bne     L30F6
-.ifdef OSI
+.ifdef OSI_KBD
         asl     STRNG2
         rol     a
         bcs     GSE
@@ -3439,7 +3689,7 @@ ERRDIR:
         inx
         bne     RTS9
         ldx     #ERR_ILLDIR
-.ifdef CBM2
+.ifdef CBM2_KBD
         .byte   $2C
 LD288:
         ldx     #ERR_UNDEFFN
@@ -3457,7 +3707,7 @@ DEF:
         jsr     CHKCLS
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifndef OSI
+.ifndef OSI_KBD
         pha
 .endif
         lda     VARPNT+1
@@ -3492,22 +3742,22 @@ L31F3:
         pla
         sta     FNCNAM+1
         ldy     #$02
-.ifndef CBM2
+.ifndef CBM2_KBD
         ldx     #ERR_UNDEFFN
 .endif
         lda     (FNCNAM),y
-.ifndef CBM2
+.ifndef CBM2_KBD
         beq     L31AF
 .endif
         sta     VARPNT
         tax
         iny
         lda     (FNCNAM),y
-.ifdef CBM2
+.ifdef CBM2_KBD
         beq     LD288
 .endif
         sta     VARPNT+1
-.ifndef OSI
+.ifndef OSI_KBD
         iny
 .endif
 L3219:
@@ -3556,7 +3806,7 @@ L3250:
         pla
         iny
         sta     (FNCNAM),y
-.ifndef OSI
+.ifndef OSI_KBD
         pla
         iny
         sta     (FNCNAM),y
@@ -3617,7 +3867,7 @@ L32AA:
 L32B6:
         stx     STRNG2+1
         lda     STRNG1+1
-.ifdef CBM2
+.ifdef CBM2_KBD
         beq     LD399
         cmp     #$02
 .endif
@@ -3645,7 +3895,7 @@ PUTEMP:
         ldy     #$00
         stx     FAC_LAST-1
         sty     FAC_LAST
-.ifdef CBM2
+.ifdef CBM2_KBD
         sty     $6D
 .endif
         dey
@@ -3697,7 +3947,7 @@ FINDHIGHESTSTRING:
         sta     FRETOP+1
         ldy     #$00
         sty     FNCNAM+1
-.ifdef CBM2
+.ifdef CBM2_KBD
         sty     $4B
 .endif
         lda     STREND
@@ -3745,7 +3995,7 @@ L336B:
 L3376:
         sta     INDEX
         stx     INDEX+1
-.ifdef OSI
+.ifdef OSI_KBD
         ldy     #$01
 .else
         ldy     #$00
@@ -3765,7 +4015,7 @@ L3376:
         sta     HIGHDS+1
         plp
         bpl     L3367
-.ifndef OSI
+.ifndef OSI_KBD
         txa
         bmi     L3367
 .endif
@@ -3774,7 +4024,7 @@ L3376:
 .ifdef CBM1
         jsr     LE7F3
 .else
-.ifndef OSI
+.ifndef OSI_KBD
         ldy     #$00
 .endif
         asl     a
@@ -3795,7 +4045,7 @@ L33B1:
         jsr     CHECK_VARIABLE
         beq     L33A9
 CHECK_SIMPLE_VARIABLE:
-.ifndef OSI
+.ifndef OSI_KBD
         lda     (INDEX),y
         bmi     CHECK_BUMP
 .endif
@@ -3843,7 +4093,7 @@ L33FA:
         ldy     #$00
         rts
 MOVE_HIGHEST_STRING_TO_TOP:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     FNCNAM+1
         ora     $4B
 .else
@@ -4051,7 +4301,7 @@ MIDSTR:
         jsr     GETBYT
 L353F:
         jsr     SUBSTRING_SETUP
-.ifdef CBM2
+.ifdef CBM2_KBD
         beq     GOIQ
 .endif
         dex
@@ -4076,7 +4326,7 @@ SUBSTRING_SETUP:
 .else
         tay
         pla
-        sta     TEMPX
+        sta     LENGTH
 .endif
         pla
         pla
@@ -4087,14 +4337,14 @@ SUBSTRING_SETUP:
         pla
         sta     DSCPTR+1
 .ifdef CONFIG_11
-        lda     TEMPX
+        lda     LENGTH
         pha
         tya
         pha
 .endif
         ldy     #$00
         txa
-.ifndef CBM2
+.ifndef CBM2_KBD
         beq     GOIQ
 .endif
 .ifndef CONFIG_11
@@ -4191,7 +4441,7 @@ GETADR:
         sta     LINNUM+1
         rts
 PEEK:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     $12
         pha
         lda     $11
@@ -4206,7 +4456,7 @@ PEEK:
         bcc     LD6F6
 LD6F3:
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
 		nop
 		nop
 		nop
@@ -4218,7 +4468,7 @@ LD6F3:
 .endif
         lda     (LINNUM),y
         tay
-.ifdef CBM2
+.ifdef CBM2_KBD
         pla
         sta     $11
         pla
@@ -4346,7 +4596,7 @@ L369B:
         eor     #$FF
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifndef OSI
+.ifndef OSI_KBD
         lda     4,y
         sbc     4,x
         sta     FAC+4
@@ -4374,7 +4624,7 @@ L36C7:
         stx     FAC+1
         ldx     FAC+3
         stx     FAC+2
-.ifdef OSI
+.ifdef OSI_KBD
         ldx     FACEXTENSION
         stx     FAC+3
 .else
@@ -4397,7 +4647,7 @@ STA_IN_FAC_SIGN:
 FADD4:
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifndef OSI
+.ifndef OSI_KBD
         lda     FAC+4
         adc     ARG+4
         sta     FAC+4
@@ -4415,7 +4665,7 @@ FADD4:
 NORMALIZE_FAC3:
         adc     #$01
         asl     FACEXTENSION
-.ifndef OSI
+.ifndef OSI_KBD
         rol     FAC+4
 .endif
         rol     FAC+3
@@ -4495,7 +4745,7 @@ COMPLEMENT_FAC_MANTISSA:
         lda     FAC+3
         eor     #$FF
         sta     FAC+3
-.ifndef OSI
+.ifndef OSI_KBD
         lda     FAC+4
         eor     #$FF
         sta     FAC+4
@@ -4506,7 +4756,7 @@ COMPLEMENT_FAC_MANTISSA:
         inc     FACEXTENSION
         bne     RTS12
 INCREMENT_FAC_MANTISSA:
-.ifndef OSI
+.ifndef OSI_KBD
         inc     FAC+4
         bne     RTS12
 .endif
@@ -4523,13 +4773,13 @@ OVERFLOW:
 SHIFT_RIGHT1:
         ldx     #RESULT-1
 SHIFT_RIGHT2:
-.ifdef OSI
+.ifdef OSI_KBD
         ldy     3,x
 .else
         ldy     4,x
 .endif
         sty     FACEXTENSION
-.ifndef OSI
+.ifndef OSI_KBD
         ldy     3,x
         sty     4,x
 .endif
@@ -4609,7 +4859,7 @@ L37FD:
 SHIFT_RIGHT5:
         clc
         rts
-.ifdef OSI
+.ifdef OSI_KBD
 CON_ONE:
         .byte   $81,$00,$00,$00
 POLY_LOG:
@@ -4689,12 +4939,12 @@ L3876:
         sta     RESULT
         sta     RESULT+1
         sta     RESULT+2
-.ifndef OSI
+.ifndef OSI_KBD
         sta     RESULT+3
 .endif
         lda     FACEXTENSION
         jsr     MULTIPLY1
-.ifndef OSI
+.ifndef OSI_KBD
         lda     FAC+4
         jsr     MULTIPLY1
 .endif
@@ -4715,7 +4965,7 @@ L38A7:
         tay
         bcc     L38C3
         clc
-.ifndef OSI
+.ifndef OSI_KBD
         lda     RESULT+3
         adc     ARG+4
         sta     RESULT+3
@@ -4784,7 +5034,7 @@ LOAD_ARG_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #BYTES_FP-1
-.ifndef OSI
+.ifndef OSI_KBD
         lda     (INDEX),y
         sta     ARG+4
         dey
@@ -4853,7 +5103,7 @@ LD9BF:
 L3970:
         rts
 CONTEN:
-.ifdef OSI
+.ifdef OSI_KBD
         .byte   $84,$20,$00,$00
 .else
         .byte   $84,$20,$00,$00,$00
@@ -4890,7 +5140,7 @@ L39A1:
         bne     L39B7
         ldy     ARG+3
         cpy     FAC+3
-.ifndef OSI
+.ifndef OSI_KBD
         bne     L39B7
         ldy     ARG+4
         cpy     FAC+4
@@ -4909,7 +5159,7 @@ L39C4:
         bcs     L39D5
 L39C7:
         asl     ARG_LAST
-.ifndef OSI
+.ifndef OSI_KBD
         rol     ARG+3
 .endif
         rol     ARG+2
@@ -4919,7 +5169,7 @@ L39C7:
         bpl     L39B7
 L39D5:
         tay
-.ifndef OSI
+.ifndef OSI_KBD
         lda     ARG+4
         sbc     FAC+4
         sta     ARG+4
@@ -4949,7 +5199,7 @@ L39F6:
         plp
         jmp     COPY_RESULT_INTO_FAC
 L3A02:
-.ifdef OSI
+.ifdef OSI_KBD
         ldx     #ERR_ZERODIV
 .else
         ldx     #ERR_ZERODIV
@@ -4962,7 +5212,7 @@ COPY_RESULT_INTO_FAC:
         sta     FAC+2
         lda     RESULT+2
         sta     FAC+3
-.ifndef OSI
+.ifndef OSI_KBD
         lda     RESULT+3
         sta     FAC+4
 .endif
@@ -4971,7 +5221,7 @@ LOAD_FAC_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifndef OSI
+.ifndef OSI_KBD
         lda     (INDEX),y
         sta     FAC+4
         dey
@@ -5010,7 +5260,7 @@ STORE_FAC_AT_YX_ROUNDED:
         stx     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifndef OSI
+.ifndef OSI_KBD
         lda     FAC+4
         sta     (INDEX),y
         dey
@@ -5088,7 +5338,7 @@ FLOAT1:
         rol     a
 FLOAT2:
         lda     #$00
-.ifndef OSI
+.ifndef OSI_KBD
         sta     FAC+4
 .endif
         sta     FAC+3
@@ -5123,7 +5373,7 @@ FCOMP2:
         cmp     FAC+2
         bne     L3B0A
         iny
-.ifndef OSI
+.ifndef OSI_KBD
         lda     (DEST),y
         cmp     FAC+3
         bne     L3B0A
@@ -5189,7 +5439,7 @@ QINT3:
         sta     FAC+1
         sta     FAC+2
         sta     FAC+3
-.ifndef OSI
+.ifndef OSI_KBD
         sta     FAC+4
 .endif
         tay
@@ -5315,17 +5565,17 @@ ADDACC:
 GETEXP:
         lda     EXPON
 .ifdef CBM
-.ifdef CBM2
+.ifdef CBM2_KBD
         cmp     #$0A
 .else
         cmp     #$0C
 .endif
         bcc     L3C2C
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$64
 .endif
         bit     EXPSGN
-.ifdef CBM2
+.ifdef CBM2_KBD
         bmi     L3C3A
 .else
         bmi     LDC70
@@ -5357,7 +5607,7 @@ L3C2C:
 L3C3A:
         sta     EXPON
         jmp     FIN4
-.ifdef OSI
+.ifdef OSI_KBD
 ; these values are /1000 of what the labels say
 CON_99999999_9:
         .byte   $91,$43,$4F,$F8
@@ -5417,7 +5667,7 @@ L3C8C:
         lda     #<CON_BILLION
         ldy     #>CON_BILLION
         jsr     FMULT
-.ifdef OSI
+.ifdef OSI_KBD
         lda     #-6
 .else
         lda     #-9
@@ -5451,13 +5701,13 @@ L3CBE:
         ldx     #$01
         lda     INDX
         clc
-.ifdef OSI
+.ifdef OSI_KBD
         adc     #$07
 .else
         adc     #$0A
 .endif
         bmi     L3CD3
-.ifdef OSI
+.ifdef OSI_KBD
         cmp     #$08
 .else
         cmp     #$0B
@@ -5494,7 +5744,7 @@ LDD3A:
 L3CF6:
         lda     FAC_LAST
         clc
-.ifndef OSI
+.ifndef OSI_KBD
         adc     DECTBL+3,y
         sta     FAC+4
         lda     FAC+3
@@ -5523,7 +5773,7 @@ L3D23:
         iny
         iny
         iny
-.ifndef OSI
+.ifndef OSI_KBD
         iny
 .endif
         sty     VARPNT
@@ -5597,7 +5847,7 @@ L3D94:
         lda     #$00
         ldy     #$01
         rts
-.ifdef OSI
+.ifdef OSI_KBD
 CON_HALF:
         .byte   $80,$00,$00,$00
 DECTBL:
@@ -5611,7 +5861,7 @@ DECTBL_END:
 .else
 CON_HALF:
         .byte   $80,$00,$00,$00,$00
-.ifdef CBM2
+.ifdef CBM2_KBD
 C_ZERO = CON_HALF + 2
 .endif
 DECTBL:
@@ -5673,7 +5923,7 @@ NEGOP:
         sta     FACSIGN
 L3E0F:
         rts
-.ifdef OSI
+.ifdef OSI_KBD
 CON_LOG_E:
         .byte   $81,$38,$AA,$3B
 POLY_EXP:
@@ -5903,7 +6153,7 @@ TAN:
         ldx     #TEMP3
         ldy     #$00
         jsr     GOMOVMF
-.ifndef OSI
+.ifndef OSI_KBD
         lda     #TEMP1
 .else
         lda     #$A4
@@ -5920,7 +6170,7 @@ TAN:
 TAN1:
         pha
         jmp     SIN1
-.ifdef OSI
+.ifdef OSI_KBD
 CON_PI_HALF:
         .byte   $81,$49,$0F,$DB
 CON_PI_DOUB:
@@ -5984,7 +6234,7 @@ L3FFC:
 L4002:
         rts
 POLY_ATN:
-.ifdef OSI
+.ifdef OSI_KBD
         .byte   $08
 		.byte	$78,$3A,$C5,$37
 		.byte	$7B,$83,$A2,$5C
@@ -6031,7 +6281,7 @@ L4047:
 L4058:
         rts
 ; random number seed
-.ifdef OSI
+.ifdef OSI_KBD
         .byte   $80,$4F,$C7,$52
 .endif
 .ifdef CONFIG_11
@@ -6048,7 +6298,7 @@ COLD_START:
         jsr     STROUT
 .endif
 COLD_START2:
-.ifdef CBM2
+.ifdef CBM2_KBD
         ldx     #$FB
 .else
         ldx     #$FF
@@ -6080,7 +6330,7 @@ COLD_START2:
         sta     GOWARM
         sta     JMPADRS
 .endif
-.ifdef OSI
+.ifdef OSI_KBD
         sta     USR
         lda     #$88
         ldy     #$AE
@@ -6098,13 +6348,13 @@ COLD_START2:
         lda     #$38
         sta     Z18
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$28
         sta     $0F
         lda     #$1E
         sta     $10
 .endif
-.ifdef OSI
+.ifdef OSI_KBD
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
 .else
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET-1 ; XXX
@@ -6114,7 +6364,7 @@ L4098:
         sta     STRNG2+1,x
         dex
         bne     L4098
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$03
         sta     DSCLEN
 .endif
@@ -6124,7 +6374,7 @@ L4098:
         sta     Z03
 .endif
         sta     LASTPT+1
-.ifndef CBM2
+.ifndef CBM2_KBD
         sta     Z15
 .endif
 .ifndef CONFIG_11
@@ -6132,7 +6382,7 @@ L4098:
 .endif
         pha
         sta     Z14
-.ifdef CBM2
+.ifdef CBM2_KBD
         inx
         stx     $01FD
         stx     $01FC
@@ -6156,21 +6406,26 @@ L4098:
         sty     TXTPTR+1
         jsr     CHRGET
         cmp     #$41
+.ifdef KBD
+nop
+nop; XXX
+.else
         beq     COLD_START
+.endif
         tay
         bne     L40EE
 .endif
-.ifndef CBM2
+.ifndef CBM2_KBD
         lda     #<RAMSTART2
 .endif
         ldy     #>RAMSTART2
- .ifdef CBM2
+ .ifdef CBM2_KBD
         sta     $28
         sty     $29
 .endif
         sta     LINNUM
         sty     LINNUM+1
-.ifdef CBM2
+.ifdef CBM2_KBD
 		tay
 .else
         ldy     #$00
@@ -6184,11 +6439,11 @@ L40D7:
         cmp     #$80
         beq     L40FA
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
         bmi     L40FA
 .endif
 L40DD:
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #$55
 .else
         lda     #$92
@@ -6202,7 +6457,7 @@ L40DD:
 .ifdef CBM
         beq     L40D7
 .endif
-.ifdef OSI
+.ifdef OSI_KBD
         beq     L40D7
         bne     L40FA
 .endif
@@ -6299,7 +6554,7 @@ L4183:
         tya
         sta     (TXTTAB),y
         inc     TXTTAB
-.ifndef CBM2
+.ifndef CBM2_KBD
         bne     L4192
         inc     TXTTAB+1
 L4192:
@@ -6307,7 +6562,7 @@ L4192:
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
-.ifdef CBM2
+.ifdef CBM2_KBD
         lda     #<QT_BASIC
         ldy     #>QT_BASIC
         jsr     STROUT
@@ -6324,7 +6579,7 @@ L4192:
         lda     #<QT_BYTES_FREE
         ldy     #>QT_BYTES_FREE
         jsr     STROUT
-.ifndef OSI
+.ifndef OSI_KBD
         jsr     SCRTCH
 .endif
 .ifdef CBM
@@ -6334,7 +6589,7 @@ L4192:
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.ifdef OSI
+.ifdef OSI_KBD
         jsr     SCRTCH
 .endif
         lda     #<RESTART
@@ -6349,7 +6604,7 @@ QT_WANT:
         .byte   $00
 QT_WRITTEN_BY:
         .byte   $0D,$0A,$0C
-.ifdef OSI
+.ifdef OSI_KBD
         .byte   "WRITTEN BY RICHARD W. WEILAND."
 .else
         .byte   "WRITTEN BY WEILAND & GATES"
@@ -6367,11 +6622,11 @@ QT_BYTES_FREE:
 .ifndef CBM
         .byte   $0D,$0A,$0D,$0A
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
         .byte   $0D,$00
 .endif
 QT_BASIC:
-.ifdef OSI
+.ifdef OSI_KBD
         .byte   "OSI 6502 BASIC VERSION 1.0 REV 3.2"
 .endif
 .ifdef KIM
@@ -6382,7 +6637,7 @@ QT_BASIC:
         .byte   "*** COMMODORE BASIC ***"
         .byte   $11,$11,$11,$00
 .endif
-.ifdef CBM2
+.ifdef CBM2_KBD
         .byte   "### COMMODORE BASIC ###"
         .byte   $0D,$0D,$00
 .endif
@@ -6555,7 +6810,7 @@ LBFFB:
         brk
         brk
         brk
-.endif /* OSI */
+.endif /* OSI_KBD */
 .ifdef KIM
 RAMSTART2:
         .byte   $08,$29,$25,$20,$60,$2A,$E5,$E4

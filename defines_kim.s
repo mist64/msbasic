@@ -52,7 +52,7 @@ DSCPTR          := $009D
 
 DSCLEN          := $00A0
 JMPADRS         := $00A1
-TEMPX			:= $00A2
+LENGTH			:= $00A2
 ARGEXTENSION    := $00A3 ; overlap with JMPADRS! (same on c64)
 TEMP1           := $00A4
 HIGHDS          := $00A5

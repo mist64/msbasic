@@ -1,5 +1,7 @@
-Name                 Year   MS Version    ROM   9digit   extensions
+Name                 Year   MS Version    ROM   9digit   extensions   comment
 Commodore BASIC 1    1977                  Y      Y         CBM
 OSI BASIC            1977   1.0 REV 3.2    Y      N          -
+KBD BASIC             ?                    Y      N         KBD      (maybe betw. CBM&OSI)
 KIM BASIC            1977   1.1            N      Y          -
+AppleSoft I          1977                  N      Y        Apple
 Commodore BASIC 2    1979                  Y      Y         CBM
