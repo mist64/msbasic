@@ -5,3 +5,5 @@
   files without ifdefs (not much in common!)
 * generate keyword and pointer list together
 * generalize CHRGOT definition
+* rename all labels that point to RTS to RTSn
+* add AppleSoft comments

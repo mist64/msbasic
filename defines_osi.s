@@ -53,6 +53,7 @@ DSCPTR          := $009E
 
 DSCLEN          := $00A0
 JMPADRS         := $00A1
+Z52             := $00A2
 
 TEMP1           := $00A3
 ARGEXTENSION    := $00A3 ; same!
@@ -63,6 +64,7 @@ TEMP2			:= $00A8 ; same!
 TMPEXP          := $00A8 ; same
 EXPON           := $00A9
 LOWTR           := $00AA                        ; $AB also EXPSGN?
+LOWTRX          := $00AA                        ; $AB also EXPSGN?
 EXPSGN			:= $00AB
 FAC             := $00AC
 FAC_LAST        := $00AF

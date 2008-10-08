@@ -375,8 +375,6 @@ QT_OK:
 .ifdef KBD
         .byte   $0D,$0D
         .byte   ">>"
-        .byte   "`"
-        .byte   $EA
 .else
 		.byte   $0D,$0A
 .ifdef CBM
@@ -386,6 +384,10 @@ QT_OK:
 .endif
 .endif
         .byte   $0D,$0A,$00
+.ifdef KBD
+        .byte   $60
+        .byte   $EA
+.endif
 QT_BREAK:
 .ifdef KBD
 		.byte	$0D,$0A
@@ -558,9 +560,9 @@ RESTART:
 .ifdef KBD
         jsr     CRDO
         nop
-L2351:
+L2351X:
         jsr     LE19A
-LE28B:
+L2351:
         jsr     LFDDA
 LE28E:
         bpl     RESTART
@@ -582,7 +584,11 @@ L2351:
 .ifdef CONFIG_11
         tax
 .endif
+.ifdef KBD
+        beq     L2351X
+.else
         beq     L2351
+.endif
         ldx     #$FF
         stx     CURLIN+1
         bcc     NUMBERED_LINE
@@ -592,8 +598,8 @@ NUMBERED_LINE:
         jsr     LINGET
         jsr     PARSE_INPUT_LINE
         sty     EOLPNTR
-        jsr     FNDLIN
 .ifdef KBD
+        jsr     LFD3E
         lda     JMPADRS+1
         sta     LOWTR
         sta     $96
@@ -643,6 +649,7 @@ LE306:
         beq     LE306
         clc
 .else
+        jsr     FNDLIN
         bcc     PUT_NEW_LINE
         ldy     #$01
         lda     (LOWTR),y
@@ -688,7 +695,7 @@ L23AD:
 PUT_NEW_LINE:
 .ifdef CBM2
         jsr     SETPTRS
-        jsr     LC442
+        jsr     LE33D
         lda     $0200
         beq     L2351
         clc
@@ -732,9 +739,9 @@ L23E6:
 FIX_LINKS:
         jsr     SETPTRS
 .ifdef CBM2_KBD
-        jsr     LC442
+        jsr     LE33D
         jmp     L2351
-LC442:
+LE33D:
 .endif
         lda     TXTTAB
         ldy     TXTTAB+1
@@ -744,15 +751,15 @@ LC442:
 L23FA:
         ldy     #$01
         lda     (INDEX),y
-.ifdef CBM2_KBD
 .ifdef KBD
-.byte $ea,$ea; xxx
+        beq     LE3AB
 .else
+.ifdef CBM2
         beq     LC46E
-.endif
 .else
         bne     L2403
         jmp     L2351
+.endif
 .endif
 L2403:
         ldy     #$04
@@ -906,7 +913,7 @@ PARSE_INPUT_LINE:
         ldy     #$04
         sty     DATAFLG
 L246C:
-.ifdef CBM2_KBD
+.ifdef CBM2
         lda     $0200,x
 .else
         lda     Z00,x
@@ -951,12 +958,16 @@ L2496:
 L2497:
         inx
 L2498:
-.ifdef CBM2_KBD
+.ifdef KBD
+        jsr     LF42D
+.else
+.ifdef CBM2
         lda     $0200,x
 .else
         lda     Z00,x
         cmp     #$20
         beq     L2497
+.endif
 .endif
         sec
         sbc     TOKEN_NAME_TABLE,y
@@ -989,7 +1000,7 @@ L24C1:
         bne     L246C
         sta     ENDCHR
 L24C8:
-.ifdef CBM2_KBD
+.ifdef CBM2
         lda     $0200,x
 .else
         lda     Z00,x
@@ -1011,7 +1022,7 @@ L24DB:
         bpl     L24DB
         lda     TOKEN_NAME_TABLE,y
         bne     L2498
-.ifdef CBM2_KBD
+.ifdef CBM2
         lda     $0200,x
 .else
         lda     Z00,x
@@ -1145,10 +1156,14 @@ STKINI:
 .ifndef CBM2_KBD
         sta     STACK+254
 .endif
-.ifdef CBM2_KBD
+.ifdef KBD
+        ldx     #$FE
+.else
+.ifdef CBM2
         ldx     #$FA
 .else
         ldx     #$FC
+.endif
 .endif
         txs
 .ifdef CBM2_KBD
@@ -1171,6 +1186,7 @@ STXTPT:
         sta     TXTPTR+1
         rts
 .ifdef KBD
+LE4C0:
         ldy     #$44
         ldx     #$E4
 LE4C4:
@@ -1227,17 +1243,17 @@ L25A6:
 .ifndef KIM_KBD
         sty     DATAFLG
 .endif
-        lda     (LOWTR),y
+        lda     (LOWTRX),y
         beq     L25E5
         jsr     ISCNTC
 .ifndef KBD
         jsr     CRDO
 .endif
         iny
-        lda     (LOWTR),y
+        lda     (LOWTRX),y
         tax
         iny
-        lda     (LOWTR),y
+        lda     (LOWTRX),y
         cmp     LINNUM+1
         bne     L25C1
         cpx     LINNUM
@@ -1265,15 +1281,15 @@ LA519:
 .ifdef CONFIG_11
         beq     L25E5
 .endif
-        lda     (LOWTR),y
+        lda     (LOWTRX),y
         bne     L25E8
         tay
-        lda     (LOWTR),y
+        lda     (LOWTRX),y
         tax
         iny
-        lda     (LOWTR),y
-        stx     LOWTR
-        sta     LOWTR+1
+        lda     (LOWTRX),y
+        stx     LOWTRX
+        sta     LOWTRX+1
         bne     L25A6
 L25E5:
         jmp     RESTART
@@ -1373,8 +1389,10 @@ NEWSTT:
 .else
 .ifdef KBD
         cpy     #$07
-.endif
+        beq     LC6D4
+.else
         beq     L2683
+.endif
 .endif
         sta     OLDTEXT
         sty     OLDTEXT+1
@@ -1555,7 +1573,7 @@ L270E:
 .ifdef KBD
 LE664:
         tay
-        jmp     LEFE9
+        jmp     SNGFLT
 .endif
 CONT:
         bne     RET1
@@ -1574,6 +1592,7 @@ L271C:
 RET1:
         rts
 .ifdef KBD
+PRT:
         jsr     GETBYT
         txa
         ror     a
@@ -1714,16 +1733,17 @@ L2809:
         lda     TXTTAB
         ldx     TXTTAB+1
 L280D:
-        jsr     FL1
 .ifdef KBD
+        jsr     LF457
         bne     UNDERR
 .else
+        jsr     FL1
         bcc     UNDERR
 .endif
-        lda     LOWTR
+        lda     LOWTRX
         sbc     #$01
         sta     TXTPTR
-        lda     LOWTR+1
+        lda     LOWTRX+1
         sbc     #$00
         sta     TXTPTR+1
 L281E:
@@ -2045,12 +2065,7 @@ PRSTRING:
 L297E:
         jsr     CHRGOT
 PRINT:
-.ifdef KBD
-nop
-nop;XXX
-.else
         beq     CRDO
-.endif
 PRINT2:
         beq     L29DD
         cmp     #TOKEN_TAB
@@ -2088,25 +2103,27 @@ L29B1:
 .endif
         jsr     STRPRT
 .ifdef KBD
-        jmp     LE833
-LE86C:  pla
-        jmp     LE64E
-LE870:  jsr     LF3D4
+        jmp     L297E
+LE86C:
+        pla
+        jmp     CONTROL_C_TYPED
+LE870:
+        jsr     GETBYT
         txa
-LE874:  beq     LE878
-.ifdef KBD
-nop
-nop; XXX
-.else
+LE874:
+        beq     LE878
         bpl     LE8F2
-.endif
-LE878:  jmp     LEE9A
-LE87B:  lda     #$0A
+LE878:
+        jmp     IQERR
+CRDO:
+        lda     #$0A
         sta     $10
-        jsr     LE8E7
-LE882:  lda     #$0D
-        jsr     LE8E7
-LE887:  lda     #$00
+        jsr     OUTDO
+LE882:
+        lda     #$0D
+        jsr     OUTDO
+LE887:
+        lda     #$00
         sta     $10
         eor     #$FF
 .else
@@ -2187,7 +2204,11 @@ L29EB:
 .ifdef CBM
         sbc     #$0A
 .else
+.ifdef KBD
+        sbc     #$0D
+.else
         sbc     #$0E
+.endif
 .endif
         bcs     L29EB
         eor     #$FF
@@ -2262,7 +2283,11 @@ L2A22:
         iny
         cmp     #$0D
         bne     L2A22
+.ifdef KBD
+		jsr     LE887
+.else
         jsr     PRINTNULLS
+.endif
         jmp     L2A22
 OUTSP:
 .ifdef CBM2
@@ -2278,9 +2303,7 @@ LCA40:
         lda     #$20
 .endif
         .byte   $2C
-.ifndef KBD
 OUTQUES:
-.endif
         lda     #$3F
 OUTDO:
 .ifndef KBD
@@ -2345,6 +2368,7 @@ L2A4E:
 .endif
 L2A56:
         and     #$FF
+LE8F2:
         rts
 .ifdef KBD
 LE8F3:
@@ -2503,11 +2527,17 @@ NXIN:
         jmp     CONTROL_C_TYPED
 NXIN:
 .endif
-.endif /* KBD */
         jsr     OUTQUES
         jsr     OUTSP
 LCB21:
         jmp     INLIN
+.endif /* KBD */
+.ifdef KBD
+GETC:
+        jsr     CONINT
+        jsr     LF43D
+        jmp     LE664
+.endif
 READ:
         ldx     DATPTR
         ldy     DATPTR+1
@@ -2559,7 +2589,11 @@ L2AF0:
         lda     Z03
         bne     LCB64
 .endif
+.ifdef KBD
+        jsr     OUTQUESSP
+.else
         jsr     OUTQUES
+.endif
 LCB64:
         jsr     NXIN
 L2AF8:
@@ -2663,7 +2697,7 @@ INPDONE:
         lda     INPTR
         ldy     INPTR+1
         ldx     INPUTFLG
-.ifdef OSI_KBD
+.ifdef OSI
         beq     L2B94
 .else
         bpl     L2B94
@@ -2732,8 +2766,12 @@ NEXT3:
         clc
         adc     #$04
         pha
+.ifdef KBD
+        adc     #$05
+.else
         adc     #$06
-        sta     $21
+.endif
+        sta     DEST
         pla
 .else
         inx
@@ -3189,8 +3227,12 @@ L2DF4:
         lda     UNFNC-TOKEN_SGN-TOKEN_SGN+$100,y
         sta     JMPADRS+1
         lda     UNFNC-TOKEN_SGN-TOKEN_SGN+$101,y
-        sta     ARGEXTENSION
+        sta     JMPADRS+2
+.ifdef KBD
+        jsr     LF47D
+.else
         jsr     JMPADRS
+.endif
         jmp     CHKNUM
 L2E04:
         ldy     #$FF
@@ -3755,8 +3797,13 @@ L3124:
 .ifndef CBM1
         sta     STRNG2+1
 .endif
+.ifdef KBD
+        ldx     #$04
+        lda     VARNAM+1
+.else
         ldx     #$05
         lda     VARNAM
+.endif
         bpl     L3135
         dex
 L3135:
@@ -3767,7 +3814,11 @@ L3135:
         dex
 L313B:
 .endif
+.ifdef KBD
+        stx     RESULT+1
+.else
         stx     RESULT+2
+.endif
         lda     #$00
         jsr     MULTIPLY_SUBS1
         txa
@@ -4025,7 +4076,11 @@ L32B6:
         lda     STRNG1+1
 .ifdef CBM2_KBD
         beq     LD399
+.ifdef KBD
+        cmp     #$07
+.else
         cmp     #$02
+.endif
 .endif
         bne     PUTNEW
 LD399:
@@ -4052,7 +4107,7 @@ PUTEMP:
         stx     FAC_LAST-1
         sty     FAC_LAST
 .ifdef CBM2_KBD
-        sty     $6D
+        sty     FACEXTENSION
 .endif
         dey
         sty     VALTYP
@@ -4096,15 +4151,21 @@ L3311:
         pla
         bne     L32F1
 GARBAG:
+
+.ifdef KBD
+        ldx     #<CONST_MEMSIZ
+        lda     #>CONST_MEMSIZ
+.else
         ldx     MEMSIZ
         lda     MEMSIZ+1
+.endif
 FINDHIGHESTSTRING:
         stx     FRETOP
         sta     FRETOP+1
         ldy     #$00
         sty     FNCNAM+1
 .ifdef CBM2_KBD
-        sty     $4B
+        sty     FNCNAM
 .endif
         lda     STREND
         ldx     STREND+1
@@ -4239,7 +4300,7 @@ L33DF:
         sta     FNCNAM
         stx     FNCNAM+1
         lda     DSCLEN
-        sta     JMPADRS+1
+        sta     Z52
 CHECK_BUMP:
         lda     DSCLEN
         clc
@@ -4254,12 +4315,12 @@ L33FA:
 MOVE_HIGHEST_STRING_TO_TOP:
 .ifdef CBM2_KBD
         lda     FNCNAM+1
-        ora     $4B
+        ora     FNCNAM
 .else
         ldx     FNCNAM+1
 .endif
         beq     L33FA
-        lda     JMPADRS+1
+        lda     Z52
 .ifdef CBM1
         sbc     #$03
 .else
@@ -4267,7 +4328,7 @@ MOVE_HIGHEST_STRING_TO_TOP:
 .endif
         lsr     a
         tay
-        sta     JMPADRS+1
+        sta     Z52
         lda     (FNCNAM),y
         adc     LOWTR
         sta     HIGHTR
@@ -4279,7 +4340,7 @@ MOVE_HIGHEST_STRING_TO_TOP:
         sta     HIGHDS
         stx     HIGHDS+1
         jsr     BLTU2
-        ldy     JMPADRS+1
+        ldy     Z52
         iny
         lda     HIGHDS
         sta     (FNCNAM),y
@@ -4391,7 +4452,11 @@ L34CD:
         sty     INDEX+1
         rts
 FRETMS:
+.ifdef KBD
+        cpy     #$00
+.else
         cpy     LASTPT+1
+.endif
         bne     L34E2
         cmp     LASTPT
         bne     L34E2
@@ -4485,7 +4550,7 @@ SUBSTRING_SETUP:
 .else
         tay
         pla
-        sta     LENGTH
+        sta     Z52
 .endif
         pla
         pla
@@ -4496,7 +4561,7 @@ SUBSTRING_SETUP:
         pla
         sta     DSCPTR+1
 .ifdef CONFIG_11
-        lda     LENGTH
+        lda     Z52
         pha
         tya
         pha
@@ -4787,8 +4852,7 @@ L365B:
 FADD2:
         tay
 .ifdef KBD
-nop
-nop;XXX
+        beq     LF456
 .else
         beq     L3634
 .endif
@@ -4866,7 +4930,11 @@ L36C7:
 .endif
         sty     FACEXTENSION
         adc     #$08
+.ifdef KBD
+        cmp     #$20
+.else
         cmp     #MANTISSA_BYTES*8
+.endif
         bne     L36C7
 ZERO_FAC:
         lda     #$00
@@ -5477,7 +5545,11 @@ STORE_FAC_IN_TEMP2_ROUNDED:
         .byte   $2C
 STORE_FAC_IN_TEMP1_ROUNDED:
 .ifdef CBM_KBD
+.ifdef KBD
+        ldx     #$54
+.else
         ldx     #TEMP1
+.endif
 .else
         ldx     #$A4; XXX
 .endif
@@ -6098,9 +6170,6 @@ DECTBL_END:
 .else
 CON_HALF:
         .byte   $80,$00,$00,$00,$00
-.ifdef CBM2_KBD
-C_ZERO = CON_HALF + 2
-.endif
 DECTBL:
         .byte   $FA,$0A,$1F,$00,$00,$98,$96,$80
         .byte   $FF,$F0,$BD,$C0,$00,$01,$86,$A0
@@ -6116,6 +6185,9 @@ DECTBL_END:
 		.byte	$FF,$FF,$FD,$A8
 		.byte	$00,$00,$00,$3C
 .endif
+.endif
+.ifdef CBM2_KBD
+C_ZERO = CON_HALF + 2
 .endif
 SQR:
         jsr     COPY_FAC_TO_ARG_ROUNDED
@@ -6236,14 +6308,22 @@ POLYNOMIAL_ODD:
         sty     STRNG2+1
         jsr     STORE_FAC_IN_TEMP1_ROUNDED
 .ifdef CBM_KBD
+.ifdef KBD
+        lda     #$54
+.else
         lda     #TEMP1
+.endif
 .else
         lda     #$A4
 .endif
         jsr     FMULT
         jsr     SERMAIN
 .ifdef CBM_KBD
+.ifdef KBD
+        lda     #$54
+.else
         lda     #TEMP1
+.endif
 .else
         lda     #$A4
 .endif
@@ -6329,7 +6409,7 @@ LFC26:
         ldy     $03CA
         lda     $03C7
         ora     #$01
-LFC2E:
+GOMOVMF:
         bne     LFBFA
         .byte   $F0
 .else
@@ -6438,7 +6518,11 @@ TAN:
         ldy     #$00
         jsr     GOMOVMF
 .ifndef OSI
+.ifdef KBD
+        lda     #$54
+.else
         lda     #TEMP1
+.endif
 .else
         lda     #$A4
 .endif
@@ -6580,10 +6664,13 @@ L4058:
 .endif
 .endif
 GENERIC_CHRGET_END:
+.ifdef KBD
+LFD3E:
+        php
+        jmp     FNDLIN
+.endif
 COLD_START:
 .ifdef KBD
-        php
-        jmp     LE43A
         lda     #$81
         sta     $03A0
         lda     #$FD
@@ -6659,7 +6746,11 @@ COLD_START2:
 .endif
 .endif
 .ifdef OSI_KBD
+.ifdef KBD
+        ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET+4
+.else
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
+.endif
 .else
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET-1 ; XXX
 .endif
@@ -7193,7 +7284,7 @@ LE1D9:
         jsr     LDE8C
         .byte   $0C
         jmp     RESTART
-OUTQUES:
+OUTQUESSP:
         jsr     OUTQUES
         jmp     OUTSP
 LFDDA:

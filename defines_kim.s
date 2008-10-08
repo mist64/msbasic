@@ -52,6 +52,7 @@ DSCPTR          := $009D
 
 DSCLEN          := $00A0
 JMPADRS         := $00A1
+Z52             := $00A2
 LENGTH			:= $00A2
 ARGEXTENSION    := $00A3 ; overlap with JMPADRS! (same on c64)
 TEMP1           := $00A4
@@ -62,6 +63,7 @@ INDX            := $00AA
 TMPEXP          := $00AA ; same
 EXPON           := $00AB
 LOWTR           := $00AC                        ; $9D also EXPSGN
+LOWTRX          := $00AC                        ; $9D also EXPSGN
 EXPSGN			:= $00AD
 FAC             := $00AE
 FAC_LAST        := $00B2

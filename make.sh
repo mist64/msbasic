@@ -10,11 +10,11 @@ diff -u cbmbasic1.bin.txt cbmbasic1-new.bin.txt | head
 echo kbdbasic
 ca65 -D KBD -D OSI_KBD -D CBM_KBD -D CBM2_KBD -D KIM_KBD -D CONFIG_11 msbasic.s -o kbdbasic.o &&
 ld65 -C kbdbasic.cfg kbdbasic.o -o kbdbasic-new.bin && 
-#xxd -g 1 kbdbasic.bin > kbdbasic.bin.txt
-#xxd -g 1 kbdbasic-new.bin > kbdbasic-new.bin.txt
-#diff -u kbdbasic.bin.txt kbdbasic-new.bin.txt | head
+xxd -g 1 kbdbasic.bin > kbdbasic.bin.txt
+xxd -g 1 kbdbasic-new.bin > kbdbasic-new.bin.txt
+diff -u kbdbasic.bin.txt kbdbasic-new.bin.txt | head
 
-da65 --info kbdbasic-temp.txt 
+#da65 --info kbdbasic-temp.txt 
 #opendiff ../cbmbasic2.s cbmbasic2-new.s
 
 # 1.0 rev 3.2
