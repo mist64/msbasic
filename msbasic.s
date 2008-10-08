@@ -2278,7 +2278,9 @@ LCA40:
         lda     #$20
 .endif
         .byte   $2C
+.ifndef KBD
 OUTQUES:
+.endif
         lda     #$3F
 OUTDO:
 .ifndef KBD
@@ -2324,9 +2326,7 @@ L2A4C:
 .ifndef CBM
         inc     Z16
 .endif
-.ifndef CBM2
 L2A4E:
-.endif
 .ifndef CBM2_KBD
         pla
 .endif
@@ -2337,7 +2337,7 @@ L2A4E:
 .ifdef KIM
         ldy     DIMFLG
 .endif
-.ifdef OSI_KBD
+.ifdef OSI
         nop
         nop
         nop
@@ -2346,14 +2346,29 @@ L2A4E:
 L2A56:
         and     #$FF
         rts
+.ifdef KBD
+LE8F3:
+        pha
+        lda     $047F
+        clc
+        beq     LE900
+        lda     #$00
+        sta     $047F
+        sec
+LE900:
+        pla
+        rts
+.endif
 L2A59:
         lda     INPUTFLG
         beq     L2A6E
 .ifdef CONFIG_11
+.ifndef KBD ; XXX combine
         bmi     L2A63
         ldy     #$FF
         bne     L2A67
 L2A63:
+.endif
 .endif
 .ifdef CBM1
         jsr     PATCH5
@@ -2382,6 +2397,7 @@ LCA8F:
         ldy     OLDTEXT+1
         sta     TXTPTR
         sty     TXTPTR+1
+LE920:
         rts
 .ifndef OSI_KBD
 GET:
@@ -2412,7 +2428,7 @@ LCAB6:
         bne     LCAD8
 .endif
         rts
-.endif /* CONFIG_G11 */
+.endif
 .ifdef CBM
 INPUTH:
         jsr     GETBYT
@@ -2431,7 +2447,9 @@ LCAD8:
 LCAE0:
 .endif
 INPUT:
+.ifndef KBD
         lsr     Z14
+.endif
         cmp     #$22
         bne     L2A9E
         jsr     STRTXT
@@ -2444,6 +2462,14 @@ L2A9E:
         sta     INPUTBUFFER-1
 LCAF8:
         jsr     NXIN
+.ifdef KBD
+        bmi     L2ABE
+NXIN:
+        jsr     LFDDA
+        bmi     LE920
+        pla
+        jmp     LE86C
+.else
 .ifdef CBM
         lda     Z03
         beq     LCB0C
@@ -2477,6 +2503,7 @@ NXIN:
         jmp     CONTROL_C_TYPED
 NXIN:
 .endif
+.endif /* KBD */
         jsr     OUTQUES
         jsr     OUTSP
 LCB21:
@@ -2657,12 +2684,27 @@ L2BA1:
         rts
 
 ERREXTRA:
+.ifdef KBD
+        .byte   "?Extra"
+.else
         .byte   "?EXTRA IGNORED"
-
+.endif
         .byte   $0D,$0A,$00
 ERRREENTRY:
+.ifdef KBD
+        .byte   "What?"
+.else
         .byte   "?REDO FROM START"
+.endif
         .byte   $0D,$0A,$00
+.ifdef KBD
+LEA30:
+        .byte   "B"
+        .byte   $FD
+        .byte   "GsBASIC"
+        .byte   $00,$1B,$0D,$13
+        .byte   " BASIC"
+.endif
 NEXT:
         bne     NEXT1
         ldy     #$00
@@ -2855,9 +2897,17 @@ FRM_STACK2:
         tay
         pla
         sta     INDEX
+.ifndef KBD
         inc     INDEX
+.endif
         pla
         sta     INDEX+1
+.ifdef KBD
+        inc     INDEX
+        bne     LEB69
+        inc     INDEX+1
+LEB69:
+.endif
         tya
         pha
 L2CED:
@@ -3030,6 +3080,10 @@ LCE3B:
         jsr     LDD3A
         jmp     LD353
 LCE53:
+.endif
+.ifdef KBD
+        ldx     #$00
+        stx     STRNG1+1
 .endif
         rts
 L2DB1:
@@ -3338,7 +3392,7 @@ NAMENOTFOUND:
         pha
         cmp     #<FRM_VARIABLE_CALL
         bne     MAKENEWVARIABLE
-.ifdef KIM
+.ifdef KIM_KBD
         tsx
         lda     STACK+2,x
         cmp     #>FRM_VARIABLE_CALL
@@ -3348,7 +3402,7 @@ LD015:
         lda     #<C_ZERO
         ldy     #>C_ZERO
         rts
-.ifndef CBM2
+.ifndef CBM2_KBD
 C_ZERO:
         .byte   $00,$00
 .endif
@@ -3558,7 +3612,7 @@ MAKE_NEW_ARRAY:
         tay
         sta     STRNG2+1
         ldx     #BYTES_PER_ELEMENT
-.ifdef OSI_KBD
+.ifdef OSI
         stx     STRNG2
 .endif
         lda     VARNAM
@@ -3571,10 +3625,12 @@ L3078:
         iny
         lda     VARNAM+1
         sta     (LOWTR),y
-.ifndef OSI_KBD
+.ifndef OSI
         bpl     L3081
         dex
+.ifndef KBD
         dex
+.endif
 L3081:
         stx     STRNG2
 .endif
@@ -3686,7 +3742,7 @@ L3124:
         stx     STRNG2
         dec     EOLPNTR
         bne     L30F6
-.ifdef OSI_KBD
+.ifdef OSI
         asl     STRNG2
         rol     a
         bcs     GSE
@@ -3704,11 +3760,13 @@ L3124:
         bpl     L3135
         dex
 L3135:
+.ifndef KBD
         lda     VARNAM+1
         bpl     L313B
         dex
         dex
 L313B:
+.endif
         stx     RESULT+2
         lda     #$00
         jsr     MULTIPLY_SUBS1
@@ -4119,6 +4177,9 @@ L3376:
 .endif
         iny
         lda     (INDEX),y
+.ifdef KBD
+        ldy     #$00
+.endif
 .ifdef CBM1
         jsr     LE7F3
 .else
@@ -4520,6 +4581,72 @@ POINT:
         stx     TXTPTR
         sty     TXTPTR+1
         rts
+.ifdef KBD
+LF422:
+        lda     VARTAB
+        sec
+        sbc     #$02
+        ldy     VARTAB+1
+        bcs     LF42C
+        dey
+LF42C:
+        rts
+LF42D:
+        lda     Z00,x
+LF430:
+        cmp     #$61
+        bcc     LF43A
+        cmp     #$7B
+        bcs     LF43A
+LF438:
+        sbc     #$1F
+LF43A:
+        rts
+LF43B:
+        ldx     #$5D
+LF43D:
+        txa
+        and     #$7F
+        cmp     $0340
+        beq     LF44D
+        sta     $0340
+        lda     #$03
+        jsr     LDE48
+LF44D:
+        jsr     LDE7F
+        bne     LF456
+        cpx     #$80
+        bcc     LF44D
+LF456:
+        rts
+LF457:
+        lda     TXTTAB
+        ldx     TXTTAB+1
+LF45B:
+        sta     JMPADRS+1
+        stx     JMPADRS+2
+        ldy     #$01
+        lda     (JMPADRS+1),y
+        beq     LF438
+        iny
+        iny
+        lda     (JMPADRS+1),y
+        dey
+        cmp     $14
+        bne     LF472
+        lda     (JMPADRS+1),y
+        cmp     $13
+LF472:
+        bcs     LF43A
+        dey
+        lda     (JMPADRS+1),y
+        tax
+        dey
+        lda     (JMPADRS+1),y
+        bcc     LF45B
+LF47D:
+        jmp     (JMPADRS+1)
+.else
 GTNUM:
         jsr     FRMNUM
         jsr     GETADR
@@ -4601,6 +4728,7 @@ L362C:
         beq     L362C
 L3634:
         rts
+.endif
 FADDH:
         lda     #<CON_HALF
         ldy     #>CON_HALF
@@ -4658,7 +4786,12 @@ L365B:
         lda     ARG
 FADD2:
         tay
+.ifdef KBD
+nop
+nop;XXX
+.else
         beq     L3634
+.endif
         sec
         sbc     FAC
         beq     FADD3
@@ -5343,7 +5476,7 @@ STORE_FAC_IN_TEMP2_ROUNDED:
         ldx     #TEMP2
         .byte   $2C
 STORE_FAC_IN_TEMP1_ROUNDED:
-.ifdef CBM
+.ifdef CBM_KBD
         ldx     #TEMP1
 .else
         ldx     #$A4; XXX
@@ -5726,9 +5859,15 @@ CON_BILLION:
         .byte   $9E,$6E,$6B,$28,$00
 .endif
 INPRT:
+.ifdef KBD
+        jsr     LFE0B
+        .byte	" in"
+        .byte	0
+.else
         lda     #<QT_IN
         ldy     #>QT_IN
         jsr     GOSTROUT2
+.endif
         lda     CURLIN+1
         ldx     CURLIN
 LINPRT:
@@ -6096,14 +6235,14 @@ POLYNOMIAL_ODD:
         sta     STRNG2
         sty     STRNG2+1
         jsr     STORE_FAC_IN_TEMP1_ROUNDED
-.ifdef CBM
+.ifdef CBM_KBD
         lda     #TEMP1
 .else
         lda     #$A4
 .endif
         jsr     FMULT
         jsr     SERMAIN
-.ifdef CBM
+.ifdef CBM_KBD
         lda     #TEMP1
 .else
         lda     #$A4
@@ -6143,11 +6282,57 @@ L3ECB:
         bne     L3EBE
 L3EDA:
         rts
+.ifndef KBD
 CONRND1:
         .byte   $98,$35,$44,$7A
 CONRND2:
         .byte   $68,$28,$B1,$46
+.endif
 RND:
+.ifdef KBD
+        ldx     #$10
+        jsr     SIGN
+        beq     LFC26
+        bmi     LFC10
+        lda     $87
+        ldy     $88
+LFBFA:
+        sta     FAC+2
+        sty     FAC+1
+LFBFE:
+        asl     a
+        asl     a
+        eor     FAC+2
+        asl     a
+        eor     FAC+1
+        asl     a
+        asl     a
+        asl     a
+        asl     a
+        eor     FAC+1
+        asl     a
+        rol     FAC+2
+        rol     FAC+1
+LFC10:
+        lda     FAC+2
+        dex
+        bne     LFBFE
+        sta     $87
+        sta     FAC+3
+        lda     FAC+1
+        sta     $88
+        lda     #$80
+        sta     FAC
+        stx     FACSIGN
+        jmp     NORMALIZE_FAC2
+LFC26:
+        ldy     $03CA
+        lda     $03C7
+        ora     #$01
+LFC2E:
+        bne     LFBFA
+        .byte   $F0
+.else
         jsr     SIGN
 .ifdef CBM
         bmi     L3F01
@@ -6202,6 +6387,7 @@ LDF88:
         ldy     #$00
 GOMOVMF:
         jmp     STORE_FAC_AT_YX_ROUNDED
+.endif
 SIN_COS_TAN_ATN:
 COS:
         lda     #<CON_PI_HALF
@@ -6251,7 +6437,7 @@ TAN:
         ldx     #TEMP3
         ldy     #$00
         jsr     GOMOVMF
-.ifndef OSI_KBD
+.ifndef OSI
         lda     #TEMP1
 .else
         lda     #$A4
@@ -6368,6 +6554,9 @@ GENERIC_CHRGET:
         inc     TXTPTR+1
 L4047:
         lda     $EA60
+.ifdef KBD
+        jsr     LF430
+.endif
         cmp     #$3A
         bcs     L4058
         cmp     #$20
@@ -6378,8 +6567,9 @@ L4047:
         sbc     #$D0
 L4058:
         rts
+.ifndef KBD
 ; random number seed
-.ifdef OSI_KBD
+.ifdef OSI
         .byte   $80,$4F,$C7,$52
 .endif
 .ifdef CONFIG_11
@@ -6388,15 +6578,30 @@ L4058:
 .ifdef CBM1
         .byte   $80,$4F,$C7,$52,$59
 .endif
+.endif
 GENERIC_CHRGET_END:
 COLD_START:
+.ifdef KBD
+        php
+        jmp     LE43A
+        lda     #$81
+        sta     $03A0
+        lda     #$FD
+        sta     $03A1
+        lda     #$20
+        sta     $0480
+        lda     $0352
+        sta     $04
+        lda     $0353
+        sta     $05
+.else
 .ifndef CBM
         lda     #<QT_WRITTEN_BY
         ldy     #>QT_WRITTEN_BY
         jsr     STROUT
 .endif
 COLD_START2:
-.ifdef CBM2_KBD
+.ifdef CBM2
         ldx     #$FB
 .else
         ldx     #$FF
@@ -6452,6 +6657,7 @@ COLD_START2:
         lda     #$1E
         sta     $10
 .endif
+.endif
 .ifdef OSI_KBD
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
 .else
@@ -6466,6 +6672,7 @@ L4098:
         lda     #$03
         sta     DSCLEN
 .endif
+.ifndef KBD
         txa
         sta     SHIFTSIGNEXT
 .ifdef CBM
@@ -6504,12 +6711,7 @@ L4098:
         sty     TXTPTR+1
         jsr     CHRGET
         cmp     #$41
-.ifdef KBD
-nop
-nop; XXX
-.else
         beq     COLD_START
-.endif
         tay
         bne     L40EE
 .endif
@@ -6744,6 +6946,7 @@ QT_BASIC:
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
         .byte   $0D,$0A,$00
 .endif
+.endif /* KBD */
 .ifdef OSI
         .byte   $00,$00
 LBEE4:
@@ -6964,4 +7167,336 @@ LE1D9:
         pla
         tya
         jmp     L2B1C
+.endif
+.ifdef KBD
+        stx     SHIFTSIGNEXT
+        stx     $0800
+        inx
+        stx     Z17
+        stx     Z18
+        stx     TXTTAB
+        lda     #$08
+        sta     TXTTAB+1
+        jsr     SCRTCH
+        sta     STACK+255
+        jsr     LDE42
+        .byte   $1B,$06,$01,$0C
+		.byte	"INTELLIVISION BASIC"
+        .byte	$0D,$0A,$0A
+		.byte	"Copyright Microsoft, Mattel  1980"
+        .byte	$0D,$0A,$00
+        sta     $0435
+        sta     $8F
+        ldy     #$0F
+        lda     #$FF
+        sta     ($04),y
+        jsr     LDE8C
+        .byte   $0C
+        jmp     RESTART
+OUTQUES:
+        jsr     OUTQUES
+        jmp     OUTSP
+LFDDA:
+        ldy     #$FF
+LFDDC:
+        iny
+LFDDD:
+        jsr     LF43B
+        cmp     #$03
+        beq     LFDF7
+        cmp     #$20
+        bcs     LFDEC
+        sbc     #$09
+        bne     LFDDD
+LFDEC:
+        sta     Z00,y
+        tax
+        bne     LFDDC
+        jsr     LE882
+        ldy     #$06
+LFDF7:
+        tax
+        clc
+        rts
+LFDFA:
+        bit     $8F
+        bmi     LFE01
+        jsr     LDE48
+LFE01:
+        bit     $8F
+        bvc     LFE10
+        jmp     LDE53
+LFE08:
+        jsr     LFDFA
+LFE0B:
+        jsr     LDE24
+        bne     LFE08
+LFE10:
+        rts
+VSAV:
+        jsr     GARBAG
+        lda     FRETOP
+        sta     $00
+        lda     FRETOP+1
+        .byte   $85
+LFE1B:
+        ora     ($A5,x)
+        .byte   $2F
+        sta     $02
+        lda     STREND+1
+        sta     $03
+        ldy     #$00
+LFE26:
+        lda     ($00),y
+        sta     ($02),y
+        inc     $02
+        bne     LFE30
+        inc     $03
+LFE30:
+        inc     $00
+        bne     LFE26
+        inc     $01
+        bit     $01
+        bvc     LFE26
+        ldx     VARTAB
+        ldy     VARTAB+1
+        lda     #$01
+        bne     LFE50
+PSAV:
+        lda     VARTAB
+        sta     $02
+        lda     VARTAB+1
+        sta     $03
+        ldx     #$01
+        ldy     #$08
+        lda     #$02
+LFE50:
+        sta     $0513
+        stx     $0503
+        stx     $00
+        sty     $0504
+        sty     $01
+        ldy     #$0D
+        lda     #$00
+LFE61:
+        sta     $0504,y
+        dey
+        bne     LFE61
+        sty     $0500
+        lda     #$40
+        sta     $0505
+        lda     $02
+        sec
+        sbc     $00
+        sta     $00
+        lda     $03
+        sbc     $01
+        sta     $01
+        lsr     a
+        lsr     a
+        lsr     a
+        sta     $03
+        jsr     LE870
+        sta     $02
+        jsr     CHRGOT
+        beq     LFEA6
+        cmp     #$2C
+        beq     L40FA
+        jmp     SYNERR
+L40FA:
+        jsr     CHRGET
+        jsr     LE870
+        sec
+        sbc     $02
+        cmp     $03
+        bpl     LFEBF
+        lda     #$27
+        sta     JMPADRS
+        jmp     LFFBD
+LFEA6:
+        lda     $02
+        clc
+        adc     $03
+        jsr     LE874
+        pha
+        jsr     LFE0B
+        jsr     L6874
+        .byte   $72
+        adc     $00,x
+        pla
+        tax
+        lda     #$00
+        jsr     LINPRT
+LFEBF:
+        ldx     #$07
+LBF83:
+        dex
+        lda     VARTAB,x
+        sec
+        sbc     TXTTAB,x
+        sta     $051B,x
+        lda     VARTAB+1,x
+        sbc     TXTTAB+1,x
+        sta     $051C,x
+        dex
+        bpl     LBF83
+        txa
+        sbc     FRETOP
+        sta     $0521
+        lda     #$3F
+        sbc     FRETOP+1
+        sta     $0522
+        lda     FRETOP
+        sta     $0523
+        lda     FRETOP+1
+        sta     $0524
+        ldx     $02
+        jsr     LFFDD
+        jsr     LFFD1
+        lda     $01
+        ldx     #$05
+LFEF7:
+        stx     $0511
+        ldy     #$E4
+        sec
+        sbc     #$08
+        sta     $01
+        bpl     LFF15
+        adc     #$08
+        asl     $00
+        rol     a
+        asl     $00
+        rol     a
+        asl     $00
+        rol     a
+        adc     #$01
+        sta     $0505
+        ldy     #$00
+LFF15:
+        sty     $0512
+        jsr     LE4C0
+        ldx     #$00
+        lda     $01
+        bpl     LFEF7
+LFF21:
+        rts
+VLOD:
+        jsr     LFFD1
+        stx     JMPADRS
+        lda     VARTAB
+        ldy     VARTAB+1
+        ldx     #$01
+        jsr     LFF64
+        ldx     #$00
+        ldy     #$02
+LFF34:
+        jsr     LE39A
+        iny
+        iny
+        inx
+        inx
+        cpx     #$05
+        bmi     LFF34
+        lda     STREND
+        sta     LOWTR
+        lda     STREND+1
+        sta     LOWTR+1
+        lda     FRETOP
+        sta     HIGHTR
+        lda     FRETOP+1
+        sta     HIGHTR+1
+        lda     #$FF
+        sta     HIGHDS
+        lda     #$3F
+        sta     HIGHDS+1
+        lda     $0523
+        sta     FRETOP
+        lda     $0524
+        sta     FRETOP+1
+        jmp     BLTU2
+LFF64:
+        sta     $9A
+        sty     $9B
+        stx     $00
+        jsr     LE870
+        jsr     LFFDD
+        lda     JMPADRS
+        beq     LFF7F
+        lda     #$01
+        sta     $9A
+        lda     #$08
+        sta     $9B
+        jsr     STXTPT
+LFF7F:
+        lda     $9A
+        sta     $0503
+        lda     $9B
+        sta     $0504
+        lda     #$ED
+        sta     $0512
+        lda     #$05
+        sta     $01
+LFF92:
+        ldx     $0512
+        beq     LFF21
+        ldy     #$04
+        jsr     LE4C4
+        lda     $01
+        cmp     $0511
+        bne     LFFB2
+        lda     #$00
+        sta     $01
+        lda     $00
+        cmp     $0513
+        beq     LFF92
+        lda     #$18
+        bne     LFFB8
+LFFB2:
+        lda     #$27
+        bne     LFFB8
+LFFB6:
+        lda     #$3C
+LFFB8:
+        sta     JMPADRS
+        jsr     CLEARC
+LFFBD:
+        jsr     LF422
+        sta     $9A
+        sty     $9B
+        lda     #$00
+        tay
+        sta     ($9A),y
+        iny
+        sta     ($9A),y
+        ldx     JMPADRS
+        jmp     ERROR
+LFFD1:
+        ldx     #$00
+LFFD3:
+        lda     #$02
+        .byte   $2C
+LFFD6:
+        lda     #$03
+        jsr     LDE8C
+        asl     FACSIGN
+LFFDD:
+        jsr     CHRGOT
+        beq     LFFE5
+        jmp     SYNERR
+LFFE5:
+        lda     #$0D
+        ldy     #$00
+        jsr     LDE8C
+        .byte   $06
+LFFED:
+        lda     $034C
+        bmi     LFFED
+        ldy     #$01
+        lda     ($04),y
+        bne     LFFB6
+        rts
+        .byte   $FF
+        .addr   LC000
+        .addr   LC000
+        .addr   LC009
 .endif
