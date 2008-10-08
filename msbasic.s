@@ -375,6 +375,8 @@ QT_OK:
 .ifdef KBD
         .byte   $0D,$0D
         .byte   ">>"
+        .byte   "`"
+        .byte   $EA
 .else
 		.byte   $0D,$0A
 .ifdef CBM
@@ -386,8 +388,7 @@ QT_OK:
         .byte   $0D,$0A,$00
 QT_BREAK:
 .ifdef KBD
-        .byte   "`"
-        .byte   $EA,$0D,$0A
+		.byte	$0D,$0A
         .byte   " Brk"
         .byte   $00
         .byte   "T"
@@ -1112,8 +1113,13 @@ CLEAR:
         bne     L256A
 .endif
 CLEARC:
+.ifdef KBD
+        lda     #<CONST_MEMSIZ
+        ldy     #>CONST_MEMSIZ
+.else
         lda     MEMSIZ
         ldy     MEMSIZ+1
+.endif
         sta     FRETOP
         sty     FRETOP+1
 .ifdef CBM
@@ -1360,11 +1366,14 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2_KBD
+.ifdef CBM2
         cpy     #$02
         nop
         beq     LC6D4
 .else
+.ifdef KBD
+        cpy     #$07
+.endif
         beq     L2683
 .endif
         sta     OLDTEXT
@@ -1448,10 +1457,18 @@ SYNERR1:
 .endif
 .ifdef CBM2_KBD
 LC721:
+.ifdef KBD
+        cmp     #$45
+.else
         cmp     #$4B
+.endif
         bne     SYNERR1
         jsr     CHRGET
+.ifdef KBD
+        lda     #$9E
+.else
         lda     #$A4
+.endif
         jsr     SYNCHR
         jmp     GOTO
 LC730:
@@ -1471,7 +1488,7 @@ RET2:
 .ifndef CBM
 ISCNTC:
 .endif
-.ifdef OSI_KBD
+.ifdef OSI
         jmp     MONISCNTC
         nop
         nop
@@ -1489,7 +1506,16 @@ ISCNTC:
         lda     #$03
         clc
 .endif /* KIM */
-.ifndef CBM
+.ifdef KBD
+        jsr     LE8F3
+        bcc     RET1
+LE633:
+        jsr     LDE7F
+        beq     STOP
+        cmp     #$03
+        bne     LE633
+.endif
+.ifndef CBM_KBD
         cmp     #$03
 .endif
 STOP:
@@ -1501,7 +1527,7 @@ END2:
         lda     TXTPTR
         ldy     TXTPTR+1
 .ifdef CBM2_KBD
-        ldx     $37
+        ldx     CURLIN+1
         inx
 .endif
         beq     END4
@@ -1518,12 +1544,19 @@ END4:
 L2701:
         lda     #<QT_BREAK
         ldy     #>QT_BREAK
+.ifndef KBD
         ldx     #$00
         stx     Z14
+.endif
         bcc     L270E
         jmp     PRINT_ERROR_LINNUM
 L270E:
         jmp     RESTART
+.ifdef KBD
+LE664:
+        tay
+        jmp     LEFE9
+.endif
 CONT:
         bne     RET1
         ldx     #ERR_CANTCONT
@@ -1540,6 +1573,23 @@ L271C:
         sty     CURLIN+1
 RET1:
         rts
+.ifdef KBD
+        jsr     GETBYT
+        txa
+        ror     a
+        ror     a
+        ror     a
+        sta     $8F
+        rts
+LE68C:
+        ldy     #$12
+LE68E:
+        lda     LEA30,y
+        sta     $03A2,y
+        dey
+        bpl     LE68E
+        rts
+.endif
 .ifndef CBM2_KBD
 NULL:
         jsr     GETBYT
@@ -1665,7 +1715,11 @@ L2809:
         ldx     TXTTAB+1
 L280D:
         jsr     FL1
+.ifdef KBD
+        bne     UNDERR
+.else
         bcc     UNDERR
+.endif
         lda     LOWTR
         sbc     #$01
         sta     TXTPTR
@@ -1991,7 +2045,12 @@ PRSTRING:
 L297E:
         jsr     CHRGOT
 PRINT:
+.ifdef KBD
+nop
+nop;XXX
+.else
         beq     CRDO
+.endif
 PRINT2:
         beq     L29DD
         cmp     #TOKEN_TAB
@@ -2007,11 +2066,7 @@ PRINT2:
 .endif
         beq     L29DE
         cmp     #$3B
-.ifdef KBD
-.byte $ea,$ea; XXX
-.else
         beq     L2A0D
-.endif
         jsr     FRMEVL
         bit     VALTYP
         bmi     PRSTRING
@@ -2022,12 +2077,39 @@ PRINT2:
         lda     (FAC_LAST-1),y
         clc
         adc     Z16
+.ifdef KBD
+        cmp     #$28
+.else
         cmp     Z17
+.endif
         bcc     L29B1
         jsr     CRDO
 L29B1:
 .endif
         jsr     STRPRT
+.ifdef KBD
+        jmp     LE833
+LE86C:  pla
+        jmp     LE64E
+LE870:  jsr     LF3D4
+        txa
+LE874:  beq     LE878
+.ifdef KBD
+nop
+nop; XXX
+.else
+        bpl     LE8F2
+.endif
+LE878:  jmp     LEE9A
+LE87B:  lda     #$0A
+        sta     $10
+        jsr     LE8E7
+LE882:  lda     #$0D
+        jsr     LE8E7
+LE887:  lda     #$00
+        sta     $10
+        eor     #$FF
+.else
         jsr     OUTSP
         bne     L297E
 L29B9:
@@ -2084,12 +2166,17 @@ L29D9:
 .else
         eor     #$FF
 .endif
+.endif
 L29DD:
         rts
 L29DE:
         lda     Z16
 .ifndef CBM
+.ifdef KBD
+        cmp     #$1A
+.else
         cmp     Z18
+.endif
         bcc     L29EA
         jsr     CRDO
         jmp     L2A0D
@@ -2194,11 +2281,14 @@ LCA40:
 OUTQUES:
         lda     #$3F
 OUTDO:
+.ifndef KBD
         bit     Z14
         bmi     L2A56
+.endif
 .ifndef CBM2_KBD
         pha
-.ifdef CBM
+.endif
+.ifdef CBM1
         cmp     #$1D
         beq     LCA6A
         cmp     #$9D
@@ -2214,22 +2304,30 @@ LCA5A:
 LCA64:
         and     #$7F
 .endif
+.ifndef CBM2
         cmp     #$20
         bcc     L2A4E
+.endif
 LCA6A:
-.ifdef CBM
+.ifdef CBM1
         lda     Z03
         jsr     PATCH6
         nop
-.else
+.endif
+.ifndef CBM_KBD
         lda     Z16
         cmp     Z17
         bne     L2A4C
         jsr     CRDO
 L2A4C:
+.endif
+.ifndef CBM
         inc     Z16
 .endif
+.ifndef CBM2
 L2A4E:
+.endif
+.ifndef CBM2_KBD
         pla
 .endif
 .ifdef KIM
