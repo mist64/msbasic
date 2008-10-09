@@ -2264,7 +2264,7 @@ LCA64:
         bcc     L2A4E
 .endif
 LCA6A:
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
         lda     Z03
         jsr     PATCH6
         nop
@@ -2322,7 +2322,7 @@ L2A59:
         bne     L2A67
 L2A63:
 .endif
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
         jsr     PATCH5
 		nop
 .else
@@ -2437,11 +2437,11 @@ LCB0C:
 .ifdef CBM
         lda     Z03
         bne     LCAF8
-.ifdef CBM2
+.ifdef CONFIG_CBM1_PATCHES
+        jmp     PATCH1
+.else
         clc
         jmp     CONTROL_C_TYPED
-.else
-        jmp     PATCH1
 .endif
 NXIN:
         lda     Z03
@@ -2530,7 +2530,7 @@ INSTART:
 .ifndef OSI_KBD
         bit     INPUTFLG
         bvc     L2B10
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
         lda     #$00
         jsr     PATCH4
         nop
@@ -3014,7 +3014,7 @@ FRM_VARIABLE_CALL	= *-1
         ldx     VALTYP
         beq     L2DB1
 .ifdef CBM
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH2
         clc
 LCE3B:
@@ -3058,7 +3058,7 @@ L2DB1:
         jmp     GIVAYF
 L2DC2:
 .endif
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH3
 .endif
 .ifdef CBM2
@@ -7070,7 +7070,7 @@ RAMSTART2:
         .byte   $08,$29,$25,$20,$60,$2A,$E5,$E4
         .byte   $20,$66,$24,$65,$AC,$04,$A4
 .endif /* KIM */
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
 PATCH1:
         clc
         jmp     CONTROL_C_TYPED

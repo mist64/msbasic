@@ -1,6 +1,6 @@
 # 1.0
 echo cbmbasic1
-ca65 -D CBM -D CBM1 -D CBM_KBD msbasic.s -o cbmbasic1.o &&
+ca65 -D CBM -D CBM1 -D CBM_KBD -D CONFIG_CBM1_PATCHES msbasic.s -o cbmbasic1.o &&
 ld65 -C cbmbasic1.cfg cbmbasic1.o -o cbmbasic1-new.bin && 
 xxd -g 1 cbmbasic1.bin > cbmbasic1.bin.txt
 xxd -g 1 cbmbasic1-new.bin > cbmbasic1-new.bin.txt
