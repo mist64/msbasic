@@ -16,6 +16,7 @@
 .include "macros.s"
 
         .setcpu "6502"
+		.macpack longbranch
         .segment "BASIC"
 
 STACK           := $0100
@@ -1145,8 +1146,8 @@ STXTPT:
         rts
 .ifdef KBD
 LE4C0:
-        ldy     #$44
-        ldx     #$E4 ; XXX
+        ldy     #<LE444
+        ldx     #>LE444
 LE4C4:
         jsr     LFFD6
         jsr     LFFED
@@ -1340,17 +1341,16 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
+.ifdef CBM2_KBD
+        cpy     #>INPUTBUFFER
+.endif
 .ifdef CBM2
-        cpy     #$02
         nop
-        beq     LC6D4
-.else
-.ifdef KBD
-        cpy     #$07
+.endif
+.ifdef CBM2_KBD
         beq     LC6D4
 .else
         beq     L2683
-.endif
 .endif
         sta     OLDTEXT
         sty     OLDTEXT+1
@@ -1372,9 +1372,7 @@ LA5DC:
         lda     (TXTPTR),y
         clc
 .ifdef CBM2_KBD
-        bne     LC6E4
-        jmp     L2701
-LC6E4:
+        jeq     L2701
 .else
         beq     L2701
 .endif
@@ -1403,9 +1401,7 @@ EXECUTE_STATEMENT:
 EXECUTE_STATEMENT1:
         sbc     #$80
 .ifndef CONFIG_11
-        bcs     LA609
-        jmp     LET
-LA609:
+        jcc     LET
 .else
         bcc     LET1
 .endif
@@ -1447,7 +1443,6 @@ LC721:
 .endif
         jsr     SYNCHR
         jmp     GOTO
-LC730:
 .endif
 RESTORE:
         sec
@@ -1623,14 +1618,14 @@ LOAD:
         lda     #$FF
         sta     $17F9
         lda     #$A6
-        ldy     #$27
+        ldy     #$27 ; XXX
         sta     L0001
         sty     L0002
         jmp     L1873
         ldx     #$FF
         txs
         lda     #$48
-        ldy     #$23
+        ldy     #$23 ; XXX
         sta     L0001
         sty     L0002
         lda     #<QT_LOADED
@@ -1664,11 +1659,7 @@ GOSUB:
         pha
         lda     CURLIN
         pha
-.ifdef CBM
-        lda     #$8D
-.else
-        lda     #$8C
-.endif
+        lda     #TOKEN_GOSUB
         pha
 L27E9:
         jsr     CHRGOT
@@ -1716,11 +1707,7 @@ POP:
 .endif
         jsr     GTFORPNT
         txs
-.ifdef CBM
-        cmp     #$8D
-.else
-        cmp     #$8C
-.endif
+        cmp     #TOKEN_GOSUB
         beq     RETURN
         ldx     #ERR_NOGOSUB
         .byte   $2C
@@ -1780,11 +1767,7 @@ L2866:
 IF:
         jsr     FRMEVL
         jsr     CHRGOT
-.ifdef CBM
-        cmp     #$89
-.else
-        cmp     #$88
-.endif
+        cmp     #TOKEN_GOTO
         beq     L2884
         lda     #TOKEN_THEN
         jsr     SYNCHR
@@ -1934,11 +1917,10 @@ LC902:
         ldx     #$02
         sei
 LC912:
-.ifdef CBM2_KBD
-        lda     $60,x
+        lda     FAC+2,x
+.ifdef CBM2
         sta     $8D,x
 .else
-        lda     $B2,x
         sta     $0200,x
 .endif
         dex
@@ -2090,14 +2072,12 @@ LE887:
 L29B9:
 .ifdef CBM2_KBD
         lda     #$00
-        sta     $0200,x
-        ldx     #$FF
-        ldy     #$01
+        sta     INPUTBUFFER,x
+        ldx     #<(INPUTBUFFER-1)
+        ldy     #>(INPUTBUFFER-1)
 .else
         ldy     #$00
         sty     INPUTBUFFER,x
-.endif
-.ifndef CBM2_KBD
         ldx     #LINNUM+1
 .endif
 .ifdef CBM
