@@ -809,10 +809,11 @@ LE39A:
 RET3:
         rts
 .else
-RET3:
 .ifdef CBM2
+RET3:
 		rts
 .else
+L2420:
 .ifdef OSI
         jsr     OUTDO
 .endif
@@ -842,7 +843,7 @@ INLIN2:
         cmp     #$40
         beq     L2423
         cmp     #$5F
-        beq     RET3
+        beq     L2420
 L2443:
         cpx     #$47
         bcs     L244C
@@ -903,9 +904,9 @@ PARSE_INPUT_LINE:
         sty     DATAFLG
 L246C:
 .ifdef CBM2
-        lda     $0200,x
+        lda     INPUTBUFFERX,x
 .else
-        lda     Z00,x
+        lda     INPUTBUFFERX,x
 .endif
 .ifdef CBM
         bpl     LC49E

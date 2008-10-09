@@ -22,6 +22,7 @@ Z18             := $0018
 LINNUM          := $0019
 TXPSV           := $0019
 INPUTBUFFER     := $001B
+INPUTBUFFERX    := $0000
 TEMPPT          := $0063
 LASTPT          := $0064
 INDEX           := $006F

@@ -13,6 +13,7 @@ Z18             := $06FD;$0010
 LINNUM          := $0013;11
 TXPSV           := $0049
 INPUTBUFFER     := $0700
+INPUTBUFFERX    := $0700
 CHARAC          := $0006;5B
 ENDCHR          := $0007;5C
 EOLPNTR         := $0008;5D
