@@ -1436,11 +1436,7 @@ LC721:
 .endif
         bne     SYNERR1
         jsr     CHRGET
-.ifdef KBD
-        lda     #$9E
-.else
-        lda     #$A4
-.endif
+        lda     #TOKEN_TO
         jsr     SYNCHR
         jmp     GOTO
 .endif
@@ -5455,15 +5451,7 @@ STORE_FAC_IN_TEMP2_ROUNDED:
         ldx     #TEMP2
         .byte   $2C
 STORE_FAC_IN_TEMP1_ROUNDED:
-.ifdef CBM_KBD
-.ifdef KBD
-        ldx     #$54
-.else
-        ldx     #TEMP1
-.endif
-.else
-        ldx     #$A4; XXX
-.endif
+        ldx     #TEMP1+(5-BYTES_FP)
         ldy     #$00
         beq     STORE_FAC_AT_YX_ROUNDED
 SETFOR:
@@ -5778,18 +5766,13 @@ ADDACC:
         jmp     FADDT
 GETEXP:
         lda     EXPON
-.ifdef CBM
-.ifdef CBM2_KBD
-        cmp     #$0A
-.else
-        cmp     #$0C
-.endif
+        cmp     #MAX_EXPON
         bcc     L3C2C
-.ifdef CBM2_KBD
+.ifndef CBM1
         lda     #$64
 .endif
         bit     EXPSGN
-.ifdef CBM2_KBD
+.ifndef CBM1
         bmi     L3C3A
 .else
         bmi     LDC70
@@ -5798,14 +5781,6 @@ GETEXP:
 LDC70:
 .ifdef CBM1
         lda     #$0B
-.endif
-.else
-        cmp     #$0A
-        bcc     L3C2C
-        lda     #$64
-        bit     EXPSGN
-        bmi     L3C3A
-        jmp     OVERFLOW
 .endif
 L3C2C:
         asl     a
@@ -5888,7 +5863,7 @@ L3C8C:
         ldy     #>CON_BILLION
         jsr     FMULT
 .ifdef OSI_KBD
-        lda     #-6
+        lda     #-6 ; exponent adjustment
 .else
         lda     #-9
 .endif
@@ -6088,6 +6063,7 @@ DECTBL:
         .byte   $FF,$FF,$FF,$9C,$00,$00,$00,$0A
         .byte   $FF,$FF,$FF,$FF
 DECTBL_END:
+.endif
 .ifdef CBM
 		.byte	$FF,$DF,$0A,$80 ; TI$
 		.byte	$00,$03,$4B,$C0
@@ -6095,7 +6071,6 @@ DECTBL_END:
 		.byte	$00,$00,$0E,$10
 		.byte	$FF,$FF,$FD,$A8
 		.byte	$00,$00,$00,$3C
-.endif
 .endif
 .ifdef CBM2_KBD
 C_ZERO = CON_HALF + 2
@@ -6218,26 +6193,10 @@ POLYNOMIAL_ODD:
         sta     STRNG2
         sty     STRNG2+1
         jsr     STORE_FAC_IN_TEMP1_ROUNDED
-.ifdef CBM_KBD
-.ifdef KBD
-        lda     #$54
-.else
-        lda     #TEMP1
-.endif
-.else
-        lda     #$A4
-.endif
+        lda     #TEMP1+(5-BYTES_FP)
         jsr     FMULT
         jsr     SERMAIN
-.ifdef CBM_KBD
-.ifdef KBD
-        lda     #$54
-.else
-        lda     #TEMP1
-.endif
-.else
-        lda     #$A4
-.endif
+        lda     #TEMP1+(5-BYTES_FP)
         ldy     #$00
         jmp     FMULT
 POLYNOMIAL:
@@ -6428,15 +6387,7 @@ TAN:
         ldx     #TEMP3
         ldy     #$00
         jsr     GOMOVMF
-.ifndef OSI
-.ifdef KBD
-        lda     #$54
-.else
-        lda     #TEMP1
-.endif
-.else
-        lda     #$A4
-.endif
+        lda     #TEMP1+(5-BYTES_FP)
         ldy     #$00
         jsr     LOAD_FAC_FROM_YA
         lda     #$00
