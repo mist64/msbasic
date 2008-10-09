@@ -27,7 +27,7 @@ diff -u osi.bin.txt osi-new.bin.txt | head
 
 # 1.1
 echo kb9
-ca65 -D KIM -D KIM_KBD -D CONFIG_11 msbasic.s -o kb9.o &&
+ca65 -D KIM -D KIM_KBD -D CONFIG_11 -D CBM2_KIM msbasic.s -o kb9.o &&
 ld65 -C kb9.cfg kb9.o -o kb9-new.bin &&
 xxd -g 1 kb9.bin > kb9.bin.txt
 xxd -g 1 kb9-new.bin > kb9-new.bin.txt
@@ -35,7 +35,7 @@ diff -u kb9.bin.txt kb9-new.bin.txt | head
 
 # 2
 echo cbmbasic2
-ca65 -D CBM -D CBM2 -D CONFIG_11 -D CBM_KBD -D CBM2_KBD msbasic.s -o cbmbasic2.o &&
+ca65 -D CBM -D CBM2 -D CONFIG_11 -D CBM_KBD -D CBM2_KBD -D CBM2_KIM msbasic.s -o cbmbasic2.o &&
 ld65 -C cbmbasic1.cfg cbmbasic2.o -o cbmbasic2-new.bin && 
 xxd -g 1 cbmbasic2.bin > cbmbasic2.bin.txt
 xxd -g 1 cbmbasic2-new.bin > cbmbasic2-new.bin.txt

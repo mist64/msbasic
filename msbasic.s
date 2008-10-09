@@ -2062,7 +2062,7 @@ CRDO:
 LE882:
         lda     #$0D
         jsr     OUTDO
-LE887:
+PRINTNULLS:
         lda     #$00
         sta     $10
         eor     #$FF
@@ -2070,7 +2070,7 @@ LE887:
         jsr     OUTSP
         bne     L297E
 L29B9:
-.ifdef CBM2_KBD
+.ifdef CBM2
         lda     #$00
         sta     INPUTBUFFER,x
         ldx     #<(INPUTBUFFER-1)
@@ -2100,11 +2100,11 @@ LC9D8:
         lda     #$0A
         jsr     OUTDO
 PRINTNULLS:
-.ifndef CBM2
-.ifdef CBM
+.ifdef CBM1
         lda     Z03
         bne     L29DD
 .endif
+.ifndef CBM2
         txa
         pha
         ldx     Z15
@@ -2221,11 +2221,7 @@ L2A22:
         iny
         cmp     #$0D
         bne     L2A22
-.ifdef KBD
-		jsr     LE887
-.else
         jsr     PRINTNULLS
-.endif
         jmp     L2A22
 OUTSP:
 .ifdef CBM2
@@ -2324,13 +2320,11 @@ LE900:
 L2A59:
         lda     INPUTFLG
         beq     L2A6E
-.ifdef CONFIG_11
-.ifndef KBD ; XXX combine
+.ifdef CBM2_KIM
         bmi     L2A63
         ldy     #$FF
         bne     L2A67
 L2A63:
-.endif
 .endif
 .ifdef CBM1
         jsr     PATCH5
@@ -2377,7 +2371,7 @@ LCAB6:
 .endif
         ldx     #<(INPUTBUFFER+1)
         ldy     #>(INPUTBUFFER+1)
-.ifdef CBM2_KBD
+.ifdef CBM2
         lda     #$00
         sta     INPUTBUFFER+1
 .else
@@ -2435,11 +2429,7 @@ NXIN:
 .ifdef CBM
         lda     Z03
         beq     LCB0C
-.ifdef CBM2_KBD
-        lda     $96
-.else
-        lda     $020C
-.endif
+        lda     Z96
         and     #$02
         beq     LCB0C
         jsr     LCAD6
@@ -2451,7 +2441,7 @@ LCB0C:
 .ifdef CBM
         lda     Z03
         bne     LCAF8
-.ifdef CBM2_KBD
+.ifdef CBM2
         clc
         jmp     CONTROL_C_TYPED
 .else
@@ -2480,7 +2470,7 @@ READ:
         ldx     DATPTR
         ldy     DATPTR+1
 .ifdef CBM2_KBD
-        lda     #$98
+        lda     #$98 ; AppleSoft, too
         .byte   $2C
 L2ABE:
         lda     #$00
@@ -2704,11 +2694,7 @@ NEXT3:
         clc
         adc     #$04
         pha
-.ifdef KBD
-        adc     #$05
-.else
-        adc     #$06
-.endif
+        adc     #BYTES_FP+1
         sta     DEST
         pla
 .else
@@ -2874,7 +2860,7 @@ FRM_STACK2:
         pla
         sta     INDEX
 .ifndef KBD
-        inc     INDEX
+        inc     INDEX ; bug: assumes not on page boundary
 .endif
         pla
         sta     INDEX+1
@@ -3079,14 +3065,14 @@ L2DC2:
 .ifdef CBM1
         jmp     PATCH3
 .endif
-.ifndef CBM
-        jmp     LOAD_FAC_FROM_YA
-.endif
 .ifdef CBM2
         bit     $62
         bpl     LCE90
         cmp     #$54
         bne     LCE82
+.endif
+.ifndef CBM
+        jmp     LOAD_FAC_FROM_YA
 .endif
 .ifdef CBM1
         .byte   $19
@@ -3121,11 +3107,7 @@ LCE82:
         bne     LCE90
         cpy     #$54
         bne     LCE90
-.ifdef CBM2_KBD
-        lda     $96
-.else
-        lda     $020C
-.endif
+        lda     Z96
         jmp     FLOAT
 LCE90:
         lda     FAC+3
@@ -3735,11 +3717,10 @@ L3124:
 .ifndef CBM1
         sta     STRNG2+1
 .endif
+        ldx     #BYTES_FP
 .ifdef KBD
-        ldx     #$04
         lda     VARNAM+1
 .else
-        ldx     #$05
         lda     VARNAM
 .endif
         bpl     L3135
@@ -4014,11 +3995,7 @@ L32B6:
         lda     STRNG1+1
 .ifdef CBM2_KBD
         beq     LD399
-.ifdef KBD
-        cmp     #$07
-.else
-        cmp     #$02
-.endif
+        cmp     #>INPUTBUFFER
 .endif
         bne     PUTNEW
 LD399:
@@ -4617,10 +4594,10 @@ LF43D:
         jsr     LDE48
 LF44D:
         jsr     LDE7F
-        bne     LF456
+        bne     RTS4
         cpx     #$80
         bcc     LF44D
-LF456:
+RTS4:
         rts
 LF457:
         lda     TXTTAB
@@ -4729,7 +4706,7 @@ L362C:
         eor     FORPNT+1
         and     FORPNT
         beq     L362C
-L3634:
+RTS3:
         rts
 .endif
 FADDH:
@@ -4749,10 +4726,10 @@ FSUBT:
 .ifdef CBM2
 LD745:
         lda     $11
-        cmp     #$66
+        cmp     #<6502
         bne     L3628
         lda     $12
-        sbc     #$19
+        sbc     #>6502
         bne     L3628
         sta     $11
         tay
@@ -4790,9 +4767,9 @@ L365B:
 FADD2:
         tay
 .ifdef KBD
-        beq     LF456
+        beq     RTS4
 .else
-        beq     L3634
+        beq     RTS3
 .endif
         sec
         sbc     FAC
@@ -5046,7 +5023,7 @@ SHIFT_RIGHT4:
         ror     2,x
         ror     3,x
 .ifdef CBM
-        ror     4,x
+        ror     4,x	; AppleSoft, too
 .endif
         ror     a
         iny
@@ -5436,11 +5413,7 @@ L39F6:
         plp
         jmp     COPY_RESULT_INTO_FAC
 L3A02:
-.ifdef OSI_KBD
         ldx     #ERR_ZERODIV
-.else
-        ldx     #ERR_ZERODIV
-.endif
         jmp     ERROR
 COPY_RESULT_INTO_FAC:
         lda     RESULT

@@ -84,6 +84,7 @@ CHRGOT          := $00C8
 TXTPTR          := $00C9
 L00CF			:= $00CF
 RNDSEED			:= $00DA
+Z96				:= $020C
 .else
 USR				:= $0000
 Z00             := $0000
@@ -170,6 +171,7 @@ CHRGOT          := $00C8-82
 TXTPTR          := $00C9-82
 L00CF			:= $00CF-82
 RNDSEED			:= $00DA-82
+Z96				:= $96
 .endif
 
 BYTES_PER_FRAME := $12
