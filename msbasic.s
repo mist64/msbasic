@@ -903,11 +903,7 @@ PARSE_INPUT_LINE:
         ldy     #$04
         sty     DATAFLG
 L246C:
-.ifdef CBM2
         lda     INPUTBUFFERX,x
-.else
-        lda     INPUTBUFFERX,x
-.endif
 .ifdef CBM
         bpl     LC49E
         cmp     #$FF
@@ -925,11 +921,7 @@ LC49E:
         bvs     L24AC
         cmp     #$3F
         bne     L2484
-.ifdef CBM
-        lda     #$99
-.else
-        lda     #$97
-.endif
+        lda     #TOKEN_PRINT
         bne     L24AC
 L2484:
         cmp     #$30
@@ -951,10 +943,8 @@ L2498:
 .ifdef KBD
         jsr     LF42D
 .else
-.ifdef CBM2
-        lda     $0200,x
-.else
-        lda     Z00,x
+        lda     INPUTBUFFERX,x
+.ifndef CBM2
         cmp     #$20
         beq     L2497
 .endif
@@ -982,19 +972,11 @@ L24BF:
         sta     DATAFLG
 L24C1:
         sec
-.ifdef CBM
-        sbc     #$55
-.else
-        sbc     #$54
-.endif
+        sbc     #TOKEN_REM-':'
         bne     L246C
         sta     ENDCHR
 L24C8:
-.ifdef CBM2
-        lda     $0200,x
-.else
-        lda     Z00,x
-.endif
+        lda     INPUTBUFFERX,x
         beq     L24AC
         cmp     ENDCHR
         beq     L24AC
@@ -1012,20 +994,14 @@ L24DB:
         bpl     L24DB
         lda     TOKEN_NAME_TABLE,y
         bne     L2498
-.ifdef CBM2
-        lda     $0200,x
-.else
-        lda     Z00,x
-.endif
+        lda     INPUTBUFFERX,x
         bpl     L24AA
 L24EA:
         sta     INPUTBUFFER-3,y
 .ifdef CBM2_KBD
         dec     TXTPTR+1
-        lda     #$FF
-.else
-        lda     #INPUTBUFFER-1
 .endif
+        lda     #<INPUTBUFFER-1
         sta     TXTPTR
         rts
 FNDLIN:
@@ -1146,15 +1122,7 @@ STKINI:
 .ifndef CBM2_KBD
         sta     STACK+254
 .endif
-.ifdef KBD
-        ldx     #$FE
-.else
-.ifdef CBM2
-        ldx     #$FA
-.else
-        ldx     #$FC
-.endif
-.endif
+        ldx     #STACK_TOP
         txs
 .ifdef CBM2_KBD
         pha

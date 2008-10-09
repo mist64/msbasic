@@ -98,6 +98,7 @@ MONISCNTC       := $FFF1
 LOAD            := $FFF4
 SAVE            := $FFF7
 
+STACK_TOP		:= $FE
 BYTES_PER_FRAME := $10
 SPACE_FOR_GOSUB := $49
 FOR_STACK1		:= $0D
@@ -114,6 +115,8 @@ CONST_MEMSIZ	:= $3FFF
 
 TOKEN_GOTO		:= $88
 TOKEN_GOSUB		:= $8C
+TOKEN_REM		:= $8E
+TOKEN_PRINT		:= $97
 TOKEN_TAB		:= $9D
 TOKEN_TO		:= $9E
 TOKEN_FN		:= $9F
