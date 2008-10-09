@@ -1,7 +1,7 @@
 # 1.0
 echo cbmbasic1
 ca65 -D CBM -D CBM1 -D CBM_KBD msbasic.s -o cbmbasic1.o &&
-ld65 -C cbmbasic.cfg cbmbasic1.o -o cbmbasic1-new.bin && 
+ld65 -C cbmbasic1.cfg cbmbasic1.o -o cbmbasic1-new.bin && 
 xxd -g 1 cbmbasic1.bin > cbmbasic1.bin.txt
 xxd -g 1 cbmbasic1-new.bin > cbmbasic1-new.bin.txt
 diff -u cbmbasic1.bin.txt cbmbasic1-new.bin.txt | head
@@ -14,7 +14,7 @@ xxd -g 1 kbdbasic.bin > kbdbasic.bin.txt
 xxd -g 1 kbdbasic-new.bin > kbdbasic-new.bin.txt
 diff -u kbdbasic.bin.txt kbdbasic-new.bin.txt | head
 
-#da65 --info kbdbasic-temp.txt 
+da65 --info kbdbasic-temp.txt 
 #opendiff ../cbmbasic2.s cbmbasic2-new.s
 
 # 1.0 rev 3.2
@@ -36,7 +36,7 @@ diff -u kb9.bin.txt kb9-new.bin.txt | head
 # 2
 echo cbmbasic2
 ca65 -D CBM -D CBM2 -D CONFIG_11 -D CBM_KBD -D CBM2_KBD msbasic.s -o cbmbasic2.o &&
-ld65 -C cbmbasic.cfg cbmbasic2.o -o cbmbasic2-new.bin && 
+ld65 -C cbmbasic1.cfg cbmbasic2.o -o cbmbasic2-new.bin && 
 xxd -g 1 cbmbasic2.bin > cbmbasic2.bin.txt
 xxd -g 1 cbmbasic2-new.bin > cbmbasic2-new.bin.txt
 diff -u cbmbasic2.bin.txt cbmbasic2-new.bin.txt | head

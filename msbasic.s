@@ -1,5 +1,4 @@
-; da65 V2.12.9 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
-; Created:    2008-10-05 12:21:17
+; Microsoft BASIC for 6502
 
 .ifdef KBD
 .include "defines_kbd.s"
@@ -59,9 +58,9 @@ TOKEN_ADDRESS_TABLE:
         .word   WAIT-1
         .word   LOAD-1
         .word   SAVE-1
+.endif
 .ifdef CBM
         .word   VERIFY-1
-.endif
 .endif
         .word   DEF-1
 .ifdef KBD
@@ -137,13 +136,13 @@ MATHTBL:
         .byte   $7F
         .word   FPWRT-1
         .byte   $50
-        .word   L2E07-1
+        .word   TAND-1
         .byte   $46
-        .word   L2E04-1
+        .word   OR-1
         .byte   $7D
         .word   NEGOP-1
         .byte   $5A
-        .word   L2D65-1
+        .word   EQUOP-1
         .byte   $64
         .word   RELOPS-1
 TOKEN_NAME_TABLE:
@@ -179,9 +178,9 @@ TOKEN_NAME_TABLE:
 	htasc	"WAIT"
 	htasc	"LOAD"
 	htasc	"SAVE"
+.endif
 .ifdef CBM
 	htasc	"VERIFY"
-.endif
 .endif
 	htasc	"DEF"
 .ifdef KBD
@@ -362,39 +361,34 @@ QT_ERROR:
         .byte   " ERROR"
 .endif
         .byte   $00
+.ifndef KBD
 QT_IN:
-.ifdef KBD
-		htasc	"TR"
-LE19A:
-		jsr     LDE42
-.else
         .byte   " IN "
         .byte   $00
-.endif
 QT_OK:
-.ifdef KBD
-        .byte   $0D,$0D
-        .byte   ">>"
-.else
 		.byte   $0D,$0A
 .ifdef CBM
         .byte   "READY."
 .else
         .byte   "OK"
 .endif
-.endif
         .byte   $0D,$0A,$00
-.ifdef KBD
-        .byte   $60
-        .byte   $EA
+.else
+		.byte	$54,$D2 ; ???
+OKPRT:
+		jsr     LDE42
+        .byte   $0D,$0D
+        .byte   ">>"
+        .byte   $0D,$0A,$00
+        rts
+        nop
 .endif
 QT_BREAK:
 .ifdef KBD
 		.byte	$0D,$0A
         .byte   " Brk"
         .byte   $00
-        .byte   "T"
-        .byte   $D0
+        .byte   $54,$D0 ; ???
 .else
 		.byte $0D,$0A
         .byte   "BREAK"
@@ -520,13 +514,13 @@ MEMERR:
 ERROR:
         lsr     Z14
 .ifdef CBM
-        lda     Z03
-        beq     LC366
-        jsr     CLRCH
+        lda     Z03       ; output
+        beq     LC366     ; is screen
+        jsr     CLRCH     ; otherwise redirect output back to screen
         lda     #$00
         sta     Z03
-.endif
 LC366:
+.endif
         jsr     CRDO
         jsr     OUTQUES
 L2329:
@@ -561,7 +555,7 @@ RESTART:
         jsr     CRDO
         nop
 L2351X:
-        jsr     LE19A
+        jsr     OKPRT
 L2351:
         jsr     LFDDA
 LE28E:
@@ -696,7 +690,7 @@ PUT_NEW_LINE:
 .ifdef CBM2
         jsr     SETPTRS
         jsr     LE33D
-        lda     $0200
+        lda     INPUTBUFFER
         beq     L2351
         clc
 .else
@@ -751,15 +745,11 @@ LE33D:
 L23FA:
         ldy     #$01
         lda     (INDEX),y
-.ifdef KBD
-        beq     LE3AB
-.else
-.ifdef CBM2
-        beq     LC46E
+.ifdef CBM2_KBD
+        beq     RET3
 .else
         bne     L2403
         jmp     L2351
-.endif
 .endif
 L2403:
         ldy     #$04
@@ -816,17 +806,16 @@ LE39A:
         lda     VARTAB+1,x
         adc     $051C,y
         sta     VARTAB+1,y
-LE3AB:
+RET3:
         rts
 .else
-L2420:
+RET3:
+.ifdef CBM2
+		rts
+.else
 .ifdef OSI
         jsr     OUTDO
 .endif
-.ifdef CBM2
-LC46E:
-		rts
-.else
         dex
         bpl     INLIN2
 L2423:
@@ -853,7 +842,7 @@ INLIN2:
         cmp     #$40
         beq     L2423
         cmp     #$5F
-        beq     L2420
+        beq     RET3
 L2443:
         cpx     #$47
         bcs     L244C
@@ -1188,7 +1177,7 @@ STXTPT:
 .ifdef KBD
 LE4C0:
         ldy     #$44
-        ldx     #$E4
+        ldx     #$E4 ; XXX
 LE4C4:
         jsr     LFFD6
         jsr     LFFED
@@ -3041,7 +3030,7 @@ NOT_:
         bne     L2D74
         ldy     #$18
         bne     EQUL
-L2D65:
+EQUOP:
         jsr     AYINT
         lda     FAC_LAST
         eor     #$FF
@@ -3234,10 +3223,10 @@ L2DF4:
         jsr     JMPADRS
 .endif
         jmp     CHKNUM
-L2E04:
+OR:
         ldy     #$FF
         .byte   $2C
-L2E07:
+TAND:
         ldy     #$00
         sty     EOLPNTR
         jsr     AYINT
