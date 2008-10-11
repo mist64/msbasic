@@ -2,19 +2,69 @@
 
 .ifdef KBD
 .include "defines_kbd.s"
+OSI_KBD_APPLE := 1
+OSI_KBD := 1
+CBM_KBD := 1
+CBM_KBD_APPLE := 1
+CBM2_KBD := 1
+KIM_KBD := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KBD_APPLE := 1
+KIM_KBD_APPLE := 1
 .endif
 .ifdef OSI
 .include "defines_osi.s"
+OSI_KBD := 1
+OSI_KBD_APPLE := 1
 .endif
 .ifdef KIM
 .include "defines_kim.s"
+KIM_KBD := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KIM := 1
+KIM_KBD_APPLE := 1
+CBM2_KIM_APPLE := 1
+KIM_APPLE := 1
 .endif
-.ifdef CBM
+.ifdef CBM1
 .include "defines_cbm.s"
+CBM := 1
+CBM_KBD := 1
+CBM_KBD_APPLE := 1
+CONFIG_CBM1_PATCHES := 1
+CBM1_APPLE := 1
+CBM_APPLE := 1
+.endif
+.ifdef CBM2
+.include "defines_cbm.s"
+CBM := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM_KBD := 1
+CBM_KBD_APPLE := 1
+CBM2_KBD_APPLE := 1
+CBM2_KBD := 1
+CBM2_KIM := 1
+CBM2_APPLE := 1
+CBM2_KIM_APPLE := 1
+CBM_APPLE := 1
 .endif
 .ifdef APPLE
 .include "defines_apple.s"
+CONFIG_11 := 1
+CBM_KBD_APPLE := 1
+CBM2_APPLE := 1
+CBM2_KBD_APPLE := 1
+KIM_KBD_APPLE := 1
+CBM2_KIM_APPLE := 1
+CBM1_APPLE := 1
+CBM_APPLE := 1
+KIM_APPLE := 1
+OSI_KBD_APPLE := 1
 .endif
+
 
 .include "macros.s"
 
