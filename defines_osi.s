@@ -87,7 +87,6 @@ RNDSEED			:= $00D4
 L0207           := $0207
 L020A           := $020A
 L2A13           := $2A0A
-L2EE2           := $2EF9
 MONRDKEY        := $FFEB
 MONCOUT         := $FFEE
 MONISCNTC       := $FFF1

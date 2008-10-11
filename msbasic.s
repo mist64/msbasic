@@ -23,7 +23,7 @@ CONFIG_DATAFLAG := 1
 CONFIG_11 := 1
 CBM2_APPLE := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
-CBM2_KIM_APPLE := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
 CBM1_APPLE := 1
 CBM_APPLE := 1
 KIM_APPLE := 1
@@ -38,7 +38,7 @@ KIM_KBD := 1
 CONFIG_11 := 1
 CONFIG_11_NOAPPLE := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
-CBM2_KIM_APPLE := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
 KIM_APPLE := 1
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
@@ -52,7 +52,7 @@ CONFIG_11_NOAPPLE := 1
 CBM2_KBD := 1
 CBM2_KIM := 1
 CBM2_APPLE := 1
-CBM2_KIM_APPLE := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
 CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
 ; INPUTBUFFER > $0100
@@ -939,13 +939,13 @@ INLIN2:
         cmp     #$0D
         beq     L2453
 .ifndef CONFIG_CBM_ALL
-        cmp     #$20
+        cmp     #$20 ; line editing
         bcc     INLIN2
         cmp     #$7D
         bcs     INLIN2
-        cmp     #$40
+        cmp     #$40 ; @
         beq     L2423
-        cmp     #$5F
+        cmp     #$5F ; _
         beq     L2420
 L2443:
         cpx     #$47
@@ -5106,7 +5106,7 @@ NORMALIZE_FAC6:
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
-.ifdef CBM_APPLE
+.ifndef CONFIG_SMALL
         ror     FAC+4
 .endif
         ror     FACEXTENSION
@@ -5226,7 +5226,7 @@ LB58E:
 SHIFT_RIGHT4:
         ror     2,x
         ror     3,x
-.ifdef CBM_APPLE
+.ifndef CONFIG_SMALL
         ror     4,x
 .endif
         ror     a
@@ -5406,7 +5406,7 @@ L38C3:
 .else
         ror     RESULT+2
 .endif
-.ifdef CBM_APPLE
+.ifndef CONFIG_SMALL
         ror     RESULT+3
 .endif
         ror     FACEXTENSION
@@ -6701,7 +6701,7 @@ POLY_ATN:
 		.byte	$7E,$4C,$CC,$91,$C7
 		.byte	$7F,$AA,$AA,$AA,$13
         .byte   $81,$00,$00,$00,$00
-.ifndef CBM_APPLE
+.ifdef KIM
 		.byte	$00 ; XXX
 .endif
 .endif
