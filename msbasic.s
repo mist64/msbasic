@@ -175,48 +175,72 @@ TOKEN_NAME_TABLE:
 .endif
 		keyrts "NEW", NEW
 
-;		keyrts "", 
-;		keyrts "", 
-;		keyrts "", 
-;		keyrts "", 
+		.segment "KEYWORDS"
+	htasc	"TAB("
+	htasc	"TO"
+	htasc	"FN"
+	htasc	"SPC("
+	htasc	"THEN"
+	htasc	"NOT"
+	htasc	"STEP"
+	htasc	"+"
+	htasc	"-"
+	htasc	"*"
+	htasc	"/"
+.ifdef KBD
+	htasc	"#"
+.else
+	htasc	"^"
+.endif
+	htasc	"AND"
+	htasc	"OR"
+	htasc	">"
+	htasc	"="
+	htasc	"<"
 
         .segment "VECTORS"
 UNFNC:
-        .addr   SGN
-        .addr   INT
-        .addr   ABS
+		keyvec "SGN", SGN
+		keyvec "INT", INT
+		keyvec "ABS", ABS
+.ifdef KBD
+		keyvec "VER", VER
+.else
 .ifdef KIM
-        .addr   IQERR
+		keyvec "USR", IQERR
 .else
+		keyvec "USR", USR
+.endif
+.endif
+		keyvec "FRE", FRE
+		keyvec "POS", POS
+		keyvec "SQR", SQR
+		keyvec "RND", RND
+		keyvec "LOG", LOG
+		keyvec "EXP", EXP
+		keyvec "COS", COS
+		keyvec "SIN", SIN
+		keyvec "TAN", TAN
+		keyvec "ATN", ATN
 .ifdef KBD
-        .addr   VER
+		keyvec "GETC", GETC
 .else
-        .addr   USR
+		keyvec "PEEK", PEEK
 .endif
+		keyvec "LEN", LEN
+		keyvec "STR$", STR
+		keyvec "VAL", VAL
+		keyvec "ASC", ASC
+		keyvec "CHR$", CHRSTR
+		keyvec "LEFT$", LEFTSTR
+		keyvec "RIGHT$", RIGHTSTR
+		keyvec "MID$", MIDSTR
+.ifdef CBM2_KBD
+	htasc	"GO"
 .endif
-        .addr   FRE
-        .addr   POS
-        .addr   SQR
-        .addr   RND
-        .addr   LOG
-        .addr   EXP
-        .addr   COS
-        .addr   SIN
-        .addr   TAN
-        .addr   ATN
-.ifdef KBD
-        .addr   GETC
-.else
-        .addr   PEEK
-.endif
-        .addr   LEN
-        .addr   STR
-        .addr   VAL
-        .addr   ASC
-        .addr   CHRSTR
-        .addr   LEFTSTR
-        .addr   RIGHTSTR
-        .addr   MIDSTR
+	.byte   0
+
+        .segment "VECTORS"
 MATHTBL:
         .byte   $79
         .word   FADDT-1
@@ -239,63 +263,6 @@ MATHTBL:
         .byte   $64
         .word   RELOPS-1
 
-        .segment "KEYWORDS"
-	htasc	"TAB("
-	htasc	"TO"
-	htasc	"FN"
-	htasc	"SPC("
-	htasc	"THEN"
-	htasc	"NOT"
-	htasc	"STEP"
-	htasc	"+"
-	htasc	"-"
-	htasc	"*"
-	htasc	"/"
-.ifdef KBD
-	htasc	"#"
-.else
-	htasc	"^"
-.endif
-	htasc	"AND"
-	htasc	"OR"
-	htasc	">"
-	htasc	"="
-	htasc	"<"
-	htasc	"SGN"
-	htasc	"INT"
-	htasc	"ABS"
-.ifdef KBD
-	htasc	"VER"
-.else
-	htasc	"USR"
-.endif
-	htasc	"FRE"
-	htasc	"POS"
-	htasc	"SQR"
-	htasc	"RND"
-	htasc	"LOG"
-	htasc	"EXP"
-	htasc	"COS"
-	htasc	"SIN"
-	htasc	"TAN"
-	htasc	"ATN"
-.ifdef KBD
-	htasc	"GETC"
-.else
-	htasc	"PEEK"
-.endif
-	htasc	"LEN"
-	htasc	"STR$"
-	htasc	"VAL"
-	htasc	"ASC"
-	htasc	"CHR$"
-	htasc	"LEFT$"
-	htasc	"RIGHT$"
-	htasc	"MID$"
-.ifdef CBM2_KBD
-	htasc	"GO"
-.endif
-	.byte   0
         .segment "CODE"
 ERROR_MESSAGES:
 .ifdef CONFIG_SMALL
