@@ -597,11 +597,7 @@ LE28E:
 .ifdef CBM
         jsr     STROUT
 .else
-.ifdef APPLE
-        jsr     GOSTROUT
-.else
-        jsr     GOWARM ; XXX
-.endif
+        jsr     GOWARM
 .endif
 L2351:
         jsr     INLIN
@@ -1728,14 +1724,14 @@ LOAD:
         lda     #$A6
         ldy     #$27 ; XXX
         sta     L0001
-        sty     L0002
+        sty     L0001+1
         jmp     L1873
         ldx     #$FF
         txs
         lda     #$48
         ldy     #$23 ; XXX
         sta     L0001
-        sty     L0002
+        sty     L0001+1
         lda     #<QT_LOADED
         ldy     #>QT_LOADED
         jsr     STROUT
@@ -6721,8 +6717,8 @@ COLD_START2:
 .ifndef CBM
         lda     #<COLD_START2
         ldy     #>COLD_START2
-        sta     L0001
-        sty     L0002
+        sta     Z00+1
+        sty     Z00+2
         sta     GOWARM+1
         sty     GOWARM+2
         lda     #<AYINT
@@ -6753,16 +6749,30 @@ COLD_START2:
         sta     $0B
         sty     $0C
 .endif
-.ifdef CBM_APPLE
+.ifdef CBM
         lda     #<IQERR
         ldy     #>IQERR
+.endif
+.ifdef APPLE
+        lda     #<L29D0
+        ldy     #>L29D0
+.endif
+.ifdef CBM_APPLE
         sta     L0001
-        sty     L0002
+        sty     L0001+1
 .endif
 .ifndef CBM
+.ifdef APPLE
+        lda     #$28
+.else
         lda     #$48
+.endif
         sta     Z17
+.ifdef APPLE
+        lda     #$0E
+.else
         lda     #$38
+.endif
         sta     Z18
 .endif
 .ifdef CBM2_KBD
@@ -6829,17 +6839,16 @@ L4098:
         lda     #<QT_MEMORY_SIZE
         ldy     #>QT_MEMORY_SIZE
         jsr     STROUT
+.ifdef APPLE
+        jsr     INLINX
+.else
         jsr     NXIN
+.endif
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
         cmp     #$41
-.ifdef APPLE
-nop
-nop;XXX
-.else
         beq     COLD_START
-.endif
         tay
         bne     L40EE
 .endif
@@ -6913,8 +6922,8 @@ L4106:
 .ifdef APPLE
         lda     #$FF
         jmp     L2829
-        .word	STROUT
-        jsr     L123C
+        .word	STROUT ; PATCH!
+        jsr     NXIN
 .else
         lda     #<QT_TERMINAL_WIDTH
         ldy     #>QT_TERMINAL_WIDTH
@@ -6932,6 +6941,7 @@ L4106:
         lda     LINNUM
         cmp     #$10
         bcc     L4106
+L2829:
         sta     Z17
 L4129:
         sbc     #$0E
@@ -7014,7 +7024,7 @@ L4192:
         lda     #<QT_BYTES_FREE
         ldy     #>QT_BYTES_FREE
         jsr     STROUT
-.ifndef OSI_KBD
+.ifndef OSI_KBD_APPLE
         jsr     SCRTCH
 .endif
 .ifdef CBM
@@ -7024,14 +7034,14 @@ L4192:
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.ifdef OSI_KBD
+.ifdef OSI_KBD_APPLE
         jsr     SCRTCH
 .endif
         lda     #<RESTART
         ldy     #>RESTART
-        sta     L0001
-        sty     L0002
-        jmp     (L0001)
+        sta     Z00+1
+        sty     Z00+2
+        jmp     (Z00+1)
 .endif
 .ifndef CBM_APPLE
 QT_WANT:
@@ -7656,9 +7666,7 @@ LFFED:
         .addr   LC009
 .endif
 .ifdef APPLE
-        brk
-        brk
-        brk
+        .byte   0,0,0
 L2900:
         jsr     LFD6A
         stx     $33
@@ -7676,9 +7684,7 @@ L2912:
         ldx     $33
         rts
 PLT:
-        .byte   $4C
-L291C:
-        beq     L2947
+        jmp     L29F0
 L291E:
         cmp     #$47
         bne     L2925
@@ -7693,19 +7699,18 @@ L292B:
         inx
 L2930:
         stx     $33
-        jsr     L13D7
-        jsr     L2198
-        jsr     L1751
-        lda     L00A4
+L2932:
+        jsr     FRMEVL
+        jsr     ROUND_FAC
+        jsr     AYINT
+        lda     FAC+4
         ldx     $33
         sta     $0300,x
         dec     $33
         bmi     L294Dx
-        .byte   $A9
-L2947:
-        bit     L1F20
-        ora     $10,x
-        .byte   $E5
+        lda     #$2C
+		jsr     SYNCHR
+        bpl     L2932
 L294Dx:
         tay
         pla
@@ -7745,7 +7750,7 @@ INLINX:
         jsr     OUTQUES
         jsr     OUTSP
         ldx     #$80
-        jmp     INLIN
+        jmp     INLIN1
         brk
         brk
         brk
@@ -7804,16 +7809,61 @@ INLINX:
         brk
         brk
         brk
+L29D0:
         jsr     L29DA
-        lda     $A3
-        sta     $A5
-        jmp     (L00A4)
+        lda     FAC+3
+        sta     FAC+5
+        jmp     (FAC+4)
 L29DA:
-        jmp     (L0006)
+        jmp     (GOSTROUT)
         brk
         brk
         brk
 L29E0:
         pla
         jmp     LFB40
+        brk                                     ; 29E4 00                       .
+        brk                                     ; 29E5 00                       .
+        brk                                     ; 29E6 00                       .
+L29E7:
+        brk                                     ; 29E7 00                       .
+        brk                                     ; 29E8 00                       .
+        brk                                     ; 29E9 00                       .
+        brk                                     ; 29EA 00                       .
+        brk                                     ; 29EB 00                       .
+        brk                                     ; 29EC 00                       .
+        brk                                     ; 29ED 00                       .
+        brk                                     ; 29EE 00                       .
+        brk                                     ; 29EF 00                       .
+L29F0:
+        pha                                     ; 29F0 48                       H
+        ldx     #$01                            ; 29F1 A2 01                    ..
+        inc     $B9                             ; 29F3 E6 B9                    ..
+        bne     L29F9                           ; 29F5 D0 02                    ..
+        inc     $BA                             ; 29F7 E6 BA                    ..
+L29F9:
+        jmp     L291E                           ; 29F9 4C 1E 29                 L.)
+; ----------------------------------------------------------------------------
+        brk                                     ; 29FC 00                       .
+        brk                                     ; 29FD 00                       .
+        brk                                     ; 29FE 00                       .
+        brk                                     ; 29FF 00                       .
+        eor     ($53,x)                         ; 2A00 41 53                    AS
+        and     ($D2,x)                         ; 2A02 21 D2                    !.
+        .byte   $02                             ; 2A04 02                       .
+        .byte   $FA                             ; 2A05 FA                       .
+        brk                                     ; 2A06 00                       .
+        lda     $12                             ; 2A07 A5 12                    ..
+        beq     L2A0E                           ; 2A09 F0 03                    ..
+        jmp     (L0008)                         ; 2A0B 6C 08 00                 l..
+L2A0E:
+        jsr     LF689
+        .byte   $15,$BC,$08,$10,$52,$45,$75,$10
+        .byte   $CD,$00,$55,$15,$9E,$08,$10,$4C
+        .byte   $45,$75,$10,$D4,$00,$55,$15,$0E
+        .byte   $08,$10,$89,$10,$75,$15,$1C,$08
+        .byte   $10,$1F,$10,$75,$00 
+        jmp     (L0008)
+; ----------------------------------------------------------------------------
+        .byte   0,0,0,0,0,0
 .endif

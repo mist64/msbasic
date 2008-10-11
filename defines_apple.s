@@ -1,8 +1,7 @@
 Z00             := $0000
-L0001           := $0001
-L0002           := $0002
+L0001           := $000B
 GOWARM          := $0003
-GOSTROUT        := $0003
+GOSTROUT        := $0006
 GOGIVEAYF       := $0008
 
 USR				:= $000A
@@ -121,8 +120,8 @@ TOKEN_SGN		:= $AD
 TOKEN_LEFTSTR	:= $C1
 
 
-RAMSTART3	:= $AAAA
-RAMSTART2	:= $AAAA
+RAMSTART3	:= $2A00
+RAMSTART2	:= $2A00
 LF689 := $F689
 LF800 := $F800
 LF819 := $F819
@@ -138,17 +137,16 @@ LFEFD	:= $FEFD
 L0D28	:= $AAAA
 L000A	:= $000A
 L123C	:= $AAAA
-L2829	:= $AAAA
 L2AAA := $AAAA
 L2A52 := $AAAA
 L2AA3 := $AAAA
 L1008 := $AAAA
 L2A6D := $AAAA
 L2A68 := $AAAA
-L0008 := $AA
-L0006 := $AA
+L0008 := $08
+L0006 := $06
 L1F20 := $AAAA
-L00A4 := $AA
+L00A4 := $A4
 L1751 := $AAAA
 L2198 := $AAAA
 L13D7 := $AAAA
