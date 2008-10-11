@@ -6,6 +6,7 @@ CONFIG_CBM_ALL := 1
 CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 CBM1_APPLE := 1
 CBM_APPLE := 1
+CONFIG_DATAFLAG := 1
 .endif
 
 .ifdef OSI
@@ -14,13 +15,14 @@ CONFIG_SMALL := 1
 CONFIG_SCRTCH_ORDER := 1
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
+CONFIG_DATAFLAG := 1
 .endif
 
 .ifdef APPLE
 .include "defines_apple.s"; 10
 CONFIG_11 := 1
 CBM2_APPLE := 1
-KIM_KBD_APPLE := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
 CBM2_KIM_APPLE := 1
 CBM1_APPLE := 1
 CBM_APPLE := 1
@@ -35,7 +37,7 @@ CONFIG_PRINT_CR := 1 ; print CR when line end reached
 KIM_KBD := 1
 CONFIG_11 := 1
 CONFIG_11_NOAPPLE := 1
-KIM_KBD_APPLE := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
 CBM2_KIM_APPLE := 1
 KIM_APPLE := 1
 CONFIG_NULL := 1
@@ -52,6 +54,7 @@ CBM2_KIM := 1
 CBM2_APPLE := 1
 CBM2_KIM_APPLE := 1
 CBM_APPLE := 1
+CONFIG_DATAFLAG := 1
 ; INPUTBUFFER > $0100
 .endif
 
@@ -63,7 +66,7 @@ CBM2_KBD := 1
 KIM_KBD := 1
 CONFIG_11 := 1
 CONFIG_11_NOAPPLE := 1
-KIM_KBD_APPLE := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
 ; INPUTBUFFER > $0100
 .endif
 
@@ -1309,7 +1312,7 @@ L2598:
 L25A6:
 .endif
         ldy     #$01
-.ifndef KIM_KBD_APPLE
+.ifdef CONFIG_DATAFLAG
         sty     DATAFLG
 .endif
         lda     (LOWTRX),y
@@ -1338,7 +1341,7 @@ L25CA:
         and     #$7F
 L25CE:
         jsr     OUTDO
-.ifndef KIM_KBD_APPLE
+.ifdef CONFIG_DATAFLAG
         cmp     #$22
         bne     LA519
         lda     DATAFLG
@@ -1364,7 +1367,7 @@ L25E5:
         jmp     RESTART
 L25E8:
         bpl     L25CE
-.ifndef KIM_KBD_APPLE
+.ifdef CONFIG_DATAFLAG
         cmp     #$FF
         beq     L25CE
         bit     DATAFLG
@@ -2560,7 +2563,7 @@ LCAB6:
 .endif
         ldx     #<(INPUTBUFFER+1)
         ldy     #>(INPUTBUFFER+1)
-.ifdef CBM2_APPLE
+.if INPUTBUFFER >= $0100
         lda     #$00
         sta     INPUTBUFFER+1
 .else
@@ -3550,7 +3553,7 @@ NAMENOTFOUND:
         pha
         cmp     #<FRM_VARIABLE_CALL
         bne     MAKENEWVARIABLE
-.ifdef KIM_KBD_APPLE
+.ifdef CONFIG_SAFE_NAMENOTFOUND
         tsx
         lda     STACK+2,x
         cmp     #>FRM_VARIABLE_CALL
@@ -6763,7 +6766,7 @@ COLD_START2:
         ldx     #$FF
         stx     CURLIN+1
 .endif
-.ifdef CBM2_APPLE
+.if INPUTBUFFER >= $0100
         ldx     #$FB
 .endif
         txs
