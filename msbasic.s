@@ -3,17 +3,17 @@
 .ifdef CBM1
 .include "defines_cbm.s" ; 6
 CONFIG_CBM_ALL := 1
-CONFIG_CBM1_PATCHES := 1
+CONFIG_CBM1_PATCHES := 1 ; don't turn off!
 CBM1_APPLE := 1
 CBM_APPLE := 1
 .endif
 
 .ifdef OSI
 .include "defines_osi.s"; 2
-OSI_KBD := 1
-OSI_KBD_APPLE := 1
+CONFIG_SMALL := 1
+CONFIG_SCRTCH_ORDER := 1
 CONFIG_NULL := 1
-CONFIG_OSI_APPLE_KIM := 1
+CONFIG_PRINT_CR := 1
 .endif
 
 .ifdef APPLE
@@ -26,8 +26,8 @@ CBM2_KIM_APPLE := 1
 CBM1_APPLE := 1
 CBM_APPLE := 1
 KIM_APPLE := 1
-OSI_KBD_APPLE := 1
-CONFIG_OSI_APPLE_KIM := 1
+CONFIG_SCRTCH_ORDER := 1
+CONFIG_PRINT_CR := 1
 .endif
 
 .ifdef KIM
@@ -40,7 +40,7 @@ KIM_KBD_APPLE := 1
 CBM2_KIM_APPLE := 1
 KIM_APPLE := 1
 CONFIG_NULL := 1
-CONFIG_OSI_APPLE_KIM := 1
+CONFIG_PRINT_CR := 1
 .endif
 
 .ifdef CBM2
@@ -58,8 +58,8 @@ CBM_APPLE := 1
 
 .ifdef KBD
 .include "defines_kbd.s" ; 10
-OSI_KBD_APPLE := 1
-OSI_KBD := 1
+CONFIG_SCRTCH_ORDER := 1
+CONFIG_SMALL := 1
 CBM2_KBD := 1
 KIM_KBD := 1
 CONFIG_11 := 1
@@ -145,7 +145,7 @@ TOKEN_ADDRESS_TABLE:
 		.word	OPEN-1
 		.word	CLOSE-1
 .endif
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         .word   GET-1
 .endif
 .ifdef KBD
@@ -277,7 +277,7 @@ TOKEN_NAME_TABLE:
 	htasc	"OPEN"
 	htasc	"CLOSE"
 .endif
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
 	htasc	"GET"
 .endif
 .ifdef KBD
@@ -341,7 +341,7 @@ TOKEN_NAME_TABLE:
 .endif
 	.byte   0
 ERROR_MESSAGES:
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 .define ERRSTR_NOFOR "NF"
 .define ERRSTR_SYNTAX "SN"
 .define ERRSTR_NOGOSUB "RG"
@@ -607,12 +607,12 @@ LC366:
         jsr     OUTQUES
 L2329:
         lda     ERROR_MESSAGES,x
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         pha
         and     #$7F
 .endif
         jsr     OUTDO
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         lda     ERROR_MESSAGES+1,x
 .ifdef KBD
         and     #$7F
@@ -906,7 +906,7 @@ L0C32:
         ldx     #$FF
         ldy     #$01
         rts
-L0C3C:
+RDKEY:
         jsr     LFD0C
         and     #$7F
 .else
@@ -1568,13 +1568,14 @@ RET2:
 .ifndef CONFIG_CBM_ALL
 ISCNTC:
 .endif
-.ifdef APPLE
-        lda     $C000
-        cmp     #$83
-        beq     L0ECC
-        rts
-L0ECC:
-        jsr     L0C3C
+.ifdef KBD
+        jsr     LE8F3
+        bcc     RET1
+LE633:
+        jsr     LDE7F
+        beq     STOP
+        cmp     #$03
+        bne     LE633
 .endif
 .ifdef OSI
         jmp     MONISCNTC
@@ -1585,6 +1586,16 @@ L0ECC:
         lsr     a
         bcc     RET2
         jsr     GETLN
+        cmp     #$03
+.endif
+.ifdef APPLE
+        lda     $C000
+        cmp     #$83
+        beq     L0ECC
+        rts
+L0ECC:
+        jsr     RDKEY
+        cmp     #$03
 .endif
 .ifdef KIM
         lda     #$01
@@ -1593,17 +1604,6 @@ L0ECC:
         ldx     #$08
         lda     #$03
         clc
-.endif /* KIM */
-.ifdef KBD
-        jsr     LE8F3
-        bcc     RET1
-LE633:
-        jsr     LDE7F
-        beq     STOP
-        cmp     #$03
-        bne     LE633
-.endif
-.ifdef CONFIG_OSI_APPLE_KIM
         cmp     #$03
 .endif
 STOP:
@@ -1998,7 +1998,7 @@ LET:
         sty     FORPNT+1
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     VALTYP+1
         pha
 .endif
@@ -2009,7 +2009,7 @@ LET:
         rol     a
         jsr     CHKVAL
         bne     LETSTRING
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         pla
 LET2:
         bpl     L2923
@@ -2026,7 +2026,7 @@ L2923:
 .endif
         jmp     SETFOR
 LETSTRING:
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         pla
 PUTSTR:
 .endif
@@ -2449,13 +2449,13 @@ LCA6A:
         jsr     PATCH6
         nop
 .endif
-.ifdef CONFIG_OSI_APPLE_KIM
+.ifdef CONFIG_PRINT_CR
         lda     Z16
         cmp     Z17
         bne     L2A4C
 .ifdef APPLE
         nop ; PATCH!
-        nop
+        nop ; don't print CR
         nop
 .else
         jsr     CRDO
@@ -2543,7 +2543,7 @@ LCA8F:
         sty     TXTPTR+1
 LE920:
         rts
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
 GET:
         jsr     ERRDIR
 .ifdef CONFIG_CBM_ALL
@@ -2690,7 +2690,7 @@ PROCESS_INPUT_ITEM:
         jsr     CHRGOT
         bne     INSTART
         bit     INPUTFLG
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         bvc     L2AF0
         jsr     MONRDKEY
 .ifdef APPLE
@@ -2726,7 +2726,7 @@ INSTART:
         jsr     CHRGET
         bit     VALTYP
         bpl     L2B34
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         bit     INPUTFLG
         bvc     L2B10
 .ifdef CONFIG_CBM1_PATCHES
@@ -2760,7 +2760,7 @@ L2B1D:
 L2B28:
         jsr     STRLT2
         jsr     POINT
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         jsr     LETSTRING
 .else
         jsr     PUTSTR
@@ -2768,7 +2768,7 @@ L2B28:
         jmp     INPUT_MORE
 L2B34:
         jsr     FIN
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         jsr     SETFOR
 .else
         lda     VALTYP+1
@@ -2898,7 +2898,7 @@ NEXT3:
         inx
         inx
         inx
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         inx
 .endif
         stx     DEST
@@ -3069,7 +3069,7 @@ LEB69:
         pha
 L2CED:
         jsr     ROUND_FAC
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     FAC+4
         pha
 .endif
@@ -3106,7 +3106,7 @@ FRM_PERFORM2:
         pla
         sta     ARG+3
         pla
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         sta     ARG+4
         pla
 .endif
@@ -3244,7 +3244,7 @@ LCE53:
 .endif
         rts
 L2DB1:
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         ldx     VALTYP+1
         bpl     L2DC2
         ldy     #$00
@@ -3459,7 +3459,7 @@ SYNERR3:
 NAMOK:
         ldx     #$00
         stx     VALTYP
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         stx     VALTYP+1
 .endif
         jsr     CHRGET
@@ -3475,14 +3475,14 @@ L2ECE:
         bcs     L2ECE
 L2ED8:
         cmp     #$24
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         bne     L2EF9
 .else
         bne     L2EE2
 .endif
         lda     #$FF
         sta     VALTYP
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         bne     L2EF2
 L2EE2:
         cmp     #$25
@@ -3618,7 +3618,7 @@ L2F68:
         sta     (LOWTR),y
         iny
         sta     (LOWTR),y
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         iny
         sta     (LOWTR),y
 .endif
@@ -3673,7 +3673,7 @@ MI2:
         jmp     QINT
 ARRAY:
         lda     DIMFLG
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         ora     VALTYP+1
 .endif
         pha
@@ -3712,7 +3712,7 @@ L2FDE:
         pla
         sta     VALTYP
         pla
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         sta     VALTYP+1
         and     #$7F
 .endif
@@ -3774,7 +3774,7 @@ MAKE_NEW_ARRAY:
 .endif
         lda     VARNAM
         sta     (LOWTR),y
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         bpl     L3078
         dex
 L3078:
@@ -4028,7 +4028,7 @@ DEF:
         jsr     CHKCLS
         lda     #TOKEN_EQUAL
         jsr     SYNCHR
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         pha
 .endif
         lda     VARPNT+1
@@ -4078,7 +4078,7 @@ L31F3:
         beq     LD288
 .endif
         sta     VARPNT+1
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         iny
 .endif
 L3219:
@@ -4127,7 +4127,7 @@ L3250:
         pla
         iny
         sta     (FNCNAM),y
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         pla
         iny
         sta     (FNCNAM),y
@@ -4322,7 +4322,7 @@ L336B:
 L3376:
         sta     INDEX
         stx     INDEX+1
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         ldy     #$01
 .else
         ldy     #$00
@@ -4342,7 +4342,7 @@ L3376:
         sta     HIGHDS+1
         plp
         bpl     L3367
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         txa
         bmi     L3367
 .endif
@@ -4354,7 +4354,7 @@ L3376:
 .ifdef CBM1
         jsr     LE7F3
 .else
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         ldy     #$00
 .endif
         asl     a
@@ -4375,7 +4375,7 @@ L33B1:
         jsr     CHECK_VARIABLE
         beq     L33A9
 CHECK_SIMPLE_VARIABLE:
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     (INDEX),y
         bmi     CHECK_BUMP
 .endif
@@ -5006,7 +5006,7 @@ L369B:
         eor     #$FF
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     4,y
         sbc     4,x
         sta     FAC+4
@@ -5034,7 +5034,7 @@ L36C7:
         stx     FAC+1
         ldx     FAC+3
         stx     FAC+2
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         ldx     FACEXTENSION
         stx     FAC+3
 .else
@@ -5061,7 +5061,7 @@ STA_IN_FAC_SIGN:
 FADD4:
         adc     ARGEXTENSION
         sta     FACEXTENSION
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     FAC+4
         adc     ARG+4
         sta     FAC+4
@@ -5079,7 +5079,7 @@ FADD4:
 NORMALIZE_FAC3:
         adc     #$01
         asl     FACEXTENSION
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         rol     FAC+4
 .endif
         rol     FAC+3
@@ -5159,7 +5159,7 @@ COMPLEMENT_FAC_MANTISSA:
         lda     FAC+3
         eor     #$FF
         sta     FAC+3
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     FAC+4
         eor     #$FF
         sta     FAC+4
@@ -5170,7 +5170,7 @@ COMPLEMENT_FAC_MANTISSA:
         inc     FACEXTENSION
         bne     RTS12
 INCREMENT_FAC_MANTISSA:
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         inc     FAC+4
         bne     RTS12
 .endif
@@ -5187,13 +5187,13 @@ OVERFLOW:
 SHIFT_RIGHT1:
         ldx     #RESULT-1
 SHIFT_RIGHT2:
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         ldy     3,x
 .else
         ldy     4,x
 .endif
         sty     FACEXTENSION
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         ldy     3,x
         sty     4,x
 .endif
@@ -5273,7 +5273,7 @@ L37FD:
 SHIFT_RIGHT5:
         clc
         rts
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 CON_ONE:
         .byte   $81,$00,$00,$00
 POLY_LOG:
@@ -5353,12 +5353,12 @@ L3876:
         sta     RESULT
         sta     RESULT+1
         sta     RESULT+2
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         sta     RESULT+3
 .endif
         lda     FACEXTENSION
         jsr     MULTIPLY1
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     FAC+4
         jsr     MULTIPLY1
 .endif
@@ -5379,7 +5379,7 @@ L38A7:
         tay
         bcc     L38C3
         clc
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     RESULT+3
         adc     ARG+4
         sta     RESULT+3
@@ -5452,7 +5452,7 @@ LOAD_ARG_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #BYTES_FP-1
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     (INDEX),y
         sta     ARG+4
         dey
@@ -5521,7 +5521,7 @@ LD9BF:
 L3970:
         rts
 CONTEN:
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         .byte   $84,$20,$00,$00
 .else
         .byte   $84,$20,$00,$00,$00
@@ -5558,7 +5558,7 @@ L39A1:
         bne     L39B7
         ldy     ARG+3
         cpy     FAC+3
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         bne     L39B7
         ldy     ARG+4
         cpy     FAC+4
@@ -5577,7 +5577,7 @@ L39C4:
         bcs     L39D5
 L39C7:
         asl     ARG_LAST
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         rol     ARG+3
 .endif
         rol     ARG+2
@@ -5587,7 +5587,7 @@ L39C7:
         bpl     L39B7
 L39D5:
         tay
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     ARG+4
         sbc     FAC+4
         sta     ARG+4
@@ -5626,7 +5626,7 @@ COPY_RESULT_INTO_FAC:
         sta     FAC+2
         lda     RESULT+2
         sta     FAC+3
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     RESULT+3
         sta     FAC+4
 .endif
@@ -5635,7 +5635,7 @@ LOAD_FAC_FROM_YA:
         sta     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     (INDEX),y
         sta     FAC+4
         dey
@@ -5670,7 +5670,7 @@ STORE_FAC_AT_YX_ROUNDED:
         stx     INDEX
         sty     INDEX+1
         ldy     #MANTISSA_BYTES
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     FAC+4
         sta     (INDEX),y
         dey
@@ -5748,7 +5748,7 @@ FLOAT1:
         rol     a
 FLOAT2:
         lda     #$00
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         sta     FAC+4
 .endif
         sta     FAC+3
@@ -5783,7 +5783,7 @@ FCOMP2:
         cmp     FAC+2
         bne     L3B0A
         iny
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         lda     (DEST),y
         cmp     FAC+3
         bne     L3B0A
@@ -5849,7 +5849,7 @@ QINT3:
         sta     FAC+1
         sta     FAC+2
         sta     FAC+3
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         sta     FAC+4
 .endif
         tay
@@ -6004,7 +6004,7 @@ L3C2C:
 L3C3A:
         sta     EXPON
         jmp     FIN4
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 ; these values are /1000 of what the labels say
 CON_99999999_9:
         .byte   $91,$43,$4F,$F8
@@ -6070,7 +6070,7 @@ L3C8C:
         lda     #<CON_BILLION
         ldy     #>CON_BILLION
         jsr     FMULT
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         lda     #-6 ; exponent adjustment
 .else
         lda     #-9
@@ -6104,13 +6104,13 @@ L3CBE:
         ldx     #$01
         lda     INDX
         clc
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         adc     #$07
 .else
         adc     #$0A
 .endif
         bmi     L3CD3
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         cmp     #$08
 .else
         cmp     #$0B
@@ -6147,7 +6147,7 @@ LDD3A:
 L3CF6:
         lda     FAC_LAST
         clc
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         adc     DECTBL+3,y
         sta     FAC+4
         lda     FAC+3
@@ -6176,7 +6176,7 @@ L3D23:
         iny
         iny
         iny
-.ifndef OSI_KBD
+.ifndef CONFIG_SMALL
         iny
 .endif
         sty     VARPNT
@@ -6250,7 +6250,7 @@ L3D94:
         lda     #$00
         ldy     #$01
         rts
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 CON_HALF:
         .byte   $80,$00,$00,$00
 DECTBL:
@@ -6326,7 +6326,7 @@ NEGOP:
         sta     FACSIGN
 L3E0F:
         rts
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 CON_LOG_E:
         .byte   $81,$38,$AA,$3B
 POLY_EXP:
@@ -6608,7 +6608,7 @@ TAN:
 TAN1:
         pha
         jmp     SIN1
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 CON_PI_HALF:
         .byte   $81,$49,$0F,$DB
 CON_PI_DOUB:
@@ -6672,7 +6672,7 @@ L3FFC:
 L4002:
         rts
 POLY_ATN:
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         .byte   $08
 		.byte	$78,$3A,$C5,$37
 		.byte	$7B,$83,$A2,$5C
@@ -6794,7 +6794,7 @@ COLD_START2:
 .ifdef APPLE
         sta     L000A
 .endif
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         sta     USR
         lda     #$88
         ldy     #$AE
@@ -6834,7 +6834,7 @@ COLD_START2:
         sta     $10
 .endif
 .endif
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
 .ifdef KBD
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET+4
 .else
@@ -6946,7 +6946,7 @@ L40DD:
 .ifdef CONFIG_CBM_ALL
         beq     L40D7
 .endif
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         beq     L40D7
         bne     L40FA
 .endif
@@ -7076,7 +7076,7 @@ L4192:
         lda     #<QT_BYTES_FREE
         ldy     #>QT_BYTES_FREE
         jsr     STROUT
-.ifndef OSI_KBD_APPLE
+.ifndef CONFIG_SCRTCH_ORDER
         jsr     SCRTCH
 .endif
 .ifdef CONFIG_CBM_ALL
@@ -7086,7 +7086,7 @@ L4192:
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.ifdef OSI_KBD_APPLE
+.ifdef CONFIG_SCRTCH_ORDER
         jsr     SCRTCH
 .endif
         lda     #<RESTART
@@ -7113,7 +7113,7 @@ QT_WRITTEN_BY:
 		.byte	$0D,$00
 .else
         .byte   $0D,$0A,$0C
-.ifdef OSI_KBD
+.ifdef CONFIG_SMALL
         .byte   "WRITTEN BY RICHARD W. WEILAND."
 .else
         .byte   "WRITTEN BY WEILAND & GATES"
@@ -7328,7 +7328,7 @@ LBFFB:
         brk
         brk
         brk
-.endif /* OSI_KBD */
+.endif /* CONFIG_SMALL */
 .ifdef KIM
 RAMSTART2:
         .byte   $08,$29,$25,$20,$60,$2A,$E5,$E4
