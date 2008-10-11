@@ -40,14 +40,22 @@ TOKEN_ADDRESS_TABLE:
         .word   INPUT-1
         .word   DIM-1
         .word   READ-1
+.ifdef APPLE
+        .word   PLT-1
+.else
         .word   LET-1
+.endif
         .word   GOTO-1
         .word   RUN-1
         .word   IF-1
         .word   RESTORE-1
         .word   GOSUB-1
         .word   POP-1
+.ifdef APPLE
+        .word   TEX-1
+.else
         .word   REM-1
+.endif
         .word   STOP-1
         .word   ON-1
 .ifndef CBM_KBD_APPLE
@@ -589,7 +597,11 @@ LE28E:
 .ifdef CBM
         jsr     STROUT
 .else
-        jsr     GOWARM
+.ifdef APPLE
+        jsr     GOSTROUT
+.else
+        jsr     GOWARM ; XXX
+.endif
 .endif
 L2351:
         jsr     INLIN
@@ -832,8 +844,9 @@ RET3:
         rts
 .else
 .ifdef APPLE
+INLIN:
         ldx     #$DD
-L0C27:
+INLIN1:
         stx     $33
         jsr     L2900
         cpx     #$EF
@@ -1159,11 +1172,19 @@ STKINI:
 .ifdef CBM2_KBD
 		tay
 .else
+.ifdef APPLE
+        sta     STACK+249
+.else
         sta     STACK+253
+.endif
 .endif
         pla
 .ifndef CBM2_KBD
+.ifdef APPLE
+        sta     STACK+250
+.else
         sta     STACK+254
+.endif
 .endif
         ldx     #STACK_TOP
         txs
@@ -1434,9 +1455,11 @@ NEWSTT2:
         jsr     EXECUTE_STATEMENT
         jmp     NEWSTT
 EXECUTE_STATEMENT:
-.ifndef CONFIG_11
+.ifndef CONFIG_11_NOAPPLE
         beq     RET1
+.ifndef APPLE
         sec
+.endif
 .else
         beq     RET2
 .endif
@@ -1590,49 +1613,6 @@ L271C:
         sty     CURLIN+1
 RET1:
         rts
-.ifdef APPLE
-L0F14:
-        bne     RET1
-        jmp     L0D28
-L0F19:
-        jsr     L0F42
-        jsr     LFECD
-        jsr     L0F51
-        jmp     LFECD
-L0F25:
-        jsr     L0F42
-        jsr     LFEFD
-        jsr     L0F51
-        jsr     LFEFD
-        lda     #$3B
-        ldy     #$0F
-        jsr     STROUT
-        jmp     L0BF3
-        brk
-        .byte   $4F
-        eor     ($44,x)
-        eor     $44
-        brk
-L0F42:
-        lda     #$6C
-        ldy     #$00
-        sta     $3C
-        sty     $3D
-        lda     #$6E
-        sta     $3E
-        sty     $3F
-        rts
-L0F51:
-        lda     $6A
-        ldy     $6B
-        sta     $3C
-        sty     $3D
-        lda     $6C
-        ldy     $6D
-        sta     $3E
-        sty     $3F
-        rts
-.endif
 .ifdef KBD
 PRT:
         jsr     GETBYT
@@ -1664,10 +1644,49 @@ NULL:
 L2739:
         jmp     IQERR
 .endif
-.ifndef CONFIG_11
+.ifndef CONFIG_11_NOAPPLE
 CLEAR:
         bne     RET1
         jmp     CLEARC
+.endif
+.ifdef APPLE
+SAVE:
+        jsr     L0F42
+        jsr     LFECD
+        jsr     L0F51
+        jmp     LFECD
+LOAD:
+        jsr     L0F42
+        jsr     LFEFD
+        jsr     L0F51
+        jsr     LFEFD
+        lda     #<QT_LOADED
+        ldy     #>QT_LOADED
+        jsr     STROUT
+        jmp     FIX_LINKS
+QT_LOADED:
+        .byte   0 ; XXX PATCHED
+        .byte   "OADED"
+        .byte   0
+L0F42:
+        lda     #$6C
+        ldy     #$00
+        sta     $3C
+        sty     $3D
+        lda     #$6E
+        sta     $3E
+        sty     $3F
+        rts
+L0F51:
+        lda     $6A
+        ldy     $6B
+        sta     $3C
+        sty     $3D
+        lda     $6C
+        ldy     $6D
+        sta     $3E
+        sty     $3F
+        rts
 .endif
 .ifdef KIM
 SAVE:
@@ -2188,7 +2207,11 @@ LC9D8:
         sta     Z16
 .endif
         jsr     OUTDO
+.ifdef APPLE
+        lda     #$80
+.else
         lda     #$0A
+.endif
         jsr     OUTDO
 PRINTNULLS:
 .ifdef CBM1
@@ -2258,14 +2281,18 @@ L29F5:
 .ifndef CONFIG_11_NOAPPLE
 .ifdef APPLE
         beq     L1185
-        jmp     L1528
+        jmp     SYNERR
 L1185:
 .else
         bne     SYNERR4
 .endif
         pla
         cmp     #TOKEN_TAB
+.ifdef APPLE
+        bne     L2A09
+.else
         bne     L2A0A
+.endif
 .else
 .ifdef CBM2_KBD
         bne     SYNERR4
@@ -2530,7 +2557,11 @@ L2A9E:
         lda     #$2C
         sta     INPUTBUFFER-1
 LCAF8:
+.ifdef APPLE
+        jsr     INLINX
+.else
         jsr     NXIN
+.endif
 .ifdef KBD
         bmi     L2ABE
 NXIN:
@@ -4624,7 +4655,7 @@ ASC:
         ldy     #$00
         lda     (INDEX),y
         tay
-.ifndef CONFIG_11
+.ifndef CONFIG_11_NOAPPLE
         jmp     SNGFLT1
 .else
         jmp     SNGFLT
@@ -7002,17 +7033,23 @@ L4192:
         sty     L0002
         jmp     (L0001)
 .endif
-.ifdef APPLE
-		.byte	$C3,$CF,$D0,$D9,$D2,$C9,$C7,$C8
-		.byte	$D4,$A0,$B1,$B9,$B7,$B7,$A0,$C2
-		.byte	$D9,$A0,$CD,$C9,$C3,$D2,$CF,$D3
-		.byte	$CF,$C6,$D4,$A0,$C3,$CF,$0D,$00
-.endif
 .ifndef CBM_APPLE
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
         .byte   $00
+.endif
 QT_WRITTEN_BY:
+.ifndef CBM
+.ifdef APPLE
+; set the MSB of every byte of a string
+.macro asc80 str
+	.repeat	.strlen(str),I
+		.byte	.strat(str,I)+$80
+	.endrep
+.endmacro
+		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
+		.byte	$0D,$00
+.else
         .byte   $0D,$0A,$0C
 .ifdef OSI_KBD
         .byte   "WRITTEN BY RICHARD W. WEILAND."
@@ -7021,7 +7058,6 @@ QT_WRITTEN_BY:
 .endif
         .byte   $0D,$0A,$00
 .endif
-.ifndef CBM
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
         .byte   $00
@@ -7639,7 +7675,7 @@ L2912:
         bne     L2907
         ldx     $33
         rts
-L291B:
+PLT:
         .byte   $4C
 L291C:
         beq     L2947
@@ -7697,7 +7733,7 @@ L2962:
 L2978:
         cmp     #$56
         beq     L297F
-        jmp     L1528
+        jmp     SYNERR
 L297F:
         ldy     $0300
         lda     $0302
@@ -7705,11 +7741,11 @@ L297F:
 L2988:
         dex
         beq     L2930
-L298B:
+INLINX:
         jsr     OUTQUES
         jsr     OUTSP
         ldx     #$80
-        jmp     L0C27
+        jmp     INLIN
         brk
         brk
         brk
