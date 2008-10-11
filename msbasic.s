@@ -12,6 +12,9 @@
 .ifdef CBM
 .include "defines_cbm.s"
 .endif
+.ifdef APPLE
+.include "defines_apple.s"
+.endif
 
 .include "macros.s"
 
@@ -47,7 +50,7 @@ TOKEN_ADDRESS_TABLE:
         .word   REM-1
         .word   STOP-1
         .word   ON-1
-.ifndef CBM_KBD
+.ifndef CBM_KBD_APPLE
         .word   NULL-1
 .endif
 .ifdef KBD
@@ -157,17 +160,25 @@ TOKEN_NAME_TABLE:
 	htasc	"INPUT"
 	htasc	"DIM"
 	htasc	"READ"
+.ifdef APPLE
+	htasc	"PLT"
+.else
 	htasc	"LET"
+.endif
 	htasc	"GOTO"
 	htasc	"RUN"
 	htasc	"IF"
 	htasc	"RESTORE"
 	htasc	"GOSUB"
 	htasc	"RETURN"
+.ifdef APPLE
+	htasc	"TEX"
+.else
 	htasc	"REM"
+.endif
 	htasc	"STOP"
 	htasc	"ON"
-.ifndef CBM_KBD
+.ifndef CBM_KBD_APPLE
 	htasc	"NULL"
 .endif
 .ifdef KBD
@@ -359,7 +370,12 @@ QT_ERROR:
 .ifdef KBD
         .byte   " err"
 .else
+.ifdef APPLE
+        .byte   " ERR"
+		.byte	$07,$07
+.else
         .byte   " ERROR"
+.endif
 .endif
         .byte   $00
 .ifndef KBD
@@ -367,11 +383,16 @@ QT_IN:
         .byte   " IN "
         .byte   $00
 QT_OK:
+.ifdef APPLE
+        .byte   $0D,$00,$00
+        .byte   "K"
+.else
 		.byte   $0D,$0A
 .ifdef CBM
         .byte   "READY."
 .else
         .byte   "OK"
+.endif
 .endif
         .byte   $0D,$0A,$00
 .else
@@ -714,10 +735,10 @@ PUT_NEW_LINE:
 L23D6:
         sty     HIGHDS+1
         jsr     BLTU
-.ifdef CBM2
+.ifdef CBM2_APPLE
         lda     LINNUM
         ldy     LINNUM+1
-        sta     INPUTBUFFER-2 ; exists in AppleSoft!
+        sta     INPUTBUFFER-2
         sty     INPUTBUFFER-1
 .endif
         lda     STREND
@@ -810,6 +831,24 @@ LE39A:
 RET3:
         rts
 .else
+.ifdef APPLE
+        ldx     #$DD
+L0C27:
+        stx     $33
+        jsr     L2900
+        cpx     #$EF
+        bcs     L0C32
+        ldx     #$EF
+L0C32:
+        lda     #$00
+        sta     $0200,x
+        ldx     #$FF
+        ldy     #$01
+        rts
+L0C3C:
+        jsr     LFD0C
+        and     #$7F
+.else
 .ifdef CBM2
 RET3:
 		rts
@@ -888,6 +927,7 @@ GETLN:
         nop
         nop
         and     #$7F
+.endif
 .endif
         cmp     #$0F
         bne     L2465
@@ -999,7 +1039,7 @@ L24DB:
         bpl     L24AA
 L24EA:
         sta     INPUTBUFFER-3,y
-.ifdef CBM2_KBD
+.ifdef CBM2_KBD_APPLE
         dec     TXTPTR+1
 .endif
         lda     #<INPUTBUFFER-1
@@ -1085,10 +1125,12 @@ SCRTCH:
         sta     VARTAB+1
 SETPTRS:
         jsr     STXTPT
+.ifndef APPLE
 .ifdef CONFIG_11
         lda     #$00
 CLEAR:
         bne     L256A
+.endif
 .endif
 CLEARC:
 .ifdef KBD
@@ -1199,7 +1241,7 @@ L2598:
 L25A6:
 .endif
         ldy     #$01
-.ifndef KIM_KBD
+.ifndef KIM_KBD_APPLE
         sty     DATAFLG
 .endif
         lda     (LOWTRX),y
@@ -1228,7 +1270,7 @@ L25CA:
         and     #$7F
 L25CE:
         jsr     OUTDO
-.ifndef KIM_KBD
+.ifndef KIM_KBD_APPLE
         cmp     #$22
         bne     LA519
         lda     DATAFLG
@@ -1254,7 +1296,7 @@ L25E5:
         jmp     RESTART
 L25E8:
         bpl     L25CE
-.ifndef KIM_KBD
+.ifndef KIM_KBD_APPLE
         cmp     #$FF
         beq     L25CE
         bit     DATAFLG
@@ -1455,6 +1497,14 @@ RET2:
 .ifndef CBM
 ISCNTC:
 .endif
+.ifdef APPLE
+        lda     $C000
+        cmp     #$83
+        beq     L0ECC
+        rts
+L0ECC:
+        jsr     L0C3C
+.endif
 .ifdef OSI
         jmp     MONISCNTC
         nop
@@ -1540,6 +1590,49 @@ L271C:
         sty     CURLIN+1
 RET1:
         rts
+.ifdef APPLE
+L0F14:
+        bne     RET1
+        jmp     L0D28
+L0F19:
+        jsr     L0F42
+        jsr     LFECD
+        jsr     L0F51
+        jmp     LFECD
+L0F25:
+        jsr     L0F42
+        jsr     LFEFD
+        jsr     L0F51
+        jsr     LFEFD
+        lda     #$3B
+        ldy     #$0F
+        jsr     STROUT
+        jmp     L0BF3
+        brk
+        .byte   $4F
+        eor     ($44,x)
+        eor     $44
+        brk
+L0F42:
+        lda     #$6C
+        ldy     #$00
+        sta     $3C
+        sty     $3D
+        lda     #$6E
+        sta     $3E
+        sty     $3F
+        rts
+L0F51:
+        lda     $6A
+        ldy     $6B
+        sta     $3C
+        sty     $3D
+        lda     $6C
+        ldy     $6D
+        sta     $3E
+        sty     $3F
+        rts
+.endif
 .ifdef KBD
 PRT:
         jsr     GETBYT
@@ -1558,7 +1651,7 @@ LE68E:
         bpl     LE68E
         rts
 .endif
-.ifndef CBM2_KBD
+.ifndef CBM2_KBD_APPLE
 NULL:
         jsr     GETBYT
         bne     RET1
@@ -1697,7 +1790,7 @@ POP:
         bne     L281E
         lda     #$FF
 .ifdef CBM2_KBD
-        sta     FORPNT+1 ; bugfix
+        sta     FORPNT+1 ; bugfix, wrong in AppleSoft
 .else
         sta     FORPNT
 .endif
@@ -2072,9 +2165,11 @@ L29B9:
         ldx     #<(INPUTBUFFER-1)
         ldy     #>(INPUTBUFFER-1)
 .else
+.ifndef APPLE
         ldy     #$00
         sty     INPUTBUFFER,x
         ldx     #LINNUM+1
+.endif
 .endif
 .ifdef CBM
         lda     Z03
@@ -2100,7 +2195,7 @@ PRINTNULLS:
         lda     Z03
         bne     L29DD
 .endif
-.ifndef CBM2
+.ifndef CBM2_APPLE
         txa
         pha
         ldx     Z15
@@ -2115,6 +2210,10 @@ L29D9:
         pla
         tax
 .else
+.ifdef APPLE
+        lda     #$00
+        sta     $50
+.endif
         eor     #$FF
 .endif
 .endif
@@ -2149,15 +2248,21 @@ L29EB:
         adc     #$01
         bne     L2A08
 L29F5:
-.ifndef CONFIG_11
-        pha
-.else
+.ifdef CONFIG_11_NOAPPLE
         php
+.else
+        pha
 .endif
         jsr     GTBYTC
         cmp     #$29
-.ifndef CONFIG_11
+.ifndef CONFIG_11_NOAPPLE
+.ifdef APPLE
+        beq     L1185
+        jmp     L1528
+L1185:
+.else
         bne     SYNERR4
+.endif
         pla
         cmp     #TOKEN_TAB
         bne     L2A0A
@@ -2273,7 +2378,13 @@ LCA6A:
         lda     Z16
         cmp     Z17
         bne     L2A4C
+.ifdef APPLE
+        nop
+        nop
+        nop
+.else
         jsr     CRDO
+.endif
 L2A4C:
 .endif
 .ifndef CBM
@@ -2286,7 +2397,13 @@ L2A4E:
 .ifdef KIM
         sty     DIMFLG
 .endif
+.ifdef APPLE
+        ora     #$80
+.endif
         jsr     MONCOUT
+.ifdef APPLE
+        and     #$7F
+.endif
 .ifdef KIM
         ldy     DIMFLG
 .endif
@@ -2316,7 +2433,7 @@ LE900:
 L2A59:
         lda     INPUTFLG
         beq     L2A6E
-.ifdef CBM2_KIM
+.ifdef CBM2_KIM_APPLE
         bmi     L2A63
         ldy     #$FF
         bne     L2A67
@@ -2367,7 +2484,7 @@ LCAB6:
 .endif
         ldx     #<(INPUTBUFFER+1)
         ldy     #>(INPUTBUFFER+1)
-.ifdef CBM2
+.ifdef CBM2_APPLE
         lda     #$00
         sta     INPUTBUFFER+1
 .else
@@ -2497,6 +2614,9 @@ PROCESS_INPUT_ITEM:
 .ifndef OSI_KBD
         bvc     L2AF0
         jsr     MONRDKEY
+.ifdef APPLE
+        and     #$7F
+.endif
         sta     INPUTBUFFER
 .ifdef CBM1
         ldy     #>(INPUTBUFFER-1)
@@ -3350,7 +3470,7 @@ NAMENOTFOUND:
         pha
         cmp     #<FRM_VARIABLE_CALL
         bne     MAKENEWVARIABLE
-.ifdef KIM_KBD
+.ifdef KIM_KBD_APPLE
         tsx
         lda     STACK+2,x
         cmp     #>FRM_VARIABLE_CALL
@@ -3710,7 +3830,7 @@ L3124:
         tay
         lda     STRNG2
 .else
-.ifndef CBM1
+.ifndef CBM1_APPLE
         sta     STRNG2+1
 .endif
         ldx     #BYTES_FP
@@ -3989,7 +4109,7 @@ L32AA:
 L32B6:
         stx     STRNG2+1
         lda     STRNG1+1
-.ifdef CBM2_KBD
+.ifdef CBM2_KBD_APPLE
         beq     LD399
         cmp     #>INPUTBUFFER
 .endif
@@ -4631,7 +4751,12 @@ COMBYTE:
         jmp     GETBYT
 GETADR:
         lda     FACSIGN
+.ifdef APPLE
+        nop
+        nop
+.else
         bmi     GOIQ
+.endif
         lda     FAC
         cmp     #$91
         bcs     GOIQ
@@ -4898,7 +5023,7 @@ NORMALIZE_FAC6:
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
-.ifdef CBM
+.ifdef CBM_APPLE
         ror     FAC+4
 .endif
         ror     FACEXTENSION
@@ -5018,8 +5143,8 @@ LB58E:
 SHIFT_RIGHT4:
         ror     2,x
         ror     3,x
-.ifdef CBM
-        ror     4,x	; AppleSoft, too
+.ifdef CBM_APPLE
+        ror     4,x
 .endif
         ror     a
         iny
@@ -5193,8 +5318,12 @@ L38C3:
 .ifndef KIM
         ror     RESULT
         ror     RESULT+1
+.ifdef APPLE
+		.byte	RESULT+2,RESULT+2 ; XXX BUG!
+.else
         ror     RESULT+2
-.ifdef CBM
+.endif
+.ifdef CBM_APPLE
         ror     RESULT+3
 .endif
         ror     FACEXTENSION
@@ -6489,7 +6618,7 @@ POLY_ATN:
 		.byte	$7E,$4C,$CC,$91,$C7
 		.byte	$7F,$AA,$AA,$AA,$13
         .byte   $81,$00,$00,$00,$00
-.ifndef CBM
+.ifndef CBM_APPLE
 		.byte	$00 ; XXX
 .endif
 .endif
@@ -6550,11 +6679,12 @@ COLD_START:
         jsr     STROUT
 .endif
 COLD_START2:
-.ifdef CBM2
-        ldx     #$FB
-.else
+.ifndef CBM2
         ldx     #$FF
         stx     CURLIN+1
+.endif
+.ifdef CBM2_APPLE
+        ldx     #$FB
 .endif
         txs
 .ifndef CBM
@@ -6582,6 +6712,9 @@ COLD_START2:
         sta     GOWARM
         sta     JMPADRS
 .endif
+.ifdef APPLE
+        sta     L000A
+.endif
 .ifdef OSI_KBD
         sta     USR
         lda     #$88
@@ -6589,12 +6722,13 @@ COLD_START2:
         sta     $0B
         sty     $0C
 .endif
-.ifdef CBM
+.ifdef CBM_APPLE
         lda     #<IQERR
         ldy     #>IQERR
         sta     L0001
         sty     L0002
-.else
+.endif
+.ifndef CBM
         lda     #$48
         sta     Z17
         lda     #$38
@@ -6632,7 +6766,7 @@ L4098:
         sta     Z03
 .endif
         sta     LASTPT+1
-.ifndef CBM2_KBD
+.ifndef CBM2_KBD_APPLE
         sta     Z15
 .endif
 .ifndef CONFIG_11
@@ -6647,11 +6781,16 @@ L4098:
 .else
         lda     #$03
         sta     DSCLEN
-.ifndef KIM
+.ifndef KIM_APPLE
         lda     #$2C
         sta     LINNUM+1
 .endif
         jsr     CRDO
+.endif
+.ifdef APPLE
+        lda     #$01
+        sta     $01FD
+        sta     $01FC
 .endif
         ldx     #TEMPST
         stx     TEMPPT
@@ -6664,7 +6803,12 @@ L4098:
         sty     TXTPTR+1
         jsr     CHRGET
         cmp     #$41
+.ifdef APPLE
+nop
+nop;XXX
+.else
         beq     COLD_START
+.endif
         tay
         bne     L40EE
 .endif
@@ -6714,7 +6858,7 @@ L40DD:
         beq     L40D7
         bne     L40FA
 .endif
-.ifdef KIM
+.ifdef KIM_APPLE
         bne     L40FA
         beq     L40D7
 .endif
@@ -6735,10 +6879,17 @@ L40FA:
         sty     FRETOP+1
 L4106:
 .ifndef CBM
+.ifdef APPLE
+        lda     #$FF
+        jmp     L2829
+        .word	STROUT
+        jsr     L123C
+.else
         lda     #<QT_TERMINAL_WIDTH
         ldy     #>QT_TERMINAL_WIDTH
         jsr     STROUT
         jsr     NXIN
+.endif
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
@@ -6851,7 +7002,13 @@ L4192:
         sty     L0002
         jmp     (L0001)
 .endif
-.ifndef CBM
+.ifdef APPLE
+		.byte	$C3,$CF,$D0,$D9,$D2,$C9,$C7,$C8
+		.byte	$D4,$A0,$B1,$B9,$B7,$B7,$A0,$C2
+		.byte	$D9,$A0,$CD,$C9,$C3,$D2,$CF,$D3
+		.byte	$CF,$C6,$D4,$A0,$C3,$CF,$0D,$00
+.endif
+.ifndef CBM_APPLE
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
         .byte   $00
@@ -6863,6 +7020,8 @@ QT_WRITTEN_BY:
         .byte   "WRITTEN BY WEILAND & GATES"
 .endif
         .byte   $0D,$0A,$00
+.endif
+.ifndef CBM
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
         .byte   $00
@@ -6872,14 +7031,17 @@ QT_TERMINAL_WIDTH:
 .endif
 QT_BYTES_FREE:
         .byte   " BYTES FREE"
-.ifndef CBM
+.ifndef CBM_APPLE
         .byte   $0D,$0A,$0D,$0A
 .endif
 .ifdef CBM2_KBD
         .byte   $0D,$00
 .endif
+.ifdef APPLE
+        .byte   $00
+.endif
 QT_BASIC:
-.ifdef OSI_KBD
+.ifdef OSI
         .byte   "OSI 6502 BASIC VERSION 1.0 REV 3.2"
 .endif
 .ifdef KIM
@@ -6890,9 +7052,13 @@ QT_BASIC:
         .byte   "*** COMMODORE BASIC ***"
         .byte   $11,$11,$11,$00
 .endif
-.ifdef CBM2_KBD
+.ifdef CBM2
         .byte   "### COMMODORE BASIC ###"
         .byte   $0D,$0D,$00
+.endif
+.ifdef APPLE
+        .byte   $0A,$0D,$0A
+		.byte	"APPLE BASIC V1.1"
 .endif
 .ifndef CBM
         .byte   $0D,$0A
@@ -7452,4 +7618,166 @@ LFFED:
         .addr   LC000
         .addr   LC000
         .addr   LC009
+.endif
+.ifdef APPLE
+        brk
+        brk
+        brk
+L2900:
+        jsr     LFD6A
+        stx     $33
+        ldx     #$00
+L2907:
+        lda     $0200,x
+        and     #$7F
+        cmp     #$0D
+        bne     L2912
+        lda     #$00
+L2912:
+        sta     $0200,x
+        inx
+        bne     L2907
+        ldx     $33
+        rts
+L291B:
+        .byte   $4C
+L291C:
+        beq     L2947
+L291E:
+        cmp     #$47
+        bne     L2925
+        jmp     L29E0
+L2925:
+        cmp     #$43
+        bne     L292B
+        beq     L2988
+L292B:
+        cmp     #$50
+        beq     L2930
+        inx
+L2930:
+        stx     $33
+        jsr     L13D7
+        jsr     L2198
+        jsr     L1751
+        lda     L00A4
+        ldx     $33
+        sta     $0300,x
+        dec     $33
+        bmi     L294Dx
+        .byte   $A9
+L2947:
+        bit     L1F20
+        ora     $10,x
+        .byte   $E5
+L294Dx:
+        tay
+        pla
+        cmp     #$43
+        bne     L2957
+        tya
+        jmp     LF864
+L2957:
+        cmp     #$50
+        bne     L2962
+        tya
+        ldy     $0301
+        jmp     LF800
+L2962:
+        pha
+        lda     $0301
+        sta     $2C
+        sta     $2D
+        pla
+        cmp     #$48
+        bne     L2978
+        lda     $0300
+        ldy     $0302
+        jmp     LF819
+L2978:
+        cmp     #$56
+        beq     L297F
+        jmp     L1528
+L297F:
+        ldy     $0300
+        lda     $0302
+        jmp     LF828
+L2988:
+        dex
+        beq     L2930
+L298B:
+        jsr     OUTQUES
+        jsr     OUTSP
+        ldx     #$80
+        jmp     L0C27
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        jsr     L29DA
+        lda     $A3
+        sta     $A5
+        jmp     (L00A4)
+L29DA:
+        jmp     (L0006)
+        brk
+        brk
+        brk
+L29E0:
+        pla
+        jmp     LFB40
 .endif
