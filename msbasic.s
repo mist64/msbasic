@@ -1,60 +1,24 @@
 ; Microsoft BASIC for 6502
 
-.ifdef KBD
-.include "defines_kbd.s"
-OSI_KBD_APPLE := 1
-OSI_KBD := 1
-CBM_KBD := 1
-CBM_KBD_APPLE := 1
-CBM2_KBD := 1
-KIM_KBD := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CBM2_KBD_APPLE := 1
-KIM_KBD_APPLE := 1
-.endif
-.ifdef OSI
-.include "defines_osi.s"
-OSI_KBD := 1
-OSI_KBD_APPLE := 1
-.endif
-.ifdef KIM
-.include "defines_kim.s"
-KIM_KBD := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CBM2_KIM := 1
-KIM_KBD_APPLE := 1
-CBM2_KIM_APPLE := 1
-KIM_APPLE := 1
-.endif
 .ifdef CBM1
-.include "defines_cbm.s"
-CBM := 1
-CBM_KBD := 1
-CBM_KBD_APPLE := 1
+.include "defines_cbm.s" ; 6
+CONFIG_CBM_ALL := 1
 CONFIG_CBM1_PATCHES := 1
 CBM1_APPLE := 1
 CBM_APPLE := 1
 .endif
-.ifdef CBM2
-.include "defines_cbm.s"
-CBM := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CBM_KBD := 1
-CBM_KBD_APPLE := 1
-CBM2_KBD_APPLE := 1
-CBM2_KBD := 1
-CBM2_KIM := 1
-CBM2_APPLE := 1
-CBM2_KIM_APPLE := 1
-CBM_APPLE := 1
+
+.ifdef OSI
+.include "defines_osi.s"; 2
+OSI_KBD := 1
+OSI_KBD_APPLE := 1
+CONFIG_NULL := 1
+CONFIG_OSI_APPLE_KIM := 1
 .endif
+
 .ifdef APPLE
-.include "defines_apple.s"
+.include "defines_apple.s"; 10
 CONFIG_11 := 1
-CBM_KBD_APPLE := 1
 CBM2_APPLE := 1
 CBM2_KBD_APPLE := 1
 KIM_KBD_APPLE := 1
@@ -63,8 +27,46 @@ CBM1_APPLE := 1
 CBM_APPLE := 1
 KIM_APPLE := 1
 OSI_KBD_APPLE := 1
+CONFIG_OSI_APPLE_KIM := 1
 .endif
 
+.ifdef KIM
+.include "defines_kim.s" ; 7
+KIM_KBD := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KIM := 1
+KIM_KBD_APPLE := 1
+CBM2_KIM_APPLE := 1
+KIM_APPLE := 1
+CONFIG_NULL := 1
+CONFIG_OSI_APPLE_KIM := 1
+.endif
+
+.ifdef CBM2
+.include "defines_cbm.s" ; 11
+CONFIG_CBM_ALL := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KBD_APPLE := 1
+CBM2_KBD := 1
+CBM2_KIM := 1
+CBM2_APPLE := 1
+CBM2_KIM_APPLE := 1
+CBM_APPLE := 1
+.endif
+
+.ifdef KBD
+.include "defines_kbd.s" ; 10
+OSI_KBD_APPLE := 1
+OSI_KBD := 1
+CBM2_KBD := 1
+KIM_KBD := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KBD_APPLE := 1
+KIM_KBD_APPLE := 1
+.endif
 
 .include "macros.s"
 
@@ -84,7 +86,7 @@ TOKEN_ADDRESS_TABLE:
         .word   FOR-1
         .word   NEXT-1
         .word   DATA-1
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         .word   INPUTH-1
 .endif
         .word   INPUT-1
@@ -108,7 +110,7 @@ TOKEN_ADDRESS_TABLE:
 .endif
         .word   STOP-1
         .word   ON-1
-.ifndef CBM_KBD_APPLE
+.ifdef CONFIG_NULL
         .word   NULL-1
 .endif
 .ifdef KBD
@@ -121,7 +123,7 @@ TOKEN_ADDRESS_TABLE:
         .word   LOAD-1
         .word   SAVE-1
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         .word   VERIFY-1
 .endif
         .word   DEF-1
@@ -130,14 +132,14 @@ TOKEN_ADDRESS_TABLE:
 .else
         .word   POKE-1
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         .word   PRINTH-1
 .endif
         .word   PRINT-1
         .word   CONT-1
         .word   LIST-1
         .word   CLEAR-1
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 		.word	CMD-1
 		.word	SYS-1
 		.word	OPEN-1
@@ -212,7 +214,7 @@ TOKEN_NAME_TABLE:
 	htasc	"FOR"
 	htasc	"NEXT"
 	htasc	"DATA"
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 	htasc	"INPUT#"
 .endif
 	htasc	"INPUT"
@@ -236,7 +238,7 @@ TOKEN_NAME_TABLE:
 .endif
 	htasc	"STOP"
 	htasc	"ON"
-.ifndef CBM_KBD_APPLE
+.ifdef CONFIG_NULL
 	htasc	"NULL"
 .endif
 .ifdef KBD
@@ -249,7 +251,7 @@ TOKEN_NAME_TABLE:
 	htasc	"LOAD"
 	htasc	"SAVE"
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 	htasc	"VERIFY"
 .endif
 	htasc	"DEF"
@@ -258,18 +260,18 @@ TOKEN_NAME_TABLE:
 .else
 	htasc	"POKE"
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 	htasc	"PRINT#"
 .endif
 	htasc	"PRINT"
 	htasc	"CONT"
 	htasc	"LIST"
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 	htasc	"CLR"
 .else
 	htasc	"CLEAR"
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 	htasc	"CMD"
 	htasc	"SYS"
 	htasc	"OPEN"
@@ -414,7 +416,7 @@ ERR_BADTYPE	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_BADTYPE
 ERR_STRLONG	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_STRLONG
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 ERR_BADDATA	:= <(*-ERROR_MESSAGES)
 	htasc ERRSTR_BADDATA
 .endif
@@ -446,7 +448,7 @@ QT_OK:
         .byte   "K"
 .else
 		.byte   $0D,$0A
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         .byte   "READY."
 .else
         .byte   "OK"
@@ -593,7 +595,7 @@ MEMERR:
         ldx     #ERR_MEMFULL
 ERROR:
         lsr     Z14
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03       ; output
         beq     LC366     ; is screen
         jsr     CLRCH     ; otherwise redirect output back to screen
@@ -644,7 +646,7 @@ LE28E:
         lsr     Z14
         lda     #<QT_OK
         ldy     #>QT_OK
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         jsr     STROUT
 .else
         jsr     GOWARM
@@ -928,13 +930,13 @@ INLIN:
         ldx     #$00
 INLIN2:
         jsr     GETLN
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         cmp     #$07
         beq     L2443
 .endif
         cmp     #$0D
         beq     L2453
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         cmp     #$20
         bcc     INLIN2
         cmp     #$7D
@@ -955,7 +957,7 @@ L2443:
         bne     INLIN2
 .endif
 L244C:
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         lda     #$07
         jsr     OUTDO
         bne     INLIN2
@@ -963,7 +965,7 @@ L244C:
 L2453:
         jmp     L29B9
 GETLN:
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         jsr     CHRIN
         ldy     Z03
         bne     L2465
@@ -1004,7 +1006,7 @@ PARSE_INPUT_LINE:
         sty     DATAFLG
 L246C:
         lda     INPUTBUFFERX,x
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         bpl     LC49E
         cmp     #$FF
         beq     L24AC
@@ -1201,7 +1203,7 @@ CLEARC:
 .endif
         sta     FRETOP
         sty     FRETOP+1
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         jsr     CLALL
 .endif
         lda     VARTAB
@@ -1563,7 +1565,7 @@ SETDA:
         sty     DATPTR+1
 RET2:
         rts
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
 ISCNTC:
 .endif
 .ifdef APPLE
@@ -1601,7 +1603,7 @@ LE633:
         cmp     #$03
         bne     LE633
 .endif
-.ifndef CBM_KBD
+.ifdef CONFIG_OSI_APPLE_KIM
         cmp     #$03
 .endif
 STOP:
@@ -2028,7 +2030,7 @@ LETSTRING:
         pla
 PUTSTR:
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         ldy     FORPNT+1
 .ifdef CBM1
         cpy     #$D0
@@ -2138,7 +2140,7 @@ L2963:
         lda     (DSCPTR),y
         sta     (FORPNT),y
         rts
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 PRINTH:
         jsr     CMD
         jmp     LCAD6
@@ -2181,7 +2183,7 @@ PRINT2:
         bmi     PRSTRING
         jsr     FOUT
         jsr     STRLIT
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         ldy     #$00
         lda     (FAC_LAST-1),y
         clc
@@ -2236,7 +2238,7 @@ L29B9:
         ldx     #LINNUM+1
 .endif
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03
         bne     L29DD
 LC9D2:
@@ -2249,7 +2251,7 @@ CRDO:
 LC9D8:
 .endif
         lda     #$0D
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         sta     Z16
 .endif
         jsr     OUTDO
@@ -2290,7 +2292,7 @@ L29DD:
         rts
 L29DE:
         lda     Z16
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
 .ifdef KBD
         cmp     #$1A
 .else
@@ -2303,7 +2305,7 @@ L29EA:
 .endif
         sec
 L29EB:
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         sbc     #$0A
 .else
 .ifdef KBD
@@ -2405,7 +2407,7 @@ OUTSP:
         .byte   $2C
 LCA40:
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     #$1D
 .else
         lda     #$20
@@ -2447,12 +2449,12 @@ LCA6A:
         jsr     PATCH6
         nop
 .endif
-.ifndef CBM_KBD
+.ifdef CONFIG_OSI_APPLE_KIM
         lda     Z16
         cmp     Z17
         bne     L2A4C
 .ifdef APPLE
-        nop
+        nop ; PATCH!
         nop
         nop
 .else
@@ -2460,7 +2462,7 @@ LCA6A:
 .endif
 L2A4C:
 .endif
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         inc     Z16
 .endif
 L2A4E:
@@ -2525,7 +2527,7 @@ L2A67:
 SYNERR4:
         jmp     SYNERR
 L2A6E:
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03
         beq     LCA8F
         ldx     #ERR_BADDATA
@@ -2544,7 +2546,7 @@ LE920:
 .ifndef OSI_KBD
 GET:
         jsr     ERRDIR
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         cmp     #$23
         bne     LCAB6
         jsr     CHRGET
@@ -2565,13 +2567,13 @@ LCAB6:
 .endif
         lda     #$40
         jsr     PROCESS_INPUT_LIST
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         ldx     Z03
         bne     LCAD8
 .endif
         rts
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 INPUTH:
         jsr     GETBYT
         lda     #$2C
@@ -2616,7 +2618,7 @@ NXIN:
         pla
         jmp     LE86C
 .else
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03
         beq     LCB0C
         lda     Z96
@@ -2628,7 +2630,7 @@ LCB0C:
 .endif
         lda     INPUTBUFFER
         bne     L2ABE
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03
         bne     LCAF8
 .ifdef CONFIG_CBM1_PATCHES
@@ -2706,7 +2708,7 @@ PROCESS_INPUT_ITEM:
 L2AF0:
 .endif
         bmi     FINDATA
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03
         bne     LCB64
 .endif
@@ -2828,7 +2830,7 @@ L2B94:
         ldy     #$00
         lda     (INPTR),y
         beq     L2BA1
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     Z03
         bne     L2BA1
 .endif
@@ -3125,7 +3127,7 @@ L2D36:
 L2D39:
         jsr     ISLETC
         bcs     FRM_VARIABLE
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         cmp     #$FF
         bne     LCDC1
         lda     #<CON_PI
@@ -3204,13 +3206,13 @@ FRM_VARIABLE:
 FRM_VARIABLE_CALL	= *-1
         sta     FAC_LAST-1
         sty     FAC_LAST
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     VARNAM
         ldy     VARNAM+1
 .endif
         ldx     VALTYP
         beq     L2DB1
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 .ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH2
         clc
@@ -3264,13 +3266,13 @@ L2DC2:
         cmp     #$54
         bne     LCE82
 .endif
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         jmp     LOAD_FAC_FROM_YA
 .endif
 .ifdef CBM1
         .byte   $19
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 LCE69:
         cpy     #$49
 .ifdef CBM1
@@ -3562,7 +3564,7 @@ C_ZERO:
         .byte   $00,$00
 .endif
 MAKENEWVARIABLE:
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     VARNAM
         ldy     VARNAM+1
         cmp     #$54
@@ -6196,7 +6198,7 @@ L3D3E:
         and     #$80
         tax
         cpy     #DECTBL_END-DECTBL
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         beq     LDD96
         cpy     #$3C
 .endif
@@ -6270,7 +6272,7 @@ DECTBL:
         .byte   $FF,$FF,$FF,$FF
 DECTBL_END:
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
 		.byte	$FF,$DF,$0A,$80 ; TI$
 		.byte	$00,$03,$4B,$C0
 		.byte	$FF,$FF,$73,$60
@@ -6490,7 +6492,7 @@ GOMOVMF:
         .byte   $F0
 .else
         jsr     SIGN
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         bmi     L3F01
         bne     LDF63
         lda     ENTROPY
@@ -6510,7 +6512,7 @@ LDF63:
         lda     #<RNDSEED
         ldy     #$00
         jsr     LOAD_FAC_FROM_YA
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         txa
         beq     L3EDA
 .endif
@@ -6525,7 +6527,7 @@ L3F01:
         lda     FAC+1
         sta     FAC_LAST
         stx     FAC+1
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         ldx     FAC+2
         lda     FAC+3
         sta     FAC+2
@@ -6629,7 +6631,7 @@ POLY_SIN:
         .byte   $07,$FB,$F8,$87,$99,$68,$89,$01
         .byte   $87,$23,$35,$DF,$E1,$86,$A5,$5D
         .byte   $E7,$28,$83,$49,$0F,$DA,$A2
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
 MICROSOFT:
         .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
         .byte   $CE,$CA
@@ -6750,7 +6752,7 @@ COLD_START:
         lda     $0353
         sta     $05
 .else
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         lda     #<QT_WRITTEN_BY
         ldy     #>QT_WRITTEN_BY
         jsr     STROUT
@@ -6764,7 +6766,7 @@ COLD_START2:
         ldx     #$FB
 .endif
         txs
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         lda     #<COLD_START2
         ldy     #>COLD_START2
         sta     Z00+1
@@ -6781,7 +6783,7 @@ COLD_START2:
         sty     GOGIVEAYF+1
 .endif
         lda     #$4C
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         sta     JMPADRS
         sta     Z00
 .else
@@ -6799,7 +6801,7 @@ COLD_START2:
         sta     $0B
         sty     $0C
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         lda     #<IQERR
         ldy     #>IQERR
 .endif
@@ -6811,7 +6813,7 @@ COLD_START2:
         sta     L0001
         sty     L0001+1
 .endif
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
 .ifdef APPLE
         lda     #$28
 .else
@@ -6853,7 +6855,7 @@ L4098:
 .ifndef KBD
         txa
         sta     SHIFTSIGNEXT
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         sta     Z03
 .endif
         sta     LASTPT+1
@@ -6885,7 +6887,7 @@ L4098:
 .endif
         ldx     #TEMPST
         stx     TEMPPT
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         lda     #<QT_MEMORY_SIZE
         ldy     #>QT_MEMORY_SIZE
         jsr     STROUT
@@ -6941,7 +6943,7 @@ L40DD:
         asl     a
         sta     (LINNUM),y
         cmp     (LINNUM),y
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         beq     L40D7
 .endif
 .ifdef OSI_KBD
@@ -6953,7 +6955,7 @@ L40DD:
         beq     L40D7
 .endif
 L40EE:
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         jsr     CHRGOT
         jsr     LINGET
         tay
@@ -6968,7 +6970,7 @@ L40FA:
         sta     FRETOP
         sty     FRETOP+1
 L4106:
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
 .ifdef APPLE
         lda     #$FF
         jmp     L2829
@@ -7077,7 +7079,7 @@ L4192:
 .ifndef OSI_KBD_APPLE
         jsr     SCRTCH
 .endif
-.ifdef CBM
+.ifdef CONFIG_CBM_ALL
         jmp     RESTART
 .else
         lda     #<STROUT
@@ -7099,7 +7101,7 @@ QT_WANT:
         .byte   $00
 .endif
 QT_WRITTEN_BY:
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
 .ifdef APPLE
 ; set the MSB of every byte of a string
 .macro asc80 str
@@ -7156,7 +7158,7 @@ QT_BASIC:
         .byte   $0A,$0D,$0A
 		.byte	"APPLE BASIC V1.1"
 .endif
-.ifndef CBM
+.ifndef CONFIG_CBM_ALL
         .byte   $0D,$0A
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
         .byte   $0D,$0A,$00
