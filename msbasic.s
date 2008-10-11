@@ -7751,64 +7751,10 @@ INLINX:
         jsr     OUTSP
         ldx     #$80
         jmp     INLIN1
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
+        .byte   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        .byte   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        .byte   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        .byte   0,0,0,0,0,0,0,0,0,0
 L29D0:
         jsr     L29DA
         lda     FAC+3
@@ -7822,19 +7768,7 @@ L29DA:
 L29E0:
         pla
         jmp     LFB40
-        brk                                     ; 29E4 00                       .
-        brk                                     ; 29E5 00                       .
-        brk                                     ; 29E6 00                       .
-L29E7:
-        brk                                     ; 29E7 00                       .
-        brk                                     ; 29E8 00                       .
-        brk                                     ; 29E9 00                       .
-        brk                                     ; 29EA 00                       .
-        brk                                     ; 29EB 00                       .
-        brk                                     ; 29EC 00                       .
-        brk                                     ; 29ED 00                       .
-        brk                                     ; 29EE 00                       .
-        brk                                     ; 29EF 00                       .
+        .byte   0,0,0,0,0,0,0,0,0,0,0,0
 L29F0:
         pha                                     ; 29F0 48                       H
         ldx     #$01                            ; 29F1 A2 01                    ..
@@ -7843,19 +7777,11 @@ L29F0:
         inc     $BA                             ; 29F7 E6 BA                    ..
 L29F9:
         jmp     L291E                           ; 29F9 4C 1E 29                 L.)
-; ----------------------------------------------------------------------------
-        brk                                     ; 29FC 00                       .
-        brk                                     ; 29FD 00                       .
-        brk                                     ; 29FE 00                       .
-        brk                                     ; 29FF 00                       .
-        eor     ($53,x)                         ; 2A00 41 53                    AS
-        and     ($D2,x)                         ; 2A02 21 D2                    !.
-        .byte   $02                             ; 2A04 02                       .
-        .byte   $FA                             ; 2A05 FA                       .
-        brk                                     ; 2A06 00                       .
-        lda     $12                             ; 2A07 A5 12                    ..
-        beq     L2A0E                           ; 2A09 F0 03                    ..
-        jmp     (L0008)                         ; 2A0B 6C 08 00                 l..
+        .byte   $00,$00,$00,$00,$41,$53,$21,$D2
+		.byte   $02,$FA,$00 
+        lda     $12
+        beq     L2A0E
+        jmp     (L0008)
 L2A0E:
         jsr     LF689
         .byte   $15,$BC,$08,$10,$52,$45,$75,$10
