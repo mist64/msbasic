@@ -74,86 +74,113 @@ CONFIG_SAFE_NAMENOTFOUND := 1
 
         .setcpu "6502"
 		.macpack longbranch
-        .segment "BASIC"
 
 STACK           := $0100
 
+		.segment "HEADER"
 .ifdef KBD
         jmp     LE68C
         .byte   $00,$13,$56
 .endif
 
+        .segment "VECTORS"
 TOKEN_ADDRESS_TABLE:
-        .word   END-1
-        .word   FOR-1
-        .word   NEXT-1
-        .word   DATA-1
+        .segment "KEYWORDS"
+TOKEN_NAME_TABLE:
+.macro keyvec key, vec
+        .segment "VECTORS"
+		.addr	vec
+        .segment "KEYWORDS"
+		htasc	key
+.endmacro
+.macro keyrts key, vec
+        .segment "VECTORS"
+		.word	vec-1
+        .segment "KEYWORDS"
+		htasc	key
+.endmacro
+
+		keyrts "END", END
+		keyrts "FOR", FOR
+		keyrts "NEXT", NEXT
+		keyrts "DATA", DATA
 .ifdef CONFIG_CBM_ALL
-        .word   INPUTH-1
+		keyrts "INPUT#", INPUTH
 .endif
-        .word   INPUT-1
-        .word   DIM-1
-        .word   READ-1
+		keyrts "INPUT", INPUT
+		keyrts "DIM", DIM
+		keyrts "READ", READ
 .ifdef APPLE
-        .word   PLT-1
+		keyrts "PLT", PLT
 .else
-        .word   LET-1
+		keyrts "LET", LET
 .endif
-        .word   GOTO-1
-        .word   RUN-1
-        .word   IF-1
-        .word   RESTORE-1
-        .word   GOSUB-1
-        .word   POP-1
+		keyrts "GOTO", GOTO
+		keyrts "RUN", RUN
+		keyrts "IF", IF
+		keyrts "RESTORE", RESTORE
+		keyrts "GOSUB", GOSUB
+		keyrts "RETURN", POP
 .ifdef APPLE
-        .word   TEX-1
+		keyrts "TEX", TEX
 .else
-        .word   REM-1
+		keyrts "REM", REM
 .endif
-        .word   STOP-1
-        .word   ON-1
+		keyrts "STOP", STOP
+		keyrts "ON", ON
 .ifdef CONFIG_NULL
-        .word   NULL-1
+		keyrts "NULL", NULL
 .endif
 .ifdef KBD
-        .word   PLOD-1
-        .word   PSAV-1
-        .word   VLOD-1
-        .word   VSAV-1
+		keyrts "PLOD", PLOD
+		keyrts "PSAV", PSAV
+		keyrts "VLOD", VLOD
+		keyrts "VSAV", VSAV
 .else
-        .word   WAIT-1
-        .word   LOAD-1
-        .word   SAVE-1
+		keyrts "WAIT", WAIT
+		keyrts "LOAD", LOAD
+		keyrts "SAVE", SAVE
 .endif
 .ifdef CONFIG_CBM_ALL
-        .word   VERIFY-1
+		keyrts "VERIFY", VERIFY
 .endif
-        .word   DEF-1
+		keyrts "DEF", DEF
 .ifdef KBD
-        .word   SLOD-1
+		keyrts "SLOD", SLOD
 .else
-        .word   POKE-1
+		keyrts "POKE", POKE
 .endif
 .ifdef CONFIG_CBM_ALL
-        .word   PRINTH-1
+		keyrts "PRINT#", PRINTH
 .endif
-        .word   PRINT-1
-        .word   CONT-1
-        .word   LIST-1
-        .word   CLEAR-1
+		keyrts "PRINT", PRINT
+		keyrts "CONT", CONT
+		keyrts "LIST", LIST
 .ifdef CONFIG_CBM_ALL
-		.word	CMD-1
-		.word	SYS-1
-		.word	OPEN-1
-		.word	CLOSE-1
+		keyrts "CLR", CLEAR
+.else
+		keyrts "CLEAR", CLEAR
+.endif
+.ifdef CONFIG_CBM_ALL
+		keyrts "CMD", CMD
+		keyrts "SYS", SYS
+		keyrts "OPEN", OPEN
+		keyrts "CLOSE", CLOSE
 .endif
 .ifndef CONFIG_SMALL
-        .word   GET-1
+		keyrts "GET", GET
 .endif
 .ifdef KBD
-        .word   PRT-1
+		keyrts "PRT", PRT
 .endif
-        .word   NEW-1
+		keyrts "NEW", NEW
+
+;		keyrts "", 
+;		keyrts "", 
+;		keyrts "", 
+;		keyrts "", 
+
+        .segment "VECTORS"
 UNFNC:
         .addr   SGN
         .addr   INT
@@ -211,81 +238,8 @@ MATHTBL:
         .word   EQUOP-1
         .byte   $64
         .word   RELOPS-1
-TOKEN_NAME_TABLE:
-	htasc	"END"
-	htasc	"FOR"
-	htasc	"NEXT"
-	htasc	"DATA"
-.ifdef CONFIG_CBM_ALL
-	htasc	"INPUT#"
-.endif
-	htasc	"INPUT"
-	htasc	"DIM"
-	htasc	"READ"
-.ifdef APPLE
-	htasc	"PLT"
-.else
-	htasc	"LET"
-.endif
-	htasc	"GOTO"
-	htasc	"RUN"
-	htasc	"IF"
-	htasc	"RESTORE"
-	htasc	"GOSUB"
-	htasc	"RETURN"
-.ifdef APPLE
-	htasc	"TEX"
-.else
-	htasc	"REM"
-.endif
-	htasc	"STOP"
-	htasc	"ON"
-.ifdef CONFIG_NULL
-	htasc	"NULL"
-.endif
-.ifdef KBD
-	htasc	"PLOD"
-	htasc	"PSAV"
-	htasc	"VLOD"
-	htasc	"VSAV"
-.else
-	htasc	"WAIT"
-	htasc	"LOAD"
-	htasc	"SAVE"
-.endif
-.ifdef CONFIG_CBM_ALL
-	htasc	"VERIFY"
-.endif
-	htasc	"DEF"
-.ifdef KBD
-	htasc	"SLOD"
-.else
-	htasc	"POKE"
-.endif
-.ifdef CONFIG_CBM_ALL
-	htasc	"PRINT#"
-.endif
-	htasc	"PRINT"
-	htasc	"CONT"
-	htasc	"LIST"
-.ifdef CONFIG_CBM_ALL
-	htasc	"CLR"
-.else
-	htasc	"CLEAR"
-.endif
-.ifdef CONFIG_CBM_ALL
-	htasc	"CMD"
-	htasc	"SYS"
-	htasc	"OPEN"
-	htasc	"CLOSE"
-.endif
-.ifndef CONFIG_SMALL
-	htasc	"GET"
-.endif
-.ifdef KBD
-	htasc	"PRT"
-.endif
-	htasc	"NEW"
+
+        .segment "KEYWORDS"
 	htasc	"TAB("
 	htasc	"TO"
 	htasc	"FN"
@@ -342,6 +296,7 @@ TOKEN_NAME_TABLE:
 	htasc	"GO"
 .endif
 	.byte   0
+        .segment "CODE"
 ERROR_MESSAGES:
 .ifdef CONFIG_SMALL
 .define ERRSTR_NOFOR "NF"
