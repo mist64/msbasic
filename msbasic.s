@@ -3,7 +3,7 @@
 .ifdef CBM1
 .include "defines_cbm.s" ; 6
 CONFIG_CBM_ALL := 1
-CONFIG_CBM1_PATCHES := 1 ; don't turn off!
+CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 CBM1_APPLE := 1
 CBM_APPLE := 1
 .endif
@@ -13,21 +13,21 @@ CBM_APPLE := 1
 CONFIG_SMALL := 1
 CONFIG_SCRTCH_ORDER := 1
 CONFIG_NULL := 1
-CONFIG_PRINT_CR := 1
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
 .endif
 
 .ifdef APPLE
 .include "defines_apple.s"; 10
 CONFIG_11 := 1
 CBM2_APPLE := 1
-CBM2_KBD_APPLE := 1
 KIM_KBD_APPLE := 1
 CBM2_KIM_APPLE := 1
 CBM1_APPLE := 1
 CBM_APPLE := 1
 KIM_APPLE := 1
 CONFIG_SCRTCH_ORDER := 1
-CONFIG_PRINT_CR := 1
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
+; INPUTBUFFER > $0100
 .endif
 
 .ifdef KIM
@@ -35,12 +35,11 @@ CONFIG_PRINT_CR := 1
 KIM_KBD := 1
 CONFIG_11 := 1
 CONFIG_11_NOAPPLE := 1
-CBM2_KIM := 1
 KIM_KBD_APPLE := 1
 CBM2_KIM_APPLE := 1
 KIM_APPLE := 1
 CONFIG_NULL := 1
-CONFIG_PRINT_CR := 1
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
 .endif
 
 .ifdef CBM2
@@ -48,12 +47,12 @@ CONFIG_PRINT_CR := 1
 CONFIG_CBM_ALL := 1
 CONFIG_11 := 1
 CONFIG_11_NOAPPLE := 1
-CBM2_KBD_APPLE := 1
 CBM2_KBD := 1
 CBM2_KIM := 1
 CBM2_APPLE := 1
 CBM2_KIM_APPLE := 1
 CBM_APPLE := 1
+; INPUTBUFFER > $0100
 .endif
 
 .ifdef KBD
@@ -64,8 +63,8 @@ CBM2_KBD := 1
 KIM_KBD := 1
 CONFIG_11 := 1
 CONFIG_11_NOAPPLE := 1
-CBM2_KBD_APPLE := 1
 KIM_KBD_APPLE := 1
+; INPUTBUFFER > $0100
 .endif
 
 .include "macros.s"
@@ -1100,7 +1099,7 @@ L24DB:
         bpl     L24AA
 L24EA:
         sta     INPUTBUFFER-3,y
-.ifdef CBM2_KBD_APPLE
+.if INPUTBUFFER >= $0100
         dec     TXTPTR+1
 .endif
         lda     #<INPUTBUFFER-1
@@ -1679,7 +1678,9 @@ LE68E:
         bpl     LE68E
         rts
 .endif
-.ifndef CBM2_KBD_APPLE
+.if .def(CONFIG_NULL) || .def(CBM1)
+; CBM1 has the keyword removed,
+; but the code is, still here
 NULL:
         jsr     GETBYT
         bne     RET1
@@ -2266,7 +2267,7 @@ PRINTNULLS:
         lda     Z03
         bne     L29DD
 .endif
-.ifndef CBM2_APPLE
+.if .def(CONFIG_NULL) || .def(CBM1)
         txa
         pha
         ldx     Z15
@@ -4188,7 +4189,7 @@ L32AA:
 L32B6:
         stx     STRNG2+1
         lda     STRNG1+1
-.ifdef CBM2_KBD_APPLE
+.if INPUTBUFFER >= $0100
         beq     LD399
         cmp     #>INPUTBUFFER
 .endif
@@ -6859,7 +6860,7 @@ L4098:
         sta     Z03
 .endif
         sta     LASTPT+1
-.ifndef CBM2_KBD_APPLE
+.if .defined(CONFIG_NULL) || .defined(CBM1)
         sta     Z15
 .endif
 .ifndef CONFIG_11
