@@ -94,13 +94,7 @@ STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $3E
 STACK_TOP		:= $FA
 .endif
-NUM_TOKENS		:= $23
 NULL_MAX		:= $0A
-.ifdef CBM1
-MAX_EXPON = 12
-.else
-MAX_EXPON = 10
-.endif
 
 RAMSTART2		:= $0400
 RAMSTART3		:= $0400

@@ -4,38 +4,36 @@
 
 .if .def(cbmbasic1)
 CBM1 := 1
-.include "defines_cbm.s" ; 6
+.include "defines_cbm.s"
 .elseif .def(osi)
 OSI := 1
-.include "defines_osi.s"; 2
+.include "defines_osi.s"
 .elseif .def(applesoft)
 APPLE := 1
-.include "defines_apple.s"; 10
+.include "defines_apple.s"
 .elseif .def(kb9)
 KIM := 1
-.include "defines_kim.s" ; 7
+.include "defines_kim.s"
 .elseif .def(cbmbasic2)
 CBM2 := 1
-.include "defines_cbm.s" ; 11
+.include "defines_cbm.s"
 .elseif .def(kbdbasic)
 KBD := 1
-.include "defines_kbd.s" ; 10
+.include "defines_kbd.s"
 .endif
 
 .ifdef CONFIG_SMALL
 BYTES_FP		:= 4
-BYTES_PER_ELEMENT := 4
 BYTES_PER_VARIABLE := 6
 .else
 BYTES_FP		:= 5
-.ifdef APPLE
-BYTES_PER_ELEMENT := 6 ; ??? should be 5 on Apple
-.else
-BYTES_PER_ELEMENT := 5
-.endif
 BYTES_PER_VARIABLE := 7
+.endif
 
-
+.ifdef APPLE
+BYTES_PER_ELEMENT := 6 ; ???
+.else
+BYTES_PER_ELEMENT := BYTES_FP
 .endif
 
 MANTISSA_BYTES	:= BYTES_FP-1
@@ -43,6 +41,13 @@ MANTISSA_BYTES	:= BYTES_FP-1
 BYTES_PER_FRAME := 2*BYTES_FP+8
 FOR_STACK1		:= 2*BYTES_FP+5
 FOR_STACK2		:= BYTES_FP+4
+
+.ifdef CBM1
+MAX_EXPON = 12
+.else
+MAX_EXPON = 10
+.endif
+
 
 .include "macros.s"
 .include "zeropage.s"
@@ -134,6 +139,8 @@ STACK           := $0100
 		keyword_rts "PRT", PRT
 .endif
 		keyword_rts "NEW", NEW
+
+		count_tokens
 
 		keyword	"TAB(", TOKEN_TAB
 		keyword	"TO", TOKEN_TO
@@ -7703,13 +7710,13 @@ L29E0:
         jmp     LFB40
         .byte   0,0,0,0,0,0,0,0,0,0,0,0
 L29F0:
-        pha                                     ; 29F0 48                       H
-        ldx     #$01                            ; 29F1 A2 01                    ..
-        inc     $B9                             ; 29F3 E6 B9                    ..
-        bne     L29F9                           ; 29F5 D0 02                    ..
-        inc     $BA                             ; 29F7 E6 BA                    ..
+        pha
+        ldx     #$01
+        inc     $B9
+        bne     L29F9
+        inc     $BA
 L29F9:
-        jmp     L291E                           ; 29F9 4C 1E 29                 L.)
+        jmp     L291E
         .byte   $00,$00,$00,$00,$41,$53,$21,$D2
 		.byte   $02,$FA,$00 
         lda     $12

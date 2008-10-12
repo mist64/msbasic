@@ -40,7 +40,6 @@ RNDSEED			:= $00D4
 
 L0207           := $0207
 L020A           := $020A
-L2A13           := $2A0A
 MONRDKEY        := $FFEB
 MONCOUT         := $FFEE
 MONISCNTC       := $FFF1
@@ -49,9 +48,7 @@ SAVE            := $FFF7
 
 STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $33
-NUM_TOKENS		:= $1C
 NULL_MAX		:= $0A
-MAX_EXPON = 10
 
 RAMSTART3		:= $0300
 RAMSTART2		:= $0300

@@ -52,6 +52,12 @@ DUMMY_START:
 		keyword key, token
 .endmacro
 
+.macro count_tokens
+        .segment "DUMMY"
+		NUM_TOKENS := <(*-DUMMY_START)
+.endmacro
+
+
 ;---------------------------------------------
 ; set the MSB of every byte of a string
 .macro asc80 str
