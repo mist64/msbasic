@@ -24,10 +24,8 @@ KBD := 1
 
 .ifdef CONFIG_SMALL
 BYTES_FP		:= 4
-BYTES_PER_VARIABLE := 6
 .else
 BYTES_FP		:= 5
-BYTES_PER_VARIABLE := 7
 .endif
 
 .ifdef APPLE
@@ -35,9 +33,8 @@ BYTES_PER_ELEMENT := 6 ; ???
 .else
 BYTES_PER_ELEMENT := BYTES_FP
 .endif
-
+BYTES_PER_VARIABLE := BYTES_FP+2
 MANTISSA_BYTES	:= BYTES_FP-1
-
 BYTES_PER_FRAME := 2*BYTES_FP+8
 FOR_STACK1		:= 2*BYTES_FP+5
 FOR_STACK2		:= BYTES_FP+4
@@ -6598,9 +6595,10 @@ POLY_ATN:
 RAMSTART1:
 GENERIC_CHRGET:
         inc     TXTPTR
-        bne     L4047
+        bne     GENERIC_CHRGOT
         inc     TXTPTR+1
-L4047:
+GENERIC_CHRGOT:
+GENERIC_TXTPTR = GENERIC_CHRGOT + 1
         lda     $EA60
 .ifdef KBD
         jsr     LF430
@@ -6900,8 +6898,8 @@ L4129:
 L4136:
 .endif
 .ifndef KIM
-        ldx     #<RAMSTART3
-        ldy     #>RAMSTART3
+        ldx     #<RAMSTART2
+        ldy     #>RAMSTART2
 .else
         lda     #<QT_WANT
         ldy     #>QT_WANT
