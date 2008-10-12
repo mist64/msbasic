@@ -82,7 +82,6 @@ CONFIG_SAFE_NAMENOTFOUND := 1
 
 .zeropage
 
-.ifndef CONFIG_SMALL
 .ifdef CBM1
 .res $65
 .endif
@@ -95,6 +94,12 @@ CONFIG_SAFE_NAMENOTFOUND := 1
 .ifdef APPLE
 .res $55
 .endif
+.ifdef OSI
+.res $65
+.endif
+.ifdef KBD
+.res $15
+.endif
 TEMPPT:
 	.res 1
 LASTPT:
@@ -106,7 +111,11 @@ INDEX:
 DEST:
 	.res 2
 RESULT:
+.ifdef CONFIG_SMALL
+	.res 3
+.else
 	.res 4
+.endif
 RESULT_LAST:
 	.res 1
 TXTTAB:
@@ -149,36 +158,57 @@ FNCNAM:
 TEMP3:
 	.res 2
 DSCPTR:
-	.res 3
+.ifdef CONFIG_SMALL
+		.res 2
+.else
+		.res 3
+.endif
 DSCLEN:
 	.res 1
+.ifndef KBD
 JMPADRS:
+.endif
 	.res 1
+.ifndef CONFIG_SMALL
 LENGTH:
+.endif
 Z52:
 	.res 1
 ARGEXTENSION:
+.ifndef CONFIG_SMALL
 	.res 1
+.endif
 TEMP1:
 	.res 1
 HIGHDS:
 	.res 2
 HIGHTR:
 	.res 2
+.ifndef CONFIG_SMALL
 TEMP2:
 	.res 1
+.endif
 INDX:
 TMPEXP:
+.ifdef CONFIG_SMALL
+TEMP2:
+.endif
 	.res 1
 EXPON:
 	.res 1
 LOWTR:
+.ifndef KBD
 LOWTRX:
+.endif
 	.res 1
 EXPSGN:
 	.res 1
 FAC:
+.ifdef CONFIG_SMALL
+	.res 3
+.else
 	.res 4
+.endif
 FAC_LAST:
 	.res 1
 FACSIGN:
@@ -188,7 +218,11 @@ SERLEN:
 SHIFTSIGNEXT:
 	.res 1
 ARG:
+.ifdef CONFIG_SMALL
+	.res 3
+.else
 	.res 4
+.endif
 ARG_LAST:
 	.res 1
 ARGSIGN:
@@ -205,6 +239,7 @@ CHRGOT:
 	.res 1
 TXTPTR:
 	.res 6
+.ifndef CONFIG_SMALL
 L00CF:
 	.res 11
 RNDSEED:
