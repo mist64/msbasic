@@ -7189,12 +7189,6 @@ QT_WANT:
 QT_WRITTEN_BY:
 .ifndef CONFIG_CBM_ALL
 .ifdef APPLE
-; set the MSB of every byte of a string
-.macro asc80 str
-	.repeat	.strlen(str),I
-		.byte	.strat(str,I)+$80
-	.endrep
-.endmacro
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
 		.byte	$0D,$00
 .else
