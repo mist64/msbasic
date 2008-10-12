@@ -1,10 +1,10 @@
 # 1.0
-#echo cbmbasic1
-#ca65 -D CBM1 msbasic.s -o tmp/cbmbasic1.o &&
-#ld65 -C cbmbasic1.cfg tmp/cbmbasic1.o -o tmp/cbmbasic1-new.bin && 
-#xxd -g 1 orig/cbmbasic1.bin > tmp/cbmbasic1.bin.txt
-#xxd -g 1 tmp/cbmbasic1-new.bin > tmp/cbmbasic1-new.bin.txt
-#diff -u tmp/cbmbasic1.bin.txt tmp/cbmbasic1-new.bin.txt | head
+echo cbmbasic1
+ca65 -D CBM1 msbasic.s -o tmp/cbmbasic1.o &&
+ld65 -C cbmbasic1.cfg tmp/cbmbasic1.o -o tmp/cbmbasic1-new.bin && 
+xxd -g 1 orig/cbmbasic1.bin > tmp/cbmbasic1.bin.txt
+xxd -g 1 tmp/cbmbasic1-new.bin > tmp/cbmbasic1-new.bin.txt
+diff -u tmp/cbmbasic1.bin.txt tmp/cbmbasic1-new.bin.txt | head
 
 # 1.0 ?
 #echo kbdbasic
@@ -38,7 +38,7 @@ xxd -g 1 orig/cbmbasic2.bin > tmp/cbmbasic2.bin.txt
 xxd -g 1 tmp/cbmbasic2-new.bin > tmp/cbmbasic2-new.bin.txt
 diff -u tmp/cbmbasic2.bin.txt tmp/cbmbasic2-new.bin.txt | head
 
-da65 --info del/cbmbasic2-temp.txt 
+#da65 --info del/cbmbasic2-temp.txt 
 
 # 1.1
 #echo applesoft

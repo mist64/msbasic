@@ -1,14 +1,24 @@
 .ifdef CBM1
-USR				:= $0000
-Z00             := $0000
-L0001           := $0001
-L0002           := $0002
-GOWARM          := $0003
+;USR				:= $0000
+;Z00             := $0000
+INPUTBUFFERX    := $0000
+;L0001           := $0001
+;L0002           := $0002
+;GOWARM          := $0003
 Z03				:= $0003 ; same
 GOSTROUT        := $0006
 GOGIVEAYF       := $0008
-CHARAC          := $005A
-ENDCHR          := $005B
+
+;Z15             := $0004
+Z16             := $0005
+Z17             := $0006
+Z18             := $0007
+LINNUM          := $0008
+TXPSV			:= $0008
+INPUTBUFFER     := $000A
+
+;CHARAC          := $005A
+;ENDCHR          := $005B
 EOLPNTR         := $005C
 DIMFLG          := $005D
 VALTYP          := $005E
@@ -17,14 +27,6 @@ SUBFLG          := $0061
 INPUTFLG        := $0062
 CPRMASK         := $0063
 Z14             := $0064                        ; Ctrl+O flag
-Z15             := $0004
-Z16             := $0005
-Z17             := $0006
-Z18             := $0007
-LINNUM          := $0008
-TXPSV			:= $0008
-INPUTBUFFER     := $000A
-INPUTBUFFERX    := $0000
 TEMPPT          := $0065
 LASTPT          := $0066
 TEMPST			:= $0068
@@ -86,99 +88,6 @@ L00CF			:= $00CF
 RNDSEED			:= $00DA
 Z96				:= $020C
 .else
-
-
-
-;USR				:= $0000
-;Z00             := $0000
-;L0001           := $0001
-;L0002           := $0002
-;GOWARM          := $0003
-;Z15             := $0004
-;Z17             := $0006
-;GOSTROUT        := $0006
-;Z18             := $0007
-;GOGIVEAYF       := $0008
-;Z03				:= $000E;3 ; same
-;LINNUM          := $0011;0008
-
-
-
-
-CHARAC          := $005A-82-5
-ENDCHR          := $005B-82-5
-EOLPNTR         := $005C-82-5
-DIMFLG          := $005D-82-5
-VALTYP          := $005E-82-5
-DATAFLG         := $0060-82-5
-SUBFLG          := $0061-82-5
-INPUTFLG        := $0062-82-5
-CPRMASK         := $0063-82-5
-Z14             := $0064-82-5                        ; Ctrl+O flag
-
-;TEMPPT          := $0065-82
-;LASTPT          := $0066-82
-;TEMPST			:= $0068-82
-;INDEX           := $0071-82
-;DEST            := $0073-82
-;RESULT          := $0075-82
-;RESULT_LAST     := $0079-82
-;TXTTAB          := $007A-82
-;VARTAB          := $007C-82
-;ARYTAB          := $007E-82
-;STREND          := $0080-82
-;FRETOP          := $0082-82
-;FRESPC          := $0084-82
-;MEMSIZ          := $0086-82
-;CURLIN          := $0088-82
-;OLDLIN          := $008A-82
-;OLDTEXT         := $008C-82
-;Z8C             := $008E-82
-;DATPTR          := $0090-82
-;INPTR           := $0092-82
-;VARNAM          := $0094-82
-;VARPNT          := $0096-82
-;FORPNT          := $0098-82
-;LASTOP          := $009A-82
-;TXPSV			:= $009A-82
-;CPRTYP          := $009C-82
-;FNCNAM          := $009D-82
-;TEMP3           := $009D-82 ; same
-;DSCPTR          := $009F-82
-;DSCLEN          := $00A2-82
-;JMPADRS         := $00A3-82
-;Z52				:= $00A4-82;
-;LENGTH			:= $00A4-82
-;ARGEXTENSION    := $00A5-82 ; overlap with JMPADRS! (same on c64)
-;TEMP1           := $00A6-82
-;HIGHDS          := $00A7-82
-;HIGHTR          := $00A9-82
-;TEMP2			:= $00AB-82
-;INDX            := $00AC-82
-;TMPEXP          := $00AC-82 ; same
-;EXPON           := $00AD-82
-;LOWTR           := $00AE-82                        ; $9D also EXPSGN
-;LOWTRX          := $00AE-82                        ; $9D also EXPSGN
-;EXPSGN			:= $00AF-82
-;FAC             := $00B0-82
-;FAC_LAST        := $00B4-82
-;FACSIGN         := $00B5-82
-;SERLEN          := $00B6-82
-;SHIFTSIGNEXT    := $00B7-82
-;ARG             := $00B8-82
-;ARG_LAST        := $00BC-82
-;ARGSIGN         := $00BD-82
-;STRNG1          := $00BE-82                        ; TODO: also SGNCPR
-;FACEXTENSION	:= $00BF-82
-;STRNG2          := $00C0-82
-;CHRGET          := $00C2-82
-;CHRGOT          := $00C8-82
-;TXTPTR          := $00C9-82
-;L00CF			:= $00CF-82
-;RNDSEED			:= $00DA-82
-;Z96				:= $00E8-82
-;Z16             := $0118-82
-
 INPUTBUFFER     := $0200;00A
 INPUTBUFFERX    := $0200
 .endif

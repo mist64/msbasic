@@ -1,83 +1,5 @@
 ; Microsoft BASIC for 6502
 
-.zeropage
-.ifdef CBM2
-USR:		.res 1
-Z00			=  USR
-L0001:		.res 1
-L0002:		.res 1
-GOWARM:		.res 1
-Z15:		.res 2
-Z17:		.res 1
-GOSTROUT	= Z17
-Z18:		.res 1
-GOGIVEAYF:	.res 6
-Z03:		.res 3
-LINNUM:		.res 2
-TEMPPT:		.res 1
-LASTPT:		.res 2
-TEMPST:		.res 9;	:= $0068-82
-INDEX:      .res 2;     := $0071-82
-DEST:       .res 2;     := $0073-82
-RESULT:     .res 4;     := $0075-82
-RESULT_LAST:.res 1;     := $0079-82
-TXTTAB:     .res 2;     := $007A-82
-VARTAB:     .res 2;     := $007C-82
-ARYTAB:     .res 2;     := $007E-82
-STREND:     .res 2;     := $0080-82
-FRETOP:     .res 2;     := $0082-82
-FRESPC:     .res 2;     := $0084-82
-MEMSIZ:     .res 2;     := $0086-82
-CURLIN:     .res 2;     := $0088-82
-OLDLIN:     .res 2;     := $008A-82
-OLDTEXT:    .res 2;     := $008C-82
-Z8C:        .res 2;     := $008E-82
-DATPTR:     .res 2;     := $0090-82
-INPTR:      .res 2;     := $0092-82
-VARNAM:     .res 2;     := $0094-82
-VARPNT:     .res 2;     := $0096-82
-FORPNT:     .res 2;     := $0098-82
-LASTOP:     .res 2;     := $009A-82
-TXPSV = LASTOP
-CPRTYP:     .res 1;     := $009C-82
-FNCNAM:     .res 2;     := $009D-82
-TEMP3 = FNCNAM
-DSCPTR:     .res 3;     := $009F-82
-DSCLEN:     .res 1;     := $00A2-82
-JMPADRS:    .res 1;     := $00A3-82
-Z52:		.res 1;		:= $00A4-82;
-LENGTH = Z52
-ARGEXTENSION:.res 1;    := $00A5-82 ; overlap with JMPADRS! (same on c64)
-TEMP1:      .res 1;     := $00A6-82
-HIGHDS:     .res 2;     := $00A7-82
-HIGHTR:     .res 2;     := $00A9-82
-TEMP2:		.res 1;	:= $00AB-82
-INDX:       .res 1;     := $00AC-82
-TMPEXP     = INDX
-EXPON:      .res 1;     := $00AD-82
-LOWTR:      .res 1;     := $00AE-82                        ; $9D also EXPSGN
-LOWTRX     = LOWTR
-EXPSGN:		.res 1;	:= $00AF-82
-FAC:        .res 4;     := $00B0-82
-FAC_LAST:   .res 1;     := $00B4-82
-FACSIGN:    .res 1;     := $00B5-82
-SERLEN:     .res 1;     := $00B6-82
-SHIFTSIGNEXT:.res 1;    := $00B7-82
-ARG:        .res 4;     := $00B8-82
-ARG_LAST:   .res 1;     := $00BC-82
-ARGSIGN:    .res 1;     := $00BD-82
-STRNG1:     .res 1;     := $00BE-82                        ; TODO: also SGNCPR
-FACEXTENSION:.res 1;	:= $00BF-82
-STRNG2:     .res 2;     := $00C0-82
-CHRGET:     .res 6;     := $00C2-82
-CHRGOT:     .res 1;     := $00C8-82
-TXTPTR:     .res 6;     := $00C9-82
-L00CF:		.res 11;	:= $00CF-82
-RNDSEED:	.res 14;		:= $00DA-82
-Z96:		.res 48;		:= $00E8-82
-Z16:        .res 1;     := $0118-82
-.endif
-
 .ifdef CBM1
 .include "defines_cbm.s" ; 6
 CONFIG_CBM_ALL := 1
@@ -149,6 +71,104 @@ CONFIG_SAFE_NAMENOTFOUND := 1
 .endif
 
 .include "macros.s"
+
+.zeropage
+.ifdef CONFIG_CBM_ALL
+USR:		.res 1
+Z00			=  USR
+L0001:		.res 1
+L0002:		.res 1
+GOWARM:		.res 1
+Z15:		.res 1
+
+.ifdef CBM1
+CHARAC = $5A
+ENDCHR = $5B
+.else
+CHARAC = GOWARM
+ENDCHR = Z15
+.endif
+
+.endif
+.ifdef CBM2
+
+EOLPNTR:	.res 1
+Z17:		.res 1
+GOSTROUT	= Z17
+DIMFLG		= Z17
+Z18:		.res 1
+VALTYP = Z18
+GOGIVEAYF:	.res 1
+DATAFLG:	.res 1
+SUBFLG:		.res 1
+INPUTFLG:	.res 1
+CPRMASK:	.res 1
+Z14:		.res 1
+Z03:		.res 3
+LINNUM:		.res 2
+TEMPPT:		.res 1; := $0065-82
+LASTPT:		.res 2; := $0066-82
+TEMPST:		.res 9;	:= $0068-82
+INDEX:      .res 2;     := $0071-82
+DEST:       .res 2;     := $0073-82
+RESULT:     .res 4;     := $0075-82
+RESULT_LAST:.res 1;     := $0079-82
+TXTTAB:     .res 2;     := $007A-82
+VARTAB:     .res 2;     := $007C-82
+ARYTAB:     .res 2;     := $007E-82
+STREND:     .res 2;     := $0080-82
+FRETOP:     .res 2;     := $0082-82
+FRESPC:     .res 2;     := $0084-82
+MEMSIZ:     .res 2;     := $0086-82
+CURLIN:     .res 2;     := $0088-82
+OLDLIN:     .res 2;     := $008A-82
+OLDTEXT:    .res 2;     := $008C-82
+Z8C:        .res 2;     := $008E-82
+DATPTR:     .res 2;     := $0090-82
+INPTR:      .res 2;     := $0092-82
+VARNAM:     .res 2;     := $0094-82
+VARPNT:     .res 2;     := $0096-82
+FORPNT:     .res 2;     := $0098-82
+LASTOP:     .res 2;     := $009A-82
+TXPSV = LASTOP
+CPRTYP:     .res 1;     := $009C-82
+FNCNAM:     .res 2;     := $009D-82
+TEMP3 = FNCNAM
+DSCPTR:     .res 3;     := $009F-82
+DSCLEN:     .res 1;     := $00A2-82
+JMPADRS:    .res 1;     := $00A3-82
+Z52:		.res 1;		:= $00A4-82;
+LENGTH = Z52
+ARGEXTENSION:.res 1;    := $00A5-82 ; overlap with JMPADRS! (same on c64)
+TEMP1:      .res 1;     := $00A6-82
+HIGHDS:     .res 2;     := $00A7-82
+HIGHTR:     .res 2;     := $00A9-82
+TEMP2:		.res 1;	:= $00AB-82
+INDX:       .res 1;     := $00AC-82
+TMPEXP     = INDX
+EXPON:      .res 1;     := $00AD-82
+LOWTR:      .res 1;     := $00AE-82                        ; $9D also EXPSGN
+LOWTRX     = LOWTR
+EXPSGN:		.res 1;	:= $00AF-82
+FAC:        .res 4;     := $00B0-82
+FAC_LAST:   .res 1;     := $00B4-82
+FACSIGN:    .res 1;     := $00B5-82
+SERLEN:     .res 1;     := $00B6-82
+SHIFTSIGNEXT:.res 1;    := $00B7-82
+ARG:        .res 4;     := $00B8-82
+ARG_LAST:   .res 1;     := $00BC-82
+ARGSIGN:    .res 1;     := $00BD-82
+STRNG1:     .res 1;     := $00BE-82                        ; TODO: also SGNCPR
+FACEXTENSION:.res 1;	:= $00BF-82
+STRNG2:     .res 2;     := $00C0-82
+CHRGET:     .res 6;     := $00C2-82
+CHRGOT:     .res 1;     := $00C8-82
+TXTPTR:     .res 6;     := $00C9-82
+L00CF:		.res 11;	:= $00CF-82
+RNDSEED:	.res 14;		:= $00DA-82
+Z96:		.res 48;		:= $00E8-82
+Z16:        .res 1;     := $0118-82
+.endif
 
         .setcpu "6502"
 		.macpack longbranch
