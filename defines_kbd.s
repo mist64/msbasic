@@ -24,66 +24,8 @@ SUBFLG          := $000C;61
 INPUTFLG        := $000D;62
 CPRMASK         := $000E;63
 Z14             := $000F;64                        ; Ctrl+O flag
-;TEMPPT          := $0015;65
-;LASTPT          := $0016;;66
-;TEMPST			:= $0018;68
-;INDEX           := $0021;71
-;DEST            := $0023;73
-;RESULT          := $0025;75
-;RESULT_LAST     := $0028;78
-;TXTTAB          := $0029;79
-;VARTAB          := $002B;7B
-;ARYTAB          := $002D;7D
-;STREND          := $002F;7F
-;FRETOP          := $0031;81
-;FRESPC          := $0033;83
-;MEMSIZ          := $0035;;85
-;CURLIN          := $0037;87
-;OLDLIN          := $0039;89
-;OLDTEXT         := $003B;8B
-;Z8C             := $003D;8D
-;DATPTR          := $003F;8F
-;INPTR           := $0041;91
-;VARNAM          := $0043;93
-;VARPNT          := $0045;95
-;FORPNT          := $0047;97
-;LASTOP          := $0049;99
-;CPRTYP          := $004B;9B
-;FNCNAM          := $004C;9C
-;TEMP3           := $004C;;9C ; same
-;DSCPTR          := $004E;9E
-;DSCLEN          := $0050;A0
 JMPADRS         := $0093;A1
-;
-LENGTH          := $0094
-
-;Z52				:= $0052;
-
-;TEMP1           := $0053;A3
-;ARGEXTENSION    := $0053;;A3 ; same!
-;HIGHDS          := $0054;A4
-;HIGHTR          := $0056;A6
-;INDX            := $0058;;A8
-;TEMP2			:= $0058;;A8 ; same!
-;TMPEXP          := $0058;;A8 ; same
-;EXPON           := $0059;A9
-;LOWTR           := $005A;AA                        ; $AB also EXPSGN?
 LOWTRX          := $0094;AA                        ; $AB also EXPSGN?
-;EXPSGN			:= $005B;;AB
-;FAC             := $005C;AC
-;FAC_LAST        := $005F;;AF
-;FACSIGN         := $0060;B0
-;SERLEN          := $0061;B1
-;SHIFTSIGNEXT    := $0062;B2
-;ARG             := $0063;B3
-;ARG_LAST        := $0066;;B6
-;ARGSIGN         := $0067;B7
-;STRNG1          := $0068;B8                        ; TODO: also SGNCPR
-;FACEXTENSION	:= $0069;;B9
-;STRNG2          := $006A;BA
-;CHRGET          := $006C;BC
-;CHRGOT          := $0072;C2
-;TXTPTR          := $0073;C3
 
 RNDSEED			:= $00D4
 
@@ -111,24 +53,6 @@ MAX_EXPON = 10
 
 RAMSTART3		:= $0300
 CONST_MEMSIZ	:= $3FFF
-
-TOKEN_GOTO		:= $88
-TOKEN_GOSUB		:= $8C
-TOKEN_REM		:= $8E
-TOKEN_PRINT		:= $97
-TOKEN_TAB		:= $9D
-TOKEN_TO		:= $9E
-TOKEN_FN		:= $9F
-TOKEN_SPC		:= $A0
-TOKEN_THEN		:= $A1
-TOKEN_NOT		:= $A2
-TOKEN_STEP		:= $A3
-TOKEN_PLUS		:= $A4
-TOKEN_MINUS		:= $A5
-TOKEN_GREATER	:= $AB
-TOKEN_EQUAL		:= $AC
-TOKEN_SGN		:= $AE
-TOKEN_LEFTSTR	:= $C2
 
 RAMSTART2		:= $0300
 
