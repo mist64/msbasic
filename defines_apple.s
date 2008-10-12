@@ -1,3 +1,19 @@
+CONFIG_11 := 1
+CBM2_APPLE := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
+CBM1_APPLE := 1
+CBM_APPLE := 1
+KIM_APPLE := 1
+CONFIG_SCRTCH_ORDER := 1
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
+; INPUTBUFFER > $0100
+
+ZP_START = $55
+
+JMPADRS = DSCLEN + 1
+LOWTRX = LOWTR
+
 Z00             := $0000
 L0001           := $000B
 GOWARM          := $0003
@@ -30,10 +46,7 @@ MONRDKEY        := $FD0C
 MONCOUT         := $FDED
 
 STACK_TOP		:= $F8
-BYTES_PER_FRAME := $12
 SPACE_FOR_GOSUB := $36
-FOR_STACK1		:= $0F
-FOR_STACK2		:= $09
 NUM_TOKENS		:= $1C
 BYTES_PER_ELEMENT := 6 ; ??? should be 5 on Apple
 BYTES_PER_VARIABLE := 7

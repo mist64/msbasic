@@ -2,245 +2,32 @@
 
 .debuginfo +
 
-.ifdef cbmbasic1
+.if .def(cbmbasic1)
 CBM1 := 1
 .include "defines_cbm.s" ; 6
-CONFIG_CBM_ALL := 1
-CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
-CBM1_APPLE := 1
-CBM_APPLE := 1
-CONFIG_DATAFLAG := 1
-.endif
-
-.ifdef osi
+.elseif .def(osi)
 OSI := 1
 .include "defines_osi.s"; 2
-CONFIG_SMALL := 1
-CONFIG_SCRTCH_ORDER := 1
-CONFIG_NULL := 1
-CONFIG_PRINT_CR := 1 ; print CR when line end reached
-CONFIG_DATAFLAG := 1
-.endif
-
-.ifdef applesoft
+.elseif .def(applesoft)
 APPLE := 1
 .include "defines_apple.s"; 10
-CONFIG_11 := 1
-CBM2_APPLE := 1
-CONFIG_SAFE_NAMENOTFOUND := 1
-CBM2_KIM_APPLE := 1 ; OUTDO difference
-CBM1_APPLE := 1
-CBM_APPLE := 1
-KIM_APPLE := 1
-CONFIG_SCRTCH_ORDER := 1
-CONFIG_PRINT_CR := 1 ; print CR when line end reached
-; INPUTBUFFER > $0100
-.endif
-
-.ifdef kb9
+.elseif .def(kb9)
 KIM := 1
 .include "defines_kim.s" ; 7
-KIM_KBD := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CONFIG_SAFE_NAMENOTFOUND := 1
-CBM2_KIM_APPLE := 1 ; OUTDO difference
-KIM_APPLE := 1
-CONFIG_NULL := 1
-CONFIG_PRINT_CR := 1 ; print CR when line end reached
-.endif
-
-.ifdef cbmbasic2
+.elseif .def(cbmbasic2)
 CBM2 := 1
 .include "defines_cbm.s" ; 11
-CONFIG_CBM_ALL := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CBM2_KBD := 1
-CBM2_KIM := 1
-CBM2_APPLE := 1
-CBM2_KIM_APPLE := 1 ; OUTDO difference
-CBM_APPLE := 1
-CONFIG_DATAFLAG := 1
-; INPUTBUFFER > $0100
-.endif
-
-.ifdef kbdbasic
+.elseif .def(kbdbasic)
 KBD := 1
 .include "defines_kbd.s" ; 10
-CONFIG_SCRTCH_ORDER := 1
-CONFIG_SMALL := 1
-CBM2_KBD := 1
-KIM_KBD := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CONFIG_SAFE_NAMENOTFOUND := 1
-; INPUTBUFFER > $0100
 .endif
+
+BYTES_PER_FRAME := 2*BYTES_FP+8
+FOR_STACK1		:= 2*BYTES_FP+5
+FOR_STACK2		:= BYTES_FP+4
 
 .include "macros.s"
-
-.zeropage
-
-.ifdef CBM1
-.res $65
-.endif
-.ifdef CBM2
-.res $13
-.endif
-.ifdef KIM
-.res $63
-.endif
-.ifdef APPLE
-.res $55
-.endif
-.ifdef OSI
-.res $65
-.endif
-.ifdef KBD
-.res $15
-.endif
-TEMPPT:
-	.res 1
-LASTPT:
-	.res 2
-TEMPST:
-	.res 9
-INDEX:
-	.res 2
-DEST:
-	.res 2
-RESULT:
-.ifdef CONFIG_SMALL
-	.res 3
-.else
-	.res 4
-.endif
-RESULT_LAST:
-	.res 1
-TXTTAB:
-	.res 2
-VARTAB:
-	.res 2
-ARYTAB:
-	.res 2
-STREND:
-	.res 2
-FRETOP:
-	.res 2
-FRESPC:
-	.res 2
-MEMSIZ:
-	.res 2
-CURLIN:
-	.res 2
-OLDLIN:
-	.res 2
-OLDTEXT:
-	.res 2
-Z8C:
-	.res 2
-DATPTR:
-	.res 2
-INPTR:
-	.res 2
-VARNAM:
-	.res 2
-VARPNT:
-	.res 2
-FORPNT:
-	.res 2
-LASTOP:
-	.res 2
-CPRTYP:
-	.res 1
-FNCNAM:
-TEMP3:
-	.res 2
-DSCPTR:
-.ifdef CONFIG_SMALL
-		.res 2
-.else
-		.res 3
-.endif
-DSCLEN:
-	.res 1
-.ifndef KBD
-JMPADRS:
-.endif
-	.res 1
-Z52:
-	.res 1
-ARGEXTENSION:
-.ifndef CONFIG_SMALL
-	.res 1
-.endif
-TEMP1:
-	.res 1
-HIGHDS:
-	.res 2
-HIGHTR:
-	.res 2
-.ifndef CONFIG_SMALL
-TEMP2:
-	.res 1
-.endif
-INDX:
-TMPEXP:
-.ifdef CONFIG_SMALL
-TEMP2:
-.endif
-	.res 1
-EXPON:
-	.res 1
-LOWTR:
-.ifndef KBD
-LOWTRX:
-.endif
-	.res 1
-EXPSGN:
-	.res 1
-FAC:
-.ifdef CONFIG_SMALL
-	.res 3
-.else
-	.res 4
-.endif
-FAC_LAST:
-	.res 1
-FACSIGN:
-	.res 1
-SERLEN:
-	.res 1
-SHIFTSIGNEXT:
-	.res 1
-ARG:
-.ifdef CONFIG_SMALL
-	.res 3
-.else
-	.res 4
-.endif
-ARG_LAST:
-	.res 1
-ARGSIGN:
-	.res 1
-STRNG1:
-	.res 1
-FACEXTENSION:
-	.res 1
-STRNG2:
-	.res 2
-CHRGET:
-	.res 6
-CHRGOT:
-	.res 1
-TXTPTR:
-	.res 6
-.ifndef CONFIG_SMALL
-L00CF:
-	.res 11
-RNDSEED:
-.endif
+.include "zeropage.s"
 
         .setcpu "6502"
 		.macpack longbranch
@@ -253,12 +40,8 @@ STACK           := $0100
         .byte   $00,$13,$56
 .endif
 
-		define_token_init
+		init_token_tables
 
-        .segment "VECTORS"
-TOKEN_ADDRESS_TABLE:
-        .segment "KEYWORDS"
-TOKEN_NAME_TABLE:
 		keyword_rts "END", END
 		keyword_rts "FOR", FOR
 		keyword_rts "NEXT", NEXT
@@ -334,7 +117,6 @@ TOKEN_NAME_TABLE:
 .endif
 		keyword_rts "NEW", NEW
 
-		.segment "KEYWORDS"
 		keyword	"TAB(", TOKEN_TAB
 		keyword	"TO", TOKEN_TO
 		keyword	"FN", TOKEN_FN
@@ -359,6 +141,7 @@ TOKEN_NAME_TABLE:
 
         .segment "VECTORS"
 UNFNC:
+
 		keyword_addr "SGN", SGN, TOKEN_SGN
 		keyword_addr "INT", INT
 		keyword_addr "ABS", ABS
@@ -6724,8 +6507,8 @@ MICROSOFT:
 .endif
 .ifdef CBM2
 MICROSOFT:
-        .byte   $A1,$54,$46,$8F,$13,$8F,$52
-        .byte   $43,$89,$CD
+        .byte   $A1,$54,$46,$8F,$13,$8F,$52,$43
+        .byte   $89,$CD
 .endif
 .endif
 ATN:

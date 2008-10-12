@@ -1,4 +1,15 @@
 .ifdef CBM1
+CONFIG_CBM_ALL := 1
+CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
+CBM1_APPLE := 1
+CBM_APPLE := 1
+CONFIG_DATAFLAG := 1
+
+ZP_START = $65
+
+JMPADRS = DSCLEN + 1
+LOWTRX = LOWTR
+
 USR				:= $0000
 Z00             := $0000
 INPUTBUFFERX    := $0000
@@ -29,6 +40,22 @@ CPRMASK         := $0063
 Z14             := $0064                        ; Ctrl+O flag
 Z96				:= $020C
 .else
+CONFIG_CBM_ALL := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KBD := 1
+CBM2_KIM := 1
+CBM2_APPLE := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
+CBM_APPLE := 1
+CONFIG_DATAFLAG := 1
+; INPUTBUFFER > $0100
+
+ZP_START = $13
+
+JMPADRS = DSCLEN + 1
+LOWTRX = LOWTR
+
 USR				:= $0000
 Z00             := $0000
 L0001           := $0001
@@ -60,7 +87,6 @@ INPUTBUFFER     := $0200;00A
 INPUTBUFFERX    := $0200
 .endif
 
-BYTES_PER_FRAME := $12
 .ifdef CBM1
 SPACE_FOR_GOSUB := $36
 STACK_TOP		:= $FC
@@ -68,8 +94,6 @@ STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $3E
 STACK_TOP		:= $FA
 .endif
-FOR_STACK1		:= $0F
-FOR_STACK2		:= $09
 NUM_TOKENS		:= $23
 NULL_MAX		:= $0A
 BYTES_PER_ELEMENT := 5

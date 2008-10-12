@@ -1,3 +1,17 @@
+KIM_KBD := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
+KIM_APPLE := 1
+CONFIG_NULL := 1
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
+
+ZP_START = $63
+
+JMPADRS = DSCLEN + 1
+LOWTRX = LOWTR
+
 Z00             := $0000
 L0001           := $0001
 L0002           := $0002
@@ -30,10 +44,7 @@ MONRDKEY        := $1E5A
 MONCOUT         := $1EA0
 
 STACK_TOP		:= $FC
-BYTES_PER_FRAME := $12
 SPACE_FOR_GOSUB := $36
-FOR_STACK1		:= $0F
-FOR_STACK2		:= $09
 NUM_TOKENS		:= $1D
 NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
 BYTES_PER_ELEMENT := 5

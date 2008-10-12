@@ -10,7 +10,11 @@
 ; For every token, a byte gets put into segment "DUMMY".
 ; This way, we count up with every token. The DUMMY segment
 ; doesn't get linked into the binary.
-.macro define_token_init
+.macro init_token_tables
+        .segment "VECTORS"
+TOKEN_ADDRESS_TABLE:
+        .segment "KEYWORDS"
+TOKEN_NAME_TABLE:
 		.segment "DUMMY"
 DUMMY_START:
 .endmacro

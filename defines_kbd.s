@@ -1,3 +1,14 @@
+CONFIG_SCRTCH_ORDER := 1
+CONFIG_SMALL := 1
+CBM2_KBD := 1
+KIM_KBD := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
+; INPUTBUFFER > $0100
+
+ZP_START = $15
+
 Z00             := $0700
 L0001           := $0001
 L0002           := $0002
@@ -24,6 +35,7 @@ SUBFLG          := $000C;61
 INPUTFLG        := $000D;62
 CPRMASK         := $000E;63
 Z14             := $000F;64                        ; Ctrl+O flag
+
 JMPADRS         := $0093;A1
 LOWTRX          := $0094;AA                        ; $AB also EXPSGN?
 
@@ -39,10 +51,7 @@ LOAD            := $FFF4
 SAVE            := $FFF7
 
 STACK_TOP		:= $FE
-BYTES_PER_FRAME := $10
 SPACE_FOR_GOSUB := $49
-FOR_STACK1		:= $0D
-FOR_STACK2		:= $08
 NUM_TOKENS		:= $1D
 NULL_MAX		:= $0A
 BYTES_PER_ELEMENT := 4

@@ -1,3 +1,14 @@
+CONFIG_SMALL := 1
+CONFIG_SCRTCH_ORDER := 1
+CONFIG_NULL := 1
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
+CONFIG_DATAFLAG := 1
+
+ZP_START = $65
+
+JMPADRS = DSCLEN + 1
+LOWTRX = LOWTR
+
 Z00             := $0000
 L0001           := $0001
 L0002           := $0002
@@ -37,10 +48,7 @@ LOAD            := $FFF4
 SAVE            := $FFF7
 
 STACK_TOP		:= $FC
-BYTES_PER_FRAME := $10
 SPACE_FOR_GOSUB := $33
-FOR_STACK1		:= $0D
-FOR_STACK2		:= $08
 NUM_TOKENS		:= $1C
 NULL_MAX		:= $0A
 BYTES_PER_ELEMENT := 4
