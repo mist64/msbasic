@@ -1,6 +1,9 @@
 ; Microsoft BASIC for 6502
 
-.ifdef CBM1
+.debuginfo +
+
+.ifdef cbmbasic1
+CBM1 := 1
 .include "defines_cbm.s" ; 6
 CONFIG_CBM_ALL := 1
 CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
@@ -9,7 +12,8 @@ CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
 .endif
 
-.ifdef OSI
+.ifdef osi
+OSI := 1
 .include "defines_osi.s"; 2
 CONFIG_SMALL := 1
 CONFIG_SCRTCH_ORDER := 1
@@ -18,7 +22,8 @@ CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_DATAFLAG := 1
 .endif
 
-.ifdef APPLE
+.ifdef applesoft
+APPLE := 1
 .include "defines_apple.s"; 10
 CONFIG_11 := 1
 CBM2_APPLE := 1
@@ -32,7 +37,8 @@ CONFIG_PRINT_CR := 1 ; print CR when line end reached
 ; INPUTBUFFER > $0100
 .endif
 
-.ifdef KIM
+.ifdef kb9
+KIM := 1
 .include "defines_kim.s" ; 7
 KIM_KBD := 1
 CONFIG_11 := 1
@@ -44,7 +50,8 @@ CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 .endif
 
-.ifdef CBM2
+.ifdef cbmbasic2
+CBM2 := 1
 .include "defines_cbm.s" ; 11
 CONFIG_CBM_ALL := 1
 CONFIG_11 := 1
@@ -58,7 +65,8 @@ CONFIG_DATAFLAG := 1
 ; INPUTBUFFER > $0100
 .endif
 
-.ifdef KBD
+.ifdef kbdbasic
+KBD := 1
 .include "defines_kbd.s" ; 10
 CONFIG_SCRTCH_ORDER := 1
 CONFIG_SMALL := 1
