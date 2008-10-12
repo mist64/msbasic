@@ -47,9 +47,5 @@ STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $36
 NUM_TOKENS		:= $1D
 NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
-BYTES_PER_ELEMENT := 5
-BYTES_PER_VARIABLE := 7
-BYTES_FP		:= 5
-MANTISSA_BYTES	:= BYTES_FP-1
 MAX_EXPON = 10
 

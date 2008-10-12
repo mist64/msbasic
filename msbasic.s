@@ -22,6 +22,24 @@ KBD := 1
 .include "defines_kbd.s" ; 10
 .endif
 
+.ifdef CONFIG_SMALL
+BYTES_FP		:= 4
+BYTES_PER_ELEMENT := 4
+BYTES_PER_VARIABLE := 6
+.else
+BYTES_FP		:= 5
+.ifdef APPLE
+BYTES_PER_ELEMENT := 6 ; ??? should be 5 on Apple
+.else
+BYTES_PER_ELEMENT := 5
+.endif
+BYTES_PER_VARIABLE := 7
+
+
+.endif
+
+MANTISSA_BYTES	:= BYTES_FP-1
+
 BYTES_PER_FRAME := 2*BYTES_FP+8
 FOR_STACK1		:= 2*BYTES_FP+5
 FOR_STACK2		:= BYTES_FP+4
