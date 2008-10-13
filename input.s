@@ -7,12 +7,14 @@
 ; ----------------------------------------------------------------------------
 INPUTERR:
         lda     INPUTFLG
-        beq     RESPERR
-.ifdef CBM2_KIM_APPLE
-        bmi     L2A63
-        ldy     #$FF
+        beq     RESPERR	; INPUT
+.ifndef CONFIG_SMALL
+.ifndef CONFIG_BUG_GET_ERROR
+        bmi     L2A63	; READ
+        ldy     #$FF	; GET
         bne     L2A67
 L2A63:
+.endif
 .endif
 .ifdef CONFIG_CBM1_PATCHES
         jsr     PATCH5
@@ -43,19 +45,20 @@ LCA8F:
         sty     TXTPTR+1
 LE920:
         rts
-.ifndef CONFIG_SMALL
 
 ; ----------------------------------------------------------------------------
 ; "GET" STATEMENT
 ; ----------------------------------------------------------------------------
+.ifndef CONFIG_SMALL
 GET:
         jsr     ERRDIR
-.ifdef CONFIG_CBM_ALL
-        cmp     #$23
+; CBM: if GET#, then switch input
+.ifdef CONFIG_FILE
+        cmp     #'#'
         bne     LCAB6
         jsr     CHRGET
         jsr     GETBYT
-        lda     #$2C
+        lda     #','
         jsr     SYNCHR
         jsr     CHKIN
         stx     Z03
@@ -71,13 +74,18 @@ LCAB6:
 .endif
         lda     #$40
         jsr     PROCESS_INPUT_LIST
-.ifdef CONFIG_CBM_ALL
+; CBM: if GET#, then switch input back
+.ifdef CONFIG_FILE
         ldx     Z03
         bne     LCAD8
 .endif
         rts
 .endif
-.ifdef CONFIG_CBM_ALL
+
+; ----------------------------------------------------------------------------
+; "INPUT#" STATEMENT
+; ----------------------------------------------------------------------------
+.ifdef CONFIG_FILE
 INPUTH:
         jsr     GETBYT
         lda     #$2C
@@ -120,13 +128,10 @@ LCAF8:
 .endif
 .ifdef KBD
         bmi     L2ABE
-NXIN:
-        jsr     LFDDA
-        bmi     LE920
-        pla
-        jmp     LE86C
-.else
-.ifdef CONFIG_CBM_ALL
+.endif
+
+.ifndef KBD
+.ifdef CONFIG_FILE
         lda     Z03
         beq     LCB0C
         lda     Z96
@@ -138,22 +143,29 @@ LCB0C:
 .endif
         lda     INPUTBUFFER
         bne     L2ABE
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
         lda     Z03
         bne     LCAF8
+.endif
 .ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH1
 .else
         clc
         jmp     CONTROL_C_TYPED
 .endif
+.endif
+
 NXIN:
+.ifdef KBD
+        jsr     LFDDA
+        bmi     LE920
+        pla
+        jmp     LE86C
+.endif
+.ifndef KBD
+.ifdef CONFIG_FILE
         lda     Z03
         bne     LCB21
-.else
-        clc
-        jmp     CONTROL_C_TYPED
-NXIN:
 .endif
         jsr     OUTQUES
         jsr     OUTSP

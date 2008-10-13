@@ -4,7 +4,25 @@ CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 CBM1_APPLE := 1
 CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
+CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
+.else
+CONFIG_CBM_ALL := 1
+CONFIG_11 := 1
+CONFIG_11_NOAPPLE := 1
+CBM2_KBD := 1
+CBM2_KIM := 1
+CBM2_APPLE := 1
+CBM2_KIM_APPLE := 1 ; OUTDO difference
+CBM_APPLE := 1
+CONFIG_DATAFLAG := 1
+; INPUTBUFFER > $0100
+.endif
 
+; common:
+CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
+
+
+.ifdef CBM1
 ZP_START = $65
 
 JMPADRS = DSCLEN + 1
@@ -40,16 +58,6 @@ CPRMASK         := $0063
 Z14             := $0064                        ; Ctrl+O flag
 Z96				:= $020C
 .else
-CONFIG_CBM_ALL := 1
-CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
-CBM2_KBD := 1
-CBM2_KIM := 1
-CBM2_APPLE := 1
-CBM2_KIM_APPLE := 1 ; OUTDO difference
-CBM_APPLE := 1
-CONFIG_DATAFLAG := 1
-; INPUTBUFFER > $0100
 
 ZP_START = $13
 
