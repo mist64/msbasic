@@ -302,7 +302,7 @@ PLOD:
         iny
         sty     JMPADRS
         jsr     LFFD3
-        jsr     LF422
+        jsr     VARTAB_MINUS_2_TO_AY
         ldx     #$02
         jsr     LFF64
         ldx     #$6F
@@ -495,13 +495,13 @@ L2497:
         inx
 L2498:
 .ifdef KBD
-        jsr     LF42D
+        jsr     GET_UPPER
 .else
         lda     INPUTBUFFERX,x
-.ifndef CBM2
+  .ifndef CBM2
         cmp     #$20
         beq     L2497
-.endif
+  .endif
 .endif
         sec
         sbc     TOKEN_NAME_TABLE,y

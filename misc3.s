@@ -1,7 +1,9 @@
+; KBD specific patches
+
 .segment "CODE"
 
 .ifdef KBD
-LF422:
+VARTAB_MINUS_2_TO_AY:
         lda     VARTAB
         sec
         sbc     #$02
@@ -10,17 +12,21 @@ LF422:
         dey
 LF42C:
         rts
-LF42D:
-        lda     Z00,x
+
+; ----------------------------------------------------------------------------
+GET_UPPER:
+        lda     INPUTBUFFERX,x
 LF430:
-        cmp     #$61
+        cmp     #'a'
         bcc     LF43A
-        cmp     #$7B
+        cmp     #'z'+1
         bcs     LF43A
 LF438:
         sbc     #$1F
 LF43A:
         rts
+
+; ----------------------------------------------------------------------------
 LF43B:
         ldx     #$5D
 LF43D:
@@ -38,6 +44,8 @@ LF44D:
         bcc     LF44D
 RTS4:
         rts
+
+; ----------------------------------------------------------------------------
 LF457:
         lda     TXTTAB
         ldx     TXTTAB+1

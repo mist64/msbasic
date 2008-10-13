@@ -44,10 +44,10 @@ GETADR:
 ; "PEEK" FUNCTION
 ; ----------------------------------------------------------------------------
 PEEK:
-.ifdef CBM2_KBD
-        lda     $12
+.ifdef CBM2
+        lda     LINNUM+1
         pha
-        lda     $11
+        lda     LINNUM
         pha
 .endif
         jsr     GETADR
@@ -59,7 +59,7 @@ PEEK:
         bcc     LD6F6
 LD6F3:
 .endif
-.ifdef CBM2_KBD
+.ifdef CBM2
 		nop ; patch that disables the compares above
 		nop
 		nop
@@ -71,11 +71,11 @@ LD6F3:
 .endif
         lda     (LINNUM),y
         tay
-.ifdef CBM2_KBD
+.ifdef CBM2
         pla
-        sta     $11
+        sta     LINNUM
         pla
-        sta     $12
+        sta     LINNUM+1
 .endif
 LD6F6:
         jmp     SNGFLT
