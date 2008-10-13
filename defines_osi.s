@@ -6,6 +6,9 @@ CONFIG_DATAFLAG := 1
 ; minor: just code order
 CONFIG_SCRTCH_ORDER := 1
 
+CRLF_1 := $0D
+CRLF_2 := $0A
+
 ZP_START = $65
 
 JMPADRS = DSCLEN + 1

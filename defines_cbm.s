@@ -25,6 +25,9 @@ CONFIG_DATAFLAG := 1
 CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
 CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
 
+CRLF_1 := $0D
+CRLF_2 := $0A
+
 .ifdef CBM1
 ZP_START = $65
 

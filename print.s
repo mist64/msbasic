@@ -50,7 +50,12 @@ L29B1:
         jsr     STRPRT
 .ifdef KBD
         jmp     L297E
+.else
+        jsr     OUTSP
+        bne     L297E ; branch always
+.endif
 
+.ifdef KBD
 ; PATCHES
 LE86C:
         pla
@@ -63,20 +68,12 @@ LE874:
         bpl     LE8F2
 LE878:
         jmp     IQERR
-CRDO:
-        lda     #$0A
-        sta     $10
-        jsr     OUTDO
-LE882:
-        lda     #$0D
-        jsr     OUTDO
-PRINTNULLS:
-        lda     #$00
-        sta     $10
-        eor     #$FF
-.else
-        jsr     OUTSP
-        bne     L297E
+; PATCHES
+.endif
+
+
+
+.ifndef KBD
 L29B9:
   .ifdef CBM2
         lda     #$00
@@ -90,32 +87,35 @@ L29B9:
         ldx     #LINNUM+1
     .endif
   .endif
-  .ifdef CONFIG_CBM_ALL
+  .ifdef CONFIG_FILE
         lda     Z03
         bne     L29DD
-LC9D2:
   .endif
+.endif
+
+
 CRDO:
-  .ifdef CBM1
+.if .def(CONFIG_PRINTNULLS) && .def(CONFIG_FILE)
         lda     Z03
         bne     LC9D8
         sta     $05
 LC9D8:
-  .endif
-        lda     #$0D
-  .ifndef CONFIG_CBM_ALL
-        sta     Z16
-  .endif
-        jsr     OUTDO
-  .ifdef APPLE
-        lda     #$80
-  .else
-        lda     #$0A
-  .endif
-        jsr     OUTDO
 .endif
-.ifndef KBD
+        lda     #CRLF_1
+.ifndef CONFIG_CBM_ALL
+        sta     Z16
+.endif
+        jsr     OUTDO
+LE882:
+        lda     #CRLF_2
+        jsr     OUTDO
+
 PRINTNULLS:
+.ifdef KBD
+        lda     #$00
+        sta     $10
+        eor     #$FF
+.else
   .if .def(CONFIG_NULL) || .def(CONFIG_PRINTNULLS)
     .ifdef CONFIG_FILE
     ; Although there is no statement for it,
