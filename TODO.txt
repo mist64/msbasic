@@ -1,4 +1,3 @@
-* split into files
 * use linker magic to compile files separately
 * convert messy init code into completely different
   files without ifdefs (not much in common!)
