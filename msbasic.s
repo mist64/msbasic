@@ -3098,6 +3098,15 @@ L2D02:
         pla
 GOEX:
         beq     EXIT
+
+; ----------------------------------------------------------------------------
+; PERFORM STACKED OPERATION
+;
+; (A) = PRECEDENCE BYTE
+; STACK:  1 -- CPRMASK
+;	5 -- (ARG)
+;	2 -- ADDR OF PERFORMER
+; ----------------------------------------------------------------------------
 FRM_PERFORM1:
         cmp     #$64
         beq     L2D0E
@@ -3127,6 +3136,13 @@ FRM_PERFORM2:
 EXIT:
         lda     FAC
         rts
+
+; ----------------------------------------------------------------------------
+; GET ELEMENT IN EXPRESSION
+;
+; GET VALUE OF VARIABLE OR NUMBER AT TXTPNT, OR POINT
+; TO STRING DESCRIPTOR IF A STRING, AND PUT IN FAC.
+; ----------------------------------------------------------------------------
 FRM_ELEMENT:
         lda     #$00
         sta     VALTYP
@@ -3157,6 +3173,12 @@ LCDC1:
         beq     L2D31
         cmp     #$22
         bne     NOT_
+
+; ----------------------------------------------------------------------------
+; STRING CONSTANT ELEMENT
+;
+; SET Y,A = (TXTPTR)+CARRY
+; ----------------------------------------------------------------------------
 STRTXT:
         lda     TXTPTR
         ldy     TXTPTR+1
@@ -3166,11 +3188,22 @@ STRTXT:
 L2D57:
         jsr     STRLIT
         jmp     POINT
+
+; ----------------------------------------------------------------------------
+; "NOT" FUNCTION
+; IF FAC=0, RETURN FAC=1
+; IF FAC<>0, RETURN FAC=0
+; ----------------------------------------------------------------------------
 NOT_:
         cmp     #TOKEN_NOT
         bne     L2D74
         ldy     #$18
         bne     EQUL
+
+; ----------------------------------------------------------------------------
+; COMPARISON FOR EQUALITY (= OPERATOR)
+; ALSO USED TO EVALUATE "NOT" FUNCTION
+; ----------------------------------------------------------------------------
 EQUOP:
         jsr     AYINT
         lda     FAC_LAST
@@ -3187,6 +3220,10 @@ L2D7B:
         cmp     #TOKEN_SGN
         bcc     PARCHK
         jmp     UNARY
+
+; ----------------------------------------------------------------------------
+; EVALUATE "(EXPRESSION)"
+; ----------------------------------------------------------------------------
 PARCHK:
         jsr     CHKOPN
         jsr     FRMEVL
@@ -3198,20 +3235,27 @@ CHKOPN:
         .byte   $2C
 CHKCOM:
         lda     #$2C
+
+; ----------------------------------------------------------------------------
+; UNLESS CHAR AT TXTPTR = (A), SYNTAX ERROR
+; ----------------------------------------------------------------------------
 SYNCHR:	; XXX all CBM code calls SYNCHR instead of CHKCOM
         ldy     #$00
         cmp     (TXTPTR),y
         bne     SYNERR
         jmp     CHRGET
+; ----------------------------------------------------------------------------
 SYNERR:
         ldx     #ERR_SYNTAX
         jmp     ERROR
+; ----------------------------------------------------------------------------
 MIN:
         ldy     #$15
 EQUL:
         pla
         pla
         jmp     L2CA4
+; ----------------------------------------------------------------------------
 FRM_VARIABLE:
         jsr     PTRGET
 FRM_VARIABLE_CALL	= *-1
@@ -3320,6 +3364,8 @@ LCE90:
         ldy     FAC+4
         jmp     LOAD_FAC_FROM_YA
 .endif
+
+; ----------------------------------------------------------------------------
 UNARY:
         asl     a
         pha
@@ -3360,9 +3406,12 @@ L2DF4:
         jsr     JMPADRS
 .endif
         jmp     CHKNUM
+
+; ----------------------------------------------------------------------------
 OR:
         ldy     #$FF
         .byte   $2C
+; ----------------------------------------------------------------------------
 TAND:
         ldy     #$00
         sty     EOLPNTR
@@ -3385,6 +3434,10 @@ TAND:
         and     CHARAC
         eor     EOLPNTR
         jmp     GIVAYF
+
+; ----------------------------------------------------------------------------
+; PERFORM RELATIONAL OPERATIONS
+; ----------------------------------------------------------------------------
 RELOPS:
         jsr     CHKVAL
         bcs     STRCMP
@@ -3397,6 +3450,10 @@ RELOPS:
         jsr     FCOMP
         tax
         jmp     NUMCMP
+
+; ----------------------------------------------------------------------------
+; STRING COMPARISON
+; ----------------------------------------------------------------------------
 STRCMP:
         lda     #$00
         sta     VALTYP
@@ -3447,6 +3504,10 @@ CMPDONE:
         lda     #$FF
 L2E99:
         jmp     FLOAT
+
+; ----------------------------------------------------------------------------
+; "DIM" STATEMENT
+; ----------------------------------------------------------------------------
 NXDIM:
         jsr     CHKCOM
 DIM:
@@ -3455,6 +3516,22 @@ DIM:
         jsr     CHRGOT
         bne     NXDIM
         rts
+
+; ----------------------------------------------------------------------------
+; PTRGET -- GENERAL VARIABLE SCAN
+;
+; SCANS VARIABLE NAME AT TXTPTR, AND SEARCHES THE
+; VARTAB AND ARYTAB FOR THE NAME.
+; IF NOT FOUND, CREATE VARIABLE OF APPROPRIATE TYPE.
+; RETURN WITH ADDRESS IN VARPNT AND Y,A
+;
+; ACTUAL ACTIVITY CONTROLLED SOMEWHAT BY TWO FLAGS:
+;	DIMFLG -- NONZERO IF CALLED FROM "DIM"
+;		ELSE = 0
+;
+;	SUBFLG -- = $00
+;		= $40 IF CALLED FROM "GETARYPT"
+; ----------------------------------------------------------------------------
 PTRGET:
         ldx     #$00
         jsr     CHRGOT
@@ -3547,6 +3624,13 @@ L2F29:
         bcc     L2F11
         inx
         bne     L2F0F
+
+; ----------------------------------------------------------------------------
+; CHECK IF (A) IS ASCII LETTER A-Z
+;
+; RETURN CARRY = 1 IF A-Z
+;	= 0 IF NOT
+; ----------------------------------------------------------------------------
 ISLETC:
         cmp     #$41
         bcc     L2F3C
@@ -3555,6 +3639,10 @@ ISLETC:
         sbc     #$A5
 L2F3C:
         rts
+
+; ----------------------------------------------------------------------------
+; VARIABLE NOT FOUND, SO MAKE ONE
+; ----------------------------------------------------------------------------
 NAMENOTFOUND:
         pla
         pha
@@ -3570,10 +3658,19 @@ LD015:
         lda     #<C_ZERO
         ldy     #>C_ZERO
         rts
+
+; ----------------------------------------------------------------------------
 .ifndef CBM2_KBD
 C_ZERO:
         .byte   $00,$00
 .endif
+
+; ----------------------------------------------------------------------------
+; MAKE A NEW SIMPLE VARIABLE
+;
+; MOVE ARRAYS UP 7 BYTES TO MAKE ROOM FOR NEW VARIABLE
+; ENTER 7-BYTE VARIABLE DATA IN THE HOLE
+; ----------------------------------------------------------------------------
 MAKENEWVARIABLE:
 .ifdef CONFIG_CBM_ALL
         lda     VARNAM
@@ -3633,6 +3730,10 @@ L2F68:
         iny
         sta     (LOWTR),y
 .endif
+
+; ----------------------------------------------------------------------------
+; PUT ADDRESS OF VALUE OF VARIABLE IN VARPNT AND Y,A
+; ----------------------------------------------------------------------------
 SET_VARPNT_AND_YA:
         lda     LOWTR
         clc
@@ -3644,354 +3745,16 @@ L2F9E:
         sta     VARPNT
         sty     VARPNT+1
         rts
-GETARY:
-        lda     EOLPNTR
-        asl     a
-        adc     #$05
-        adc     LOWTR
-        ldy     LOWTR+1
-        bcc     L2FAF
-        iny
-L2FAF:
-        sta     HIGHDS
-        sty     HIGHDS+1
-        rts
-NEG32768:
-        .byte   $90,$80,$00,$00
-MAKINT:
-        jsr     CHRGET
-.ifdef CBM2_KBD
-        jsr     FRMEVL
-.else
-        jsr     FRMNUM
-.endif
-MKINT:
-.ifdef CBM2_KBD
-        jsr     CHKNUM
-.endif
-        lda     FACSIGN
-        bmi     MI1
-AYINT:
-        lda     FAC
-        cmp     #$90
-        bcc     MI2
-        lda     #<NEG32768
-        ldy     #>NEG32768
-        jsr     FCOMP
-MI1:
-        bne     IQERR
-MI2:
-        jmp     QINT
-ARRAY:
-        lda     DIMFLG
-.ifndef CONFIG_SMALL
-        ora     VALTYP+1
-.endif
-        pha
-        lda     VALTYP
-        pha
-        ldy     #$00
-L2FDE:
-        tya
-        pha
-        lda     VARNAM+1
-        pha
-        lda     VARNAM
-        pha
-        jsr     MAKINT
-        pla
-        sta     VARNAM
-        pla
-        sta     VARNAM+1
-        pla
-        tay
-        tsx
-        lda     STACK+2,x
-        pha
-        lda     STACK+1,x
-        pha
-        lda     FAC_LAST-1
-        sta     STACK+2,x
-        lda     FAC_LAST
-        sta     STACK+1,x
-        iny
-        jsr     CHRGOT
-        cmp     #$2C
-        beq     L2FDE
-        sty     EOLPNTR
-        jsr     CHKCLS
-        pla
-        sta     VALTYP
-        pla
-.ifndef CONFIG_SMALL
-        sta     VALTYP+1
-        and     #$7F
-.endif
-        sta     DIMFLG
-        ldx     ARYTAB
-        lda     ARYTAB+1
-L301F:
-        stx     LOWTR
-        sta     LOWTR+1
-        cmp     STREND+1
-        bne     L302B
-        cpx     STREND
-        beq     MAKE_NEW_ARRAY
-L302B:
-        ldy     #$00
-        lda     (LOWTR),y
-        iny
-        cmp     VARNAM
-        bne     L303A
-        lda     VARNAM+1
-        cmp     (LOWTR),y
-        beq     USE_OLD_ARRAY
-L303A:
-        iny
-        lda     (LOWTR),y
-        clc
-        adc     LOWTR
-        tax
-        iny
-        lda     (LOWTR),y
-        adc     LOWTR+1
-        bcc     L301F
-SUBERR:
-        ldx     #ERR_BADSUBS
-        .byte   $2C
-IQERR:
-        ldx     #ERR_ILLQTY
-JER:
-        jmp     ERROR
-USE_OLD_ARRAY:
-        ldx     #ERR_REDIMD
-        lda     DIMFLG
-        bne     JER
-        jsr     GETARY
-        lda     EOLPNTR
-        ldy     #$04
-        cmp     (LOWTR),y
-        bne     SUBERR
-        jmp     FIND_ARRAY_ELEMENT
-MAKE_NEW_ARRAY:
-        jsr     GETARY
-        jsr     REASON
-        lda     #$00
-        tay
-        sta     STRNG2+1
-        ldx     #BYTES_PER_ELEMENT
-.ifdef OSI
-        stx     STRNG2
-.endif
-        lda     VARNAM
-        sta     (LOWTR),y
-.ifndef CONFIG_SMALL
-        bpl     L3078
-        dex
-L3078:
-.endif
-        iny
-        lda     VARNAM+1
-        sta     (LOWTR),y
-.ifndef OSI
-        bpl     L3081
-        dex
-.ifndef KBD
-        dex
-.endif
-L3081:
-        stx     STRNG2
-.endif
-        lda     EOLPNTR
-        iny
-        iny
-        iny
-        sta     (LOWTR),y
-L308A:
-        ldx     #$0B
-        lda     #$00
-        bit     DIMFLG
-        bvc     L309A
-        pla
-        clc
-        adc     #$01
-        tax
-        pla
-        adc     #$00
-L309A:
-        iny
-        sta     (LOWTR),y
-        iny
-        txa
-        sta     (LOWTR),y
-        jsr     MULTIPLY_SUBSCRIPT
-        stx     STRNG2
-        sta     STRNG2+1
-        ldy     INDEX
-        dec     EOLPNTR
-        bne     L308A
-        adc     HIGHDS+1
-        bcs     GME
-        sta     HIGHDS+1
-        tay
-        txa
-        adc     HIGHDS
-        bcc     L30BD
-        iny
-        beq     GME
-L30BD:
-        jsr     REASON
-        sta     STREND
-        sty     STREND+1
-        lda     #$00
-        inc     STRNG2+1
-        ldy     STRNG2
-        beq     L30D1
-L30CC:
-        dey
-        sta     (HIGHDS),y
-        bne     L30CC
-L30D1:
-        dec     HIGHDS+1
-        dec     STRNG2+1
-        bne     L30CC
-        inc     HIGHDS+1
-        sec
-        lda     STREND
-        sbc     LOWTR
-        ldy     #$02
-        sta     (LOWTR),y
-        lda     STREND+1
-        iny
-        sbc     LOWTR+1
-        sta     (LOWTR),y
-        lda     DIMFLG
-        bne     RTS9
-        iny
-FIND_ARRAY_ELEMENT:
-        lda     (LOWTR),y
-        sta     EOLPNTR
-        lda     #$00
-        sta     STRNG2
-L30F6:
-        sta     STRNG2+1
-        iny
-        pla
-        tax
-        sta     FAC_LAST-1
-        pla
-        sta     FAC_LAST
-        cmp     (LOWTR),y
-        bcc     FAE2
-        bne     GSE
-        iny
-        txa
-        cmp     (LOWTR),y
-        bcc     FAE3
-GSE:
-        jmp     SUBERR
-GME:
-        jmp     MEMERR
-FAE2:
-        iny
-FAE3:
-        lda     STRNG2+1
-        ora     STRNG2
-        clc
-        beq     L3124
-        jsr     MULTIPLY_SUBSCRIPT
-        txa
-        adc     FAC_LAST-1
-        tax
-        tya
-        ldy     INDEX
-L3124:
-        adc     FAC_LAST
-        stx     STRNG2
-        dec     EOLPNTR
-        bne     L30F6
-.ifdef OSI
-        asl     STRNG2
-        rol     a
-        bcs     GSE
-        asl     STRNG2
-        rol     a
-        bcs     GSE
-        tay
-        lda     STRNG2
-.else
-.ifndef CBM1_APPLE
-        sta     STRNG2+1
-.endif
-        ldx     #BYTES_FP
-.ifdef KBD
-        lda     VARNAM+1
-.else
-        lda     VARNAM
-.endif
-        bpl     L3135
-        dex
-L3135:
-.ifndef KBD
-        lda     VARNAM+1
-        bpl     L313B
-        dex
-        dex
-L313B:
-.endif
-.ifdef KBD
-        stx     RESULT+1
-.else
-        stx     RESULT+2
-.endif
-        lda     #$00
-        jsr     MULTIPLY_SUBS1
-        txa
-.endif
-        adc     HIGHDS
-        sta     VARPNT
-        tya
-        adc     HIGHDS+1
-        sta     VARPNT+1
-        tay
-        lda     VARPNT
-RTS9:
-        rts
-MULTIPLY_SUBSCRIPT:
-        sty     INDEX
-        lda     (LOWTR),y
-        sta     RESULT_LAST-2
-        dey
-        lda     (LOWTR),y
-MULTIPLY_SUBS1:
-        sta     RESULT_LAST-1
-        lda     #$10
-        sta     INDX
-        ldx     #$00
-        ldy     #$00
-L3163:
-        txa
-        asl     a
-        tax
-        tya
-        rol     a
-        tay
-        bcs     GME
-        asl     STRNG2
-        rol     STRNG2+1
-        bcc     L317C
-        clc
-        txa
-        adc     RESULT_LAST-2
-        tax
-        tya
-        adc     RESULT_LAST-1
-        tay
-        bcs     GME
-L317C:
-        dec     INDX
-        bne     L3163
-        rts
+
+
+.include "array.s"
+
+
+; ----------------------------------------------------------------------------
+; "FRE" FUNCTION
+;
+; COLLECTS GARBAGE AND RETURNS # BYTES OF MEMORY LEFT
+; ----------------------------------------------------------------------------
 FRE:
         lda     VALTYP
         beq     L3188
@@ -4004,6 +3767,12 @@ L3188:
         tay
         lda     FRETOP+1
         sbc     STREND+1
+; FALL INTO GIVAYF TO FLOAT THE VALUE
+; NOTE THAT VALUES OVER 32767 WILL RETURN AS NEGATIVE
+
+; ----------------------------------------------------------------------------
+; FLOAT THE SIGNED INTEGER IN A,Y
+; ----------------------------------------------------------------------------
 GIVAYF:
         ldx     #$00
         stx     VALTYP
@@ -4013,9 +3782,18 @@ GIVAYF:
         jmp     FLOAT1
 POS:
         ldy     Z16
+
+; ----------------------------------------------------------------------------
+; FLOAT (Y) INTO FAC, GIVING VALUE 0-255
+; ----------------------------------------------------------------------------
 SNGFLT:
         lda     #$00
         beq     GIVAYF
+
+; ----------------------------------------------------------------------------
+; CHECK FOR DIRECT OR RUNNING MODE
+; GIVING ERROR IF DIRECT MODE
+; ----------------------------------------------------------------------------
 ERRDIR:
         ldx     CURLIN+1
         inx
@@ -4144,629 +3922,11 @@ L3250:
         sta     (FNCNAM),y
 .endif
         rts
-STR:
-        jsr     CHKNUM
-        ldy     #$00
-        jsr     FOUT1
-        pla
-        pla
-LD353:
-        lda     #$FF
-        ldy     #$00
-        beq     STRLIT
-STRINI:
-        ldx     FAC_LAST-1
-        ldy     FAC_LAST
-        stx     DSCPTR
-        sty     DSCPTR+1
-STRSPA:
-        jsr     GETSPA
-        stx     FAC+1
-        sty     FAC+2
-        sta     FAC
-        rts
-STRLIT:
-        ldx     #$22
-        stx     CHARAC
-        stx     ENDCHR
-STRLT2:
-        sta     STRNG1
-        sty     STRNG1+1
-        sta     FAC+1
-        sty     FAC+2
-        ldy     #$FF
-L3298:
-        iny
-        lda     (STRNG1),y
-        beq     L32A9
-        cmp     CHARAC
-        beq     L32A5
-        cmp     ENDCHR
-        bne     L3298
-L32A5:
-        cmp     #$22
-        beq     L32AA
-L32A9:
-        clc
-L32AA:
-        sty     FAC
-        tya
-        adc     STRNG1
-        sta     STRNG2
-        ldx     STRNG1+1
-        bcc     L32B6
-        inx
-L32B6:
-        stx     STRNG2+1
-        lda     STRNG1+1
-.if INPUTBUFFER >= $0100
-        beq     LD399
-        cmp     #>INPUTBUFFER
-.endif
-        bne     PUTNEW
-LD399:
-        tya
-        jsr     STRINI
-        ldx     STRNG1
-        ldy     STRNG1+1
-        jsr     MOVSTR
-PUTNEW:
-        ldx     TEMPPT
-        cpx     #TEMPST+9
-        bne     PUTEMP
-        ldx     #ERR_FRMCPX
-JERR:
-        jmp     ERROR
-PUTEMP:
-        lda     FAC
-        sta     0,x
-        lda     FAC+1
-        sta     1,x
-        lda     FAC+2
-        sta     2,x
-        ldy     #$00
-        stx     FAC_LAST-1
-        sty     FAC_LAST
-.ifdef CBM2_KBD
-        sty     FACEXTENSION
-.endif
-        dey
-        sty     VALTYP
-        stx     LASTPT
-        inx
-        inx
-        inx
-        stx     TEMPPT
-        rts
-GETSPA:
-        lsr     DATAFLG
-L32F1:
-        pha
-        eor     #$FF
-        sec
-        adc     FRETOP
-        ldy     FRETOP+1
-        bcs     L32FC
-        dey
-L32FC:
-        cpy     STREND+1
-        bcc     L3311
-        bne     L3306
-        cmp     STREND
-        bcc     L3311
-L3306:
-        sta     FRETOP
-        sty     FRETOP+1
-        sta     FRESPC
-        sty     FRESPC+1
-        tax
-        pla
-        rts
-L3311:
-        ldx     #ERR_MEMFULL
-        lda     DATAFLG
-        bmi     JERR
-        jsr     GARBAG
-        lda     #$80
-        sta     DATAFLG
-        pla
-        bne     L32F1
-GARBAG:
 
-.ifdef KBD
-        ldx     #<CONST_MEMSIZ
-        lda     #>CONST_MEMSIZ
-.else
-        ldx     MEMSIZ
-        lda     MEMSIZ+1
-.endif
-FINDHIGHESTSTRING:
-        stx     FRETOP
-        sta     FRETOP+1
-        ldy     #$00
-        sty     FNCNAM+1
-.ifdef CBM2_KBD
-        sty     FNCNAM
-.endif
-        lda     STREND
-        ldx     STREND+1
-        sta     LOWTR
-        stx     LOWTR+1
-        lda     #TEMPST
-        ldx     #$00
-        sta     INDEX
-        stx     INDEX+1
-L333D:
-        cmp     TEMPPT
-        beq     L3346
-        jsr     CHECK_VARIABLE
-        beq     L333D
-L3346:
-        lda     #BYTES_PER_VARIABLE
-        sta     DSCLEN
-        lda     VARTAB
-        ldx     VARTAB+1
-        sta     INDEX
-        stx     INDEX+1
-L3352:
-        cpx     ARYTAB+1
-        bne     L335A
-        cmp     ARYTAB
-        beq     L335F
-L335A:
-        jsr     CHECK_SIMPLE_VARIABLE
-        beq     L3352
-L335F:
-        sta     HIGHDS
-        stx     HIGHDS+1
-        lda     #$03
-        sta     DSCLEN
-L3367:
-        lda     HIGHDS
-        ldx     HIGHDS+1
-L336B:
-        cpx     STREND+1
-        bne     L3376
-        cmp     STREND
-        bne     L3376
-        jmp     MOVE_HIGHEST_STRING_TO_TOP
-L3376:
-        sta     INDEX
-        stx     INDEX+1
-.ifdef CONFIG_SMALL
-        ldy     #$01
-.else
-        ldy     #$00
-        lda     (INDEX),y
-        tax
-        iny
-.endif
-        lda     (INDEX),y
-        php
-        iny
-        lda     (INDEX),y
-        adc     HIGHDS
-        sta     HIGHDS
-        iny
-        lda     (INDEX),y
-        adc     HIGHDS+1
-        sta     HIGHDS+1
-        plp
-        bpl     L3367
-.ifndef CONFIG_SMALL
-        txa
-        bmi     L3367
-.endif
-        iny
-        lda     (INDEX),y
-.ifdef KBD
-        ldy     #$00
-.endif
-.ifdef CBM1
-        jsr     LE7F3
-.else
-.ifndef CONFIG_SMALL
-        ldy     #$00
-.endif
-        asl     a
-        adc     #$05
-.endif
-        adc     INDEX
-        sta     INDEX
-        bcc     L33A7
-        inc     INDEX+1
-L33A7:
-        ldx     INDEX+1
-L33A9:
-        cpx     HIGHDS+1
-        bne     L33B1
-        cmp     HIGHDS
-        beq     L336B
-L33B1:
-        jsr     CHECK_VARIABLE
-        beq     L33A9
-CHECK_SIMPLE_VARIABLE:
-.ifndef CONFIG_SMALL
-        lda     (INDEX),y
-        bmi     CHECK_BUMP
-.endif
-        iny
-        lda     (INDEX),y
-        bpl     CHECK_BUMP
-        iny
-CHECK_VARIABLE:
-        lda     (INDEX),y
-        beq     CHECK_BUMP
-        iny
-        lda     (INDEX),y
-        tax
-        iny
-        lda     (INDEX),y
-        cmp     FRETOP+1
-        bcc     L33D5
-        bne     CHECK_BUMP
-        cpx     FRETOP
-        bcs     CHECK_BUMP
-L33D5:
-        cmp     LOWTR+1
-        bcc     CHECK_BUMP
-        bne     L33DF
-        cpx     LOWTR
-        bcc     CHECK_BUMP
-L33DF:
-        stx     LOWTR
-        sta     LOWTR+1
-        lda     INDEX
-        ldx     INDEX+1
-        sta     FNCNAM
-        stx     FNCNAM+1
-        lda     DSCLEN
-        sta     Z52
-CHECK_BUMP:
-        lda     DSCLEN
-        clc
-        adc     INDEX
-        sta     INDEX
-        bcc     L33FA
-        inc     INDEX+1
-L33FA:
-        ldx     INDEX+1
-        ldy     #$00
-        rts
-MOVE_HIGHEST_STRING_TO_TOP:
-.ifdef CBM2_KBD
-        lda     FNCNAM+1
-        ora     FNCNAM
-.else
-        ldx     FNCNAM+1
-.endif
-        beq     L33FA
-        lda     Z52
-.ifdef CBM1
-        sbc     #$03
-.else
-        and     #$04
-.endif
-        lsr     a
-        tay
-        sta     Z52
-        lda     (FNCNAM),y
-        adc     LOWTR
-        sta     HIGHTR
-        lda     LOWTR+1
-        adc     #$00
-        sta     HIGHTR+1
-        lda     FRETOP
-        ldx     FRETOP+1
-        sta     HIGHDS
-        stx     HIGHDS+1
-        jsr     BLTU2
-        ldy     Z52
-        iny
-        lda     HIGHDS
-        sta     (FNCNAM),y
-        tax
-        inc     HIGHDS+1
-        lda     HIGHDS+1
-        iny
-        sta     (FNCNAM),y
-        jmp     FINDHIGHESTSTRING
-CAT:
-        lda     FAC_LAST
-        pha
-        lda     FAC_LAST-1
-        pha
-        jsr     FRM_ELEMENT
-        jsr     CHKSTR
-        pla
-        sta     STRNG1
-        pla
-        sta     STRNG1+1
-        ldy     #$00
-        lda     (STRNG1),y
-        clc
-        adc     (FAC_LAST-1),y
-        bcc     L3454
-        ldx     #ERR_STRLONG
-        jmp     ERROR
-L3454:
-        jsr     STRINI
-        jsr     MOVINS
-        lda     DSCPTR
-        ldy     DSCPTR+1
-        jsr     FRETMP
-        jsr     MOVSTR1
-        lda     STRNG1
-        ldy     STRNG1+1
-        jsr     FRETMP
-        jsr     PUTNEW
-        jmp     FRMEVL2
-MOVINS:
-        ldy     #$00
-        lda     (STRNG1),y
-        pha
-        iny
-        lda     (STRNG1),y
-        tax
-        iny
-        lda     (STRNG1),y
-        tay
-        pla
-MOVSTR:
-        stx     INDEX
-        sty     INDEX+1
-MOVSTR1:
-        tay
-        beq     L3490
-        pha
-L3487:
-        dey
-        lda     (INDEX),y
-        sta     (FRESPC),y
-        tya
-        bne     L3487
-        pla
-L3490:
-        clc
-        adc     FRESPC
-        sta     FRESPC
-        bcc     L3499
-        inc     FRESPC+1
-L3499:
-        rts
-FRESTR:
-        jsr     CHKSTR
-FREFAC:
-        lda     FAC_LAST-1
-        ldy     FAC_LAST
-FRETMP:
-        sta     INDEX
-        sty     INDEX+1
-        jsr     FRETMS
-        php
-        ldy     #$00
-        lda     (INDEX),y
-        pha
-        iny
-        lda     (INDEX),y
-        tax
-        iny
-        lda     (INDEX),y
-        tay
-        pla
-        plp
-        bne     L34CD
-        cpy     FRETOP+1
-        bne     L34CD
-        cpx     FRETOP
-        bne     L34CD
-        pha
-        clc
-        adc     FRETOP
-        sta     FRETOP
-        bcc     L34CC
-        inc     FRETOP+1
-L34CC:
-        pla
-L34CD:
-        stx     INDEX
-        sty     INDEX+1
-        rts
-FRETMS:
-.ifdef KBD
-        cpy     #$00
-.else
-        cpy     LASTPT+1
-.endif
-        bne     L34E2
-        cmp     LASTPT
-        bne     L34E2
-        sta     TEMPPT
-        sbc     #$03
-        sta     LASTPT
-        ldy     #$00
-L34E2:
-        rts
-CHRSTR:
-        jsr     CONINT
-        txa
-        pha
-        lda     #$01
-        jsr     STRSPA
-        pla
-        ldy     #$00
-        sta     (FAC+1),y
-        pla
-        pla
-        jmp     PUTNEW
-LEFTSTR:
-        jsr     SUBSTRING_SETUP
-        cmp     (DSCPTR),y
-        tya
-SUBSTRING1:
-        bcc     L3503
-        lda     (DSCPTR),y
-        tax
-        tya
-L3503:
-        pha
-SUBSTRING2:
-        txa
-SUBSTRING3:
-        pha
-        jsr     STRSPA
-        lda     DSCPTR
-        ldy     DSCPTR+1
-        jsr     FRETMP
-        pla
-        tay
-        pla
-        clc
-        adc     INDEX
-        sta     INDEX
-        bcc     L351C
-        inc     INDEX+1
-L351C:
-        tya
-        jsr     MOVSTR1
-        jmp     PUTNEW
-RIGHTSTR:
-        jsr     SUBSTRING_SETUP
-        clc
-        sbc     (DSCPTR),y
-        eor     #$FF
-        jmp     SUBSTRING1
-MIDSTR:
-        lda     #$FF
-        sta     FAC_LAST
-        jsr     CHRGOT
-        cmp     #$29
-        beq     L353F
-        jsr     CHKCOM
-        jsr     GETBYT
-L353F:
-        jsr     SUBSTRING_SETUP
-.ifdef CBM2_KBD
-        beq     GOIQ
-.endif
-        dex
-        txa
-        pha
-        clc
-        ldx     #$00
-        sbc     (DSCPTR),y
-        bcs     SUBSTRING2
-        eor     #$FF
-        cmp     FAC_LAST
-        bcc     SUBSTRING3
-        lda     FAC_LAST
-        bcs     SUBSTRING3
-SUBSTRING_SETUP:
-        jsr     CHKCLS
-        pla
-.ifndef CONFIG_11
-        sta     JMPADRS+1
-        pla
-        sta     JMPADRS+2
-.else
-        tay
-        pla
-        sta     Z52
-.endif
-        pla
-        pla
-        pla
-        tax
-        pla
-        sta     DSCPTR
-        pla
-        sta     DSCPTR+1
-.ifdef CONFIG_11
-        lda     Z52
-        pha
-        tya
-        pha
-.endif
-        ldy     #$00
-        txa
-.ifndef CBM2_KBD
-        beq     GOIQ
-.endif
-.ifndef CONFIG_11
-        inc     JMPADRS+1
-        jmp     (JMPADRS+1)
-.else
-        rts
-.endif
-LEN:
-        jsr     GETSTR
-SNGFLT1:
-        jmp     SNGFLT
-GETSTR:
-        jsr     FRESTR
-        ldx     #$00
-        stx     VALTYP
-        tay
-        rts
-ASC:
-        jsr     GETSTR
-        beq     GOIQ
-        ldy     #$00
-        lda     (INDEX),y
-        tay
-.ifndef CONFIG_11_NOAPPLE
-        jmp     SNGFLT1
-.else
-        jmp     SNGFLT
-.endif
-GOIQ:
-        jmp     IQERR
-GTBYTC:
-        jsr     CHRGET
-GETBYT:
-        jsr     FRMNUM
-CONINT:
-        jsr     MKINT
-        ldx     FAC_LAST-1
-        bne     GOIQ
-        ldx     FAC_LAST
-        jmp     CHRGOT
-VAL:
-        jsr     GETSTR
-        bne     L35AC
-        jmp     ZERO_FAC
-L35AC:
-        ldx     TXTPTR
-        ldy     TXTPTR+1
-        stx     STRNG2
-        sty     STRNG2+1
-        ldx     INDEX
-        stx     TXTPTR
-        clc
-        adc     INDEX
-        sta     DEST
-        ldx     INDEX+1
-        stx     TXTPTR+1
-        bcc     L35C4
-        inx
-L35C4:
-        stx     DEST+1
-        ldy     #$00
-        lda     (DEST),y
-        pha
-        lda     #$00
-        sta     (DEST),y
-        jsr     CHRGOT
-        jsr     FIN
-        pla
-        ldy     #$00
-        sta     (DEST),y
-POINT:
-        ldx     STRNG2
-        ldy     STRNG2+1
-        stx     TXTPTR
-        sty     TXTPTR+1
-        rts
+
+.include "string.s"
+
+
 .ifdef KBD
 LF422:
         lda     VARTAB
@@ -4833,12 +3993,28 @@ LF472:
 LF47D:
         jmp     (JMPADRS+1)
 .else
+
+; ----------------------------------------------------------------------------
+; EVALUATE "EXP1,EXP2"
+;
+; CONVERT EXP1 TO 16-BIT NUMBER IN LINNUM
+; CONVERT EXP2 TO 8-BIT NUMBER IN X-REG
+; ----------------------------------------------------------------------------
 GTNUM:
         jsr     FRMNUM
         jsr     GETADR
+
+; ----------------------------------------------------------------------------
+; EVALUATE ",EXPRESSION"
+; CONVERT EXPRESSION TO SINGLE BYTE IN X-REG
+; ----------------------------------------------------------------------------
 COMBYTE:
         jsr     CHKCOM
         jmp     GETBYT
+
+; ----------------------------------------------------------------------------
+; CONVERT (FAC) TO A 16-BIT VALUE IN LINNUM
+; ----------------------------------------------------------------------------
 GETADR:
         lda     FACSIGN
 .ifdef APPLE
@@ -4856,6 +4032,59 @@ GETADR:
         sty     LINNUM
         sta     LINNUM+1
         rts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; ----------------------------------------------------------------------------
+; "PEEK" FUNCTION
+; ----------------------------------------------------------------------------
 PEEK:
 .ifdef CBM2_KBD
         lda     $12
@@ -4873,7 +4102,7 @@ PEEK:
 LD6F3:
 .endif
 .ifdef CBM2_KBD
-		nop
+		nop ; patch that disables the compares above
 		nop
 		nop
 		nop
@@ -4892,12 +4121,20 @@ LD6F3:
 .endif
 LD6F6:
         jmp     SNGFLT
+
+; ----------------------------------------------------------------------------
+; "POKE" STATEMENT
+; ----------------------------------------------------------------------------
 POKE:
         jsr     GTNUM
         txa
         ldy     #$00
         sta     (LINNUM),y
         rts
+
+; ----------------------------------------------------------------------------
+; "WAIT" STATEMENT
+; ----------------------------------------------------------------------------
 WAIT:
         jsr     GTNUM
         stx     FORPNT
