@@ -5,6 +5,9 @@ CBM1_APPLE := 1
 CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
 CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
+CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
+; minor: just code order
+CONFIG_INPUTBUFFER_ORDER := 1 ; ldx/ldy or ldy/ldx
 .else
 CONFIG_CBM_ALL := 1
 CONFIG_11 := 1
@@ -20,7 +23,7 @@ CONFIG_DATAFLAG := 1
 
 ; common:
 CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
-
+CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
 
 .ifdef CBM1
 ZP_START = $65

@@ -16,10 +16,12 @@ PRINT2:
         beq     L29F5
         cmp     #TOKEN_SPC
 .ifdef CBM2_KBD
-        clc
+        clc	; also AppleSoft II
 .endif
         beq     L29F5
         cmp     #','
+; Pre-KIM had no CLC. KIM added the CLC
+; here. Post-KIM moved the CLC up...
 .ifdef KIM
         clc
 .endif
@@ -31,16 +33,16 @@ PRINT2:
         bmi     PRSTRING
         jsr     FOUT
         jsr     STRLIT
-.ifndef CONFIG_CBM_ALL
+.ifndef CONFIG_NO_CR
         ldy     #$00
         lda     (FAC_LAST-1),y
         clc
         adc     Z16
-.ifdef KBD
+  .ifdef KBD
         cmp     #$28
-.else
+  .else
         cmp     Z17
-.endif
+  .endif
         bcc     L29B1
         jsr     CRDO
 L29B1:
@@ -48,6 +50,8 @@ L29B1:
         jsr     STRPRT
 .ifdef KBD
         jmp     L297E
+
+; PATCHES
 LE86C:
         pla
         jmp     CONTROL_C_TYPED
@@ -74,47 +78,53 @@ PRINTNULLS:
         jsr     OUTSP
         bne     L297E
 L29B9:
-.ifdef CBM2
+  .ifdef CBM2
         lda     #$00
         sta     INPUTBUFFER,x
         ldx     #<(INPUTBUFFER-1)
         ldy     #>(INPUTBUFFER-1)
-.else
-.ifndef APPLE
+  .else
+    .ifndef APPLE
         ldy     #$00
         sty     INPUTBUFFER,x
         ldx     #LINNUM+1
-.endif
-.endif
-.ifdef CONFIG_CBM_ALL
+    .endif
+  .endif
+  .ifdef CONFIG_CBM_ALL
         lda     Z03
         bne     L29DD
 LC9D2:
-.endif
+  .endif
 CRDO:
-.ifdef CBM1
+  .ifdef CBM1
         lda     Z03
         bne     LC9D8
         sta     $05
 LC9D8:
-.endif
+  .endif
         lda     #$0D
-.ifndef CONFIG_CBM_ALL
+  .ifndef CONFIG_CBM_ALL
         sta     Z16
-.endif
+  .endif
         jsr     OUTDO
-.ifdef APPLE
+  .ifdef APPLE
         lda     #$80
-.else
+  .else
         lda     #$0A
-.endif
+  .endif
         jsr     OUTDO
+.endif
+.ifndef KBD
 PRINTNULLS:
-.ifdef CBM1
+  .if .def(CONFIG_NULL) || .def(CONFIG_PRINTNULLS)
+    .ifdef CONFIG_FILE
+    ; Although there is no statement for it,
+    ; CBM1 had NULL support and ignores
+    ; it when not targeting the screem,
+    ; CBM2 dropped it completely.
         lda     Z03
         bne     L29DD
-.endif
-.if .def(CONFIG_NULL) || .def(CBM1)
+    .endif
         txa
         pha
         ldx     Z15
@@ -128,13 +138,13 @@ L29D9:
         stx     Z16
         pla
         tax
-.else
-.ifdef APPLE
+  .else
+    .ifdef APPLE
         lda     #$00
         sta     $50
-.endif
+    .endif
         eor     #$FF
-.endif
+  .endif
 .endif
 L29DD:
         rts

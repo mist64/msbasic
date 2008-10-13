@@ -4,7 +4,7 @@
 		keyword_rts "FOR", FOR
 		keyword_rts "NEXT", NEXT
 		keyword_rts "DATA", DATA
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
 		keyword_rts "INPUT#", INPUTH
 .endif
 		keyword_rts "INPUT", INPUT
@@ -50,7 +50,7 @@
 .else
 		keyword_rts "POKE", POKE
 .endif
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
 		keyword_rts "PRINT#", PRINTH
 .endif
 		keyword_rts "PRINT", PRINT, TOKEN_PRINT
@@ -61,7 +61,7 @@
 .else
 		keyword_rts "CLEAR", CLEAR
 .endif
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
 		keyword_rts "CMD", CMD
 		keyword_rts "SYS", SYS
 		keyword_rts "OPEN", OPEN

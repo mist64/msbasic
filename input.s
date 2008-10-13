@@ -29,7 +29,7 @@ L2A67:
 SYNERR4:
         jmp     SYNERR
 RESPERR:
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
         lda     Z03
         beq     LCA8F
         ldx     #ERR_BADDATA
@@ -43,7 +43,7 @@ LCA8F:
         ldy     OLDTEXT+1
         sta     TXTPTR
         sty     TXTPTR+1
-LE920:
+RTS20:
         rts
 
 ; ----------------------------------------------------------------------------
@@ -128,10 +128,8 @@ LCAF8:
 .endif
 .ifdef KBD
         bmi     L2ABE
-.endif
-
-.ifndef KBD
-.ifdef CONFIG_FILE
+.else
+  .ifdef CONFIG_FILE
         lda     Z03
         beq     LCB0C
         lda     Z96
@@ -140,38 +138,41 @@ LCAF8:
         jsr     LCAD6
         jmp     DATA
 LCB0C:
-.endif
+  .endif
         lda     INPUTBUFFER
         bne     L2ABE
-.ifdef CONFIG_FILE
+  .ifdef CONFIG_FILE
         lda     Z03
         bne     LCAF8
-.endif
-.ifdef CONFIG_CBM1_PATCHES
+  .endif
+  .ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH1
-.else
+  .else
         clc
         jmp     CONTROL_C_TYPED
-.endif
+  .endif
 .endif
 
 NXIN:
 .ifdef KBD
         jsr     LFDDA
-        bmi     LE920
+        bmi     RTS20
         pla
         jmp     LE86C
-.endif
-.ifndef KBD
-.ifdef CONFIG_FILE
+.else
+  .ifdef CONFIG_FILE
         lda     Z03
         bne     LCB21
-.endif
-        jsr     OUTQUES
+  .endif
+        jsr     OUTQUES	; '?'
         jsr     OUTSP
 LCB21:
         jmp     INLIN
-.endif /* KBD */
+.endif
+
+; ----------------------------------------------------------------------------
+; "GETC" STATEMENT
+; ----------------------------------------------------------------------------
 .ifdef KBD
 GETC:
         jsr     CONINT
@@ -223,25 +224,25 @@ PROCESS_INPUT_ITEM:
         jsr     CHRGOT
         bne     INSTART
         bit     INPUTFLG
-.ifndef CONFIG_SMALL
+.ifndef CONFIG_SMALL ; GET
         bvc     L2AF0
         jsr     MONRDKEY
-.ifdef APPLE
+  .ifdef CONFIG_IO_MSB
         and     #$7F
-.endif
+  .endif
         sta     INPUTBUFFER
-.ifdef CBM1
+  .ifdef CONFIG_INPUTBUFFER_ORDER
         ldy     #>(INPUTBUFFER-1)
         ldx     #<(INPUTBUFFER-1)
-.else
+  .else
         ldx     #<(INPUTBUFFER-1)
         ldy     #>(INPUTBUFFER-1)
-.endif
+  .endif
         bne     L2AF8
 L2AF0:
 .endif
         bmi     FINDATA
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
         lda     Z03
         bne     LCB64
 .endif
@@ -261,20 +262,20 @@ INSTART:
         jsr     CHRGET
         bit     VALTYP
         bpl     L2B34
-.ifndef CONFIG_SMALL
+.ifndef CONFIG_SMALL ; GET
         bit     INPUTFLG
         bvc     L2B10
-.ifdef CONFIG_CBM1_PATCHES
+  .ifdef CONFIG_CBM1_PATCHES
         lda     #$00
         jsr     PATCH4
         nop
-.else
+  .else
         inx
         stx     TXTPTR
         lda     #$00
         sta     CHARAC
         beq     L2B1C
-.endif
+  .endif
 L2B10:
 .endif
         sta     CHARAC
@@ -359,17 +360,17 @@ INPDONE:
         lda     INPTR
         ldy     INPTR+1
         ldx     INPUTFLG
-.ifdef OSI
-        beq     L2B94
+.ifdef OSI ; CONFIG_SMALL && !CONFIG_11
+        beq     L2B94 ; INPUT
 .else
-        bpl     L2B94
+        bpl     L2B94; INPUT or GET
 .endif
         jmp     SETDA
 L2B94:
         ldy     #$00
         lda     (INPTR),y
         beq     L2BA1
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
         lda     Z03
         bne     L2BA1
 .endif

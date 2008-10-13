@@ -125,7 +125,7 @@ L4098:
         sta     Z03
 .endif
         sta     LASTPT+1
-.if .defined(CONFIG_NULL) || .defined(CBM1)
+.if .defined(CONFIG_NULL) || .defined(CONFIG_PRINTNULLS)
         sta     Z15
 .endif
 .ifndef CONFIG_11

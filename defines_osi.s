@@ -1,8 +1,10 @@
 CONFIG_SMALL := 1
-CONFIG_SCRTCH_ORDER := 1
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_DATAFLAG := 1
+
+; minor: just code order
+CONFIG_SCRTCH_ORDER := 1
 
 ZP_START = $65
 
