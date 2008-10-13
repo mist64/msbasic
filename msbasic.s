@@ -116,6 +116,30 @@ QT_BREAK:
         .byte   "BREAK"
         .byte   $00
 .endif
+
+
+
+
+
+
+
+
+
+
+; ----------------------------------------------------------------------------
+; CALLED BY "NEXT" AND "FOR" TO SCAN THROUGH
+; THE STACK FOR A FRAME WITH THE SAME VARIABLE.
+;
+; (FORPNT) = ADDRESS OF VARIABLE IF "FOR" OR "NEXT"
+; 	= $XXFF IF CALLED FROM "RETURN"
+; 	<<< BUG: SHOULD BE $FFXX >>>
+;
+;	RETURNS .NE. IF VARIABLE NOT FOUND,
+;	(X) = STACK PNTR AFTER SKIPPING ALL FRAMES
+;
+;	.EQ. IF FOUND
+;	(X) = STACK PNTR OF FRAME FOUND
+; ----------------------------------------------------------------------------
 GTFORPNT:
         tsx
         inx
@@ -146,6 +170,15 @@ L229A:
         bne     L2279
 L22A1:
         rts
+
+; ----------------------------------------------------------------------------
+; MOVE BLOCK OF MEMORY UP
+;
+; ON ENTRY:
+;	(Y,A) = (HIGHDS) = DESTINATION END+1
+;	(LOWTR) = LOWEST ADDRESS OF SOURCE
+;	(HIGHTR) = HIGHEST SOURCE ADDRESS+1
+; ----------------------------------------------------------------------------
 BLTU:
         jsr     REASON
         sta     STREND
@@ -190,6 +223,11 @@ L22DD:
         dex
         bne     L22D6
         rts
+
+; ----------------------------------------------------------------------------
+; CHECK IF ENOUGH ROOM LEFT ON STACK
+; FOR "FOR", "GOSUB", OR EXPRESSION EVALUATION
+; ----------------------------------------------------------------------------
 CHKMEM:
         asl     a
         adc     #SPACE_FOR_GOSUB
@@ -199,6 +237,11 @@ CHKMEM:
         cpx     INDEX
         bcc     MEMERR
         rts
+
+; ----------------------------------------------------------------------------
+; CHECK IF ENOUGH ROOM BETWEEN ARRAYS AND STRINGS
+; (Y,A) = ADDR ARRAYS NEED TO GROW TO
+; ----------------------------------------------------------------------------
 REASON:
         cpy     FRETOP+1
         bcc     L231E
@@ -231,8 +274,18 @@ L230B:
         bcs     MEMERR
 L231E:
         rts
+
+; ----------------------------------------------------------------------------
 MEMERR:
         ldx     #ERR_MEMFULL
+
+; ----------------------------------------------------------------------------
+; HANDLE AN ERROR
+;
+; (X)=OFFSET IN ERROR MESSAGE TABLE
+; (ERRFLG) > 128 IF "ON ERR" TURNED ON
+; (CURLIN+1) = $FF IF IN DIRECT MODE
+; ----------------------------------------------------------------------------
 ERROR:
         lsr     Z14
 .ifdef CONFIG_CBM_ALL
@@ -266,12 +319,24 @@ L2329:
         jsr     STKINI
         lda     #<QT_ERROR
         ldy     #>QT_ERROR
+
+; ----------------------------------------------------------------------------
+; PRINT STRING AT (Y,A)
+; PRINT CURRENT LINE # UNLESS IN DIRECT MODE
+; FALL INTO WARM RESTART
+; ----------------------------------------------------------------------------
 PRINT_ERROR_LINNUM:
         jsr     STROUT
         ldy     CURLIN+1
         iny
         beq     RESTART
         jsr     INPRT
+
+; ----------------------------------------------------------------------------
+; WARM RESTART ENTRY
+;
+; COME HERE FROM MONITOR BY CTL-C, 0G, 3D0G, OR E003G
+; ----------------------------------------------------------------------------
 RESTART:
 .ifdef KBD
         jsr     CRDO
@@ -310,6 +375,10 @@ L2351:
         bcc     NUMBERED_LINE
         jsr     PARSE_INPUT_LINE
         jmp     NEWSTT2
+
+; ----------------------------------------------------------------------------
+; HANDLE NUMBERED LINE
+; ----------------------------------------------------------------------------
 NUMBERED_LINE:
         jsr     LINGET
         jsr     PARSE_INPUT_LINE
@@ -408,6 +477,8 @@ L23AD:
         inc     DEST+1
         dex
         bne     L23AD
+.endif
+; ----------------------------------------------------------------------------
 PUT_NEW_LINE:
 .ifdef CBM2
         jsr     SETPTRS
@@ -416,6 +487,7 @@ PUT_NEW_LINE:
         beq     L2351
         clc
 .else
+.ifndef KBD
         lda     INPUTBUFFER
         beq     FIX_LINKS
         lda     MEMSIZ
@@ -447,11 +519,17 @@ L23D6:
         sty     VARTAB+1
         ldy     EOLPNTR
         dey
+; ---COPY LINE INTO PROGRAM-------
 L23E6:
         lda     INPUTBUFFER-4,y
         sta     (LOWTR),y
         dey
         bpl     L23E6
+
+; ----------------------------------------------------------------------------
+; CLEAR ALL VARIABLES
+; RE-ESTABLISH ALL FORWARD LINKS
+; ----------------------------------------------------------------------------
 FIX_LINKS:
         jsr     SETPTRS
 .ifdef CBM2_KBD
@@ -531,6 +609,10 @@ LE39A:
 RET3:
         rts
 .else
+
+; ----------------------------------------------------------------------------
+; READ A LINE, AND STRIP OFF SIGN BITS
+; ----------------------------------------------------------------------------
 .ifdef APPLE
 INLIN:
         ldx     #$DD
@@ -542,9 +624,9 @@ INLIN1:
         ldx     #$EF
 L0C32:
         lda     #$00
-        sta     $0200,x
-        ldx     #$FF
-        ldy     #$01
+        sta     INPUTBUFFER,x
+        ldx     #<INPUTBUFFER-1
+        ldy     #>INPUTBUFFER-1
         rts
 RDKEY:
         jsr     LFD0C
@@ -640,6 +722,10 @@ GETLN:
 L2465:
         rts
 .endif /* KBD */
+
+; ----------------------------------------------------------------------------
+; TOKENIZE THE INPUT LINE
+; ----------------------------------------------------------------------------
 PARSE_INPUT_LINE:
         ldx     TXTPTR
         ldy     #$04
@@ -670,6 +756,10 @@ L2484:
         bcc     L248C
         cmp     #$3C
         bcc     L24AC
+; ----------------------------------------------------------------------------
+; SEARCH TOKEN NAME TABLE FOR MATCH STARTING
+; WITH CURRENT CHAR FROM INPUT LINE
+; ----------------------------------------------------------------------------
 L248C:
         sty     STRNG2
         ldy     #$00
@@ -697,6 +787,9 @@ L2498:
         cmp     #$80
         bne     L24D7
         ora     EOLPNTR
+; ----------------------------------------------------------------------------
+; STORE CHARACTER OR TOKEN IN OUTPUT LINE
+; ----------------------------------------------------------------------------
 L24AA:
         ldy     STRNG2
 L24AC:
@@ -717,6 +810,10 @@ L24C1:
         sbc     #TOKEN_REM-':'
         bne     L246C
         sta     ENDCHR
+; ----------------------------------------------------------------------------
+; HANDLE LITERAL (BETWEEN QUOTES) OR REMARK,
+; BY COPYING CHARS UP TO ENDCHR.
+; ----------------------------------------------------------------------------
 L24C8:
         lda     INPUTBUFFERX,x
         beq     L24AC
@@ -727,6 +824,9 @@ L24D0:
         sta     INPUTBUFFER-5,y
         inx
         bne     L24C8
+; ----------------------------------------------------------------------------
+; ADVANCE POINTER TO NEXT TOKEN NAME
+; ----------------------------------------------------------------------------
 L24D7:
         ldx     TXTPTR
         inc     EOLPNTR
@@ -738,6 +838,7 @@ L24DB:
         bne     L2498
         lda     INPUTBUFFERX,x
         bpl     L24AA
+; ---END OF LINE------------------
 L24EA:
         sta     INPUTBUFFER-3,y
 .if INPUTBUFFER >= $0100
@@ -746,6 +847,16 @@ L24EA:
         lda     #<INPUTBUFFER-1
         sta     TXTPTR
         rts
+
+; ----------------------------------------------------------------------------
+; SEARCH FOR LINE
+;
+; (LINNUM) = LINE # TO FIND
+; IF NOT FOUND:  CARRY = 0
+;	LOWTR POINTS AT NEXT LINE
+; IF FOUND:      CARRY = 1
+;	LOWTR POINTS AT LINE
+; ----------------------------------------------------------------------------
 FNDLIN:
 .ifdef KBD
         jsr     CHRGET
@@ -807,6 +918,10 @@ L251F:
 .endif
 L2520:
         rts
+
+; ----------------------------------------------------------------------------
+; "NEW" STATEMENT
+; ----------------------------------------------------------------------------
 NEW:
         bne     L2520
 SCRTCH:
@@ -824,11 +939,16 @@ SCRTCH:
         lda     TXTTAB+1
         adc     #$00
         sta     VARTAB+1
+; ----------------------------------------------------------------------------
 SETPTRS:
         jsr     STXTPT
 .ifndef APPLE
 .ifdef CONFIG_11
         lda     #$00
+
+; ----------------------------------------------------------------------------
+; "CLEAR" STATEMENT
+; ----------------------------------------------------------------------------
 CLEAR:
         bne     L256A
 .endif
@@ -853,6 +973,7 @@ CLEARC:
         sta     STREND
         sty     STREND+1
         jsr     RESTORE
+; ----------------------------------------------------------------------------
 STKINI:
         ldx     #TEMPST
         stx     TEMPPT
@@ -886,6 +1007,10 @@ STKINI:
         sta     SUBFLG
 L256A:
         rts
+
+; ----------------------------------------------------------------------------
+; SET TXTPTR TO BEGINNING OF PROGRAM
+; ----------------------------------------------------------------------------
 STXTPT:
         clc
         lda     TXTTAB
@@ -915,6 +1040,10 @@ LE4D4:
         cmp     JMPADRS+1
 LE4DE:
         rts
+
+; ----------------------------------------------------------------------------
+; "LIST" STATEMENT
+; ----------------------------------------------------------------------------
 LIST:
         jsr     LE440
         bne     LE4DE
@@ -970,6 +1099,7 @@ L25A6:
         beq     L25C3
 L25C1:
         bcs     L25E5
+; ---LIST ONE LINE----------------
 L25C3:
         sty     FORPNT
         jsr     LINPRT
@@ -1030,6 +1160,19 @@ L25FD:
         bmi     L25CA
         jsr     OUTDO
         bne     L25FD
+
+; ----------------------------------------------------------------------------
+; "FOR" STATEMENT
+;
+; FOR PUSHES 18 BYTES ON THE STACK:
+; 2 -- TXTPTR
+; 2 -- LINE NUMBER
+; 5 -- INITIAL (CURRENT)  FOR VARIABLE VALUE
+; 1 -- STEP SIGN
+; 5 -- STEP VALUE
+; 2 -- ADDRESS OF FOR VARIABLE IN VARTAB
+; 1 -- FOR TOKEN ($81)
+; ----------------------------------------------------------------------------
 FOR:
         lda     #$80
         sta     SUBFLG
@@ -1069,7 +1212,11 @@ L2619:
         ldy     #>STEP
         sta     INDEX
         sty     INDEX+1
-        jmp     L2CED
+        jmp     FRM_STACK3
+
+; ----------------------------------------------------------------------------
+; "STEP" PHRASE OF "FOR" STATEMENT
+; ----------------------------------------------------------------------------
 STEP:
         lda     #<CON_ONE
         ldy     #>CON_ONE
@@ -1088,6 +1235,10 @@ L2665:
         pha
         lda     #$81
         pha
+
+; ----------------------------------------------------------------------------
+; PERFORM NEXT STATEMENT
+; ----------------------------------------------------------------------------
 NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
@@ -1142,6 +1293,13 @@ NEWSTT2:
         jsr     CHRGET
         jsr     EXECUTE_STATEMENT
         jmp     NEWSTT
+
+; ----------------------------------------------------------------------------
+; EXECUTE A STATEMENT
+;
+; (A) IS FIRST CHAR OF STATEMENT
+; CARRY IS SET
+; ----------------------------------------------------------------------------
 EXECUTE_STATEMENT:
 .ifndef CONFIG_11_NOAPPLE
         beq     RET1
@@ -1193,6 +1351,10 @@ LC721:
         jsr     SYNCHR
         jmp     GOTO
 .endif
+
+; ----------------------------------------------------------------------------
+; "RESTORE" STATEMENT
+; ----------------------------------------------------------------------------
 RESTORE:
         sec
         lda     TXTTAB
@@ -1206,6 +1368,10 @@ SETDA:
 RET2:
         rts
 .ifndef CONFIG_CBM_ALL
+
+; ----------------------------------------------------------------------------
+; SEE IF CONTROL-C TYPED
+; ----------------------------------------------------------------------------
 ISCNTC:
 .endif
 .ifdef KBD
@@ -1246,8 +1412,16 @@ L0ECC:
         clc
         cmp     #$03
 .endif
+
+; ----------------------------------------------------------------------------
+; "STOP" STATEMENT
+; ----------------------------------------------------------------------------
 STOP:
         bcs     END2
+
+; ----------------------------------------------------------------------------
+; "END" STATEMENT
+; ----------------------------------------------------------------------------
 END:
         clc
 END2:
@@ -1285,6 +1459,10 @@ LE664:
         tay
         jmp     SNGFLT
 .endif
+
+; ----------------------------------------------------------------------------
+; "CONT" COMMAND
+; ----------------------------------------------------------------------------
 CONT:
         bne     RET1
         ldx     #ERR_CANTCONT
@@ -1440,12 +1618,26 @@ L27C2:
         sty     VARTAB+1
         jmp     FIX_LINKS
 .endif
+
+; ----------------------------------------------------------------------------
+; "RUN" COMMAND
+; ----------------------------------------------------------------------------
 RUN:
         bne     L27CF
         jmp     SETPTRS
 L27CF:
         jsr     CLEARC
         jmp     L27E9
+
+; ----------------------------------------------------------------------------
+; "GOSUB" STATEMENT
+;
+; LEAVES 7 BYTES ON STACK:
+; 2 -- RETURN ADDRESS (NEWSTT)
+; 2 -- TXTPTR
+; 2 -- LINE #
+; 1 -- GOSUB TOKEN
+; ----------------------------------------------------------------------------
 GOSUB:
         lda     #$03
         jsr     CHKMEM
@@ -1463,6 +1655,11 @@ L27E9:
         jsr     CHRGOT
         jsr     GOTO
         jmp     NEWSTT
+
+; ----------------------------------------------------------------------------
+; "GOTO" STATEMENT
+; ALSO USED BY "RUN" AND "GOSUB"
+; ----------------------------------------------------------------------------
 GOTO:
         jsr     LINGET
         jsr     REMN
@@ -1495,6 +1692,10 @@ L280D:
         sta     TXTPTR+1
 L281E:
         rts
+
+; ----------------------------------------------------------------------------
+; "POP" AND "RETURN" STATEMENTS
+; ----------------------------------------------------------------------------
 POP:
         bne     L281E
         lda     #$FF
@@ -1512,8 +1713,10 @@ POP:
 UNDERR:
         ldx     #ERR_UNDEFSTAT
         jmp     ERROR
+; ----------------------------------------------------------------------------
 SYNERR2:
         jmp     SYNERR
+; ----------------------------------------------------------------------------
 RETURN:
         pla
         pla
@@ -1524,8 +1727,17 @@ RETURN:
         sta     TXTPTR
         pla
         sta     TXTPTR+1
+
+; ----------------------------------------------------------------------------
+; "DATA" STATEMENT
+; EXECUTED BY SKIPPING TO NEXT COLON OR EOL
+; ----------------------------------------------------------------------------
 DATA:
         jsr     DATAN
+
+; ----------------------------------------------------------------------------
+; ADD (Y) TO TXTPTR
+; ----------------------------------------------------------------------------
 ADDON:
         tya
         clc
@@ -1535,6 +1747,10 @@ ADDON:
         inc     TXTPTR+1
 L2852:
         rts
+
+; ----------------------------------------------------------------------------
+; SCAN AHEAD TO NEXT ":" OR EOL
+; ----------------------------------------------------------------------------
 DATAN:
         ldx     #$3A
         .byte   $2C
@@ -1562,6 +1778,10 @@ L2866:
         bne     L2866
         beq     L285E
 .endif
+
+; ----------------------------------------------------------------------------
+; "IF" STATEMENT
+; ----------------------------------------------------------------------------
 IF:
         jsr     FRMEVL
         jsr     CHRGOT
@@ -1572,6 +1792,10 @@ IF:
 L2884:
         lda     FAC
         bne     L288D
+
+; ----------------------------------------------------------------------------
+; "REM" STATEMENT, OR FALSE "IF" STATEMENT
+; ----------------------------------------------------------------------------
 REM:
         jsr     REMN
         beq     ADDON
@@ -1581,6 +1805,13 @@ L288D:
         jmp     GOTO
 L2895:
         jmp     EXECUTE_STATEMENT
+
+; ----------------------------------------------------------------------------
+; "ON" STATEMENT
+;
+; ON <EXP> GOTO <LIST>
+; ON <EXP> GOSUB <LIST>
+; ----------------------------------------------------------------------------
 ON:
         jsr     GETBYT
         pha
@@ -1602,6 +1833,10 @@ L28AC:
         pla
 L28B7:
         rts
+
+; ----------------------------------------------------------------------------
+; CONVERT LINE NUMBER
+; ----------------------------------------------------------------------------
 LINGET:
         ldx     #$00
         stx     LINNUM
@@ -1646,6 +1881,13 @@ L28BE:
 L28EC:
         jsr     CHRGET
         jmp     L28BE
+
+; ----------------------------------------------------------------------------
+; "LET" STATEMENT
+;
+; LET <VAR> = <EXP>
+; <VAR> = <EXP>
+; ----------------------------------------------------------------------------
 LET:
         jsr     PTRGET
         sta     FORPNT
@@ -1678,10 +1920,18 @@ LET2:
         rts
 L2923:
 .endif
+
+; ----------------------------------------------------------------------------
+; REAL VARIABLE = EXPRESSION
+; ----------------------------------------------------------------------------
         jmp     SETFOR
 LETSTRING:
 .ifndef CONFIG_SMALL
         pla
+
+; ----------------------------------------------------------------------------
+; INSTALL STRING, DESCRIPTOR ADDRESS IS AT FAC+3,4
+; ----------------------------------------------------------------------------
 PUTSTR:
 .endif
 .ifdef CONFIG_CBM_ALL
@@ -1810,10 +2060,16 @@ LC98F:
         plp
         jmp     PRINT
 .endif
+
+; ----------------------------------------------------------------------------
 PRSTRING:
         jsr     STRPRT
 L297E:
         jsr     CHRGOT
+
+; ----------------------------------------------------------------------------
+; "PRINT" STATEMENT
+; ----------------------------------------------------------------------------
 PRINT:
         beq     CRDO
 PRINT2:
@@ -2036,8 +2292,16 @@ L2A13:
         jsr     OUTSP
         bne     L2A0A
 .endif
+
+; ----------------------------------------------------------------------------
+; PRINT STRING AT (Y,A)
+; ----------------------------------------------------------------------------
 STROUT:
         jsr     STRLIT
+
+; ----------------------------------------------------------------------------
+; PRINT STRING AT (FACMO,FACLO)
+; ----------------------------------------------------------------------------
 STRPRT:
         jsr     FREFAC
         tax
@@ -2053,6 +2317,7 @@ L2A22:
         bne     L2A22
         jsr     PRINTNULLS
         jmp     L2A22
+; ----------------------------------------------------------------------------
 OUTSP:
 .ifdef CBM2
         lda     $0E
@@ -2069,6 +2334,10 @@ LCA40:
         .byte   $2C
 OUTQUES:
         lda     #$3F
+
+; ----------------------------------------------------------------------------
+; PRINT CHAR FROM (A)
+; ----------------------------------------------------------------------------
 OUTDO:
 .ifndef KBD
         bit     Z14
@@ -2159,9 +2428,15 @@ LE900:
         pla
         rts
 .endif
-L2A59:
+
+; ----------------------------------------------------------------------------
+; INPUT CONVERSION ERROR:  ILLEGAL CHARACTER
+; IN NUMERIC FIELD.  MUST DISTINGUISH
+; BETWEEN INPUT, READ, AND GET
+; ----------------------------------------------------------------------------
+INPUTERR:
         lda     INPUTFLG
-        beq     L2A6E
+        beq     RESPERR
 .ifdef CBM2_KIM_APPLE
         bmi     L2A63
         ldy     #$FF
@@ -2180,7 +2455,7 @@ L2A67:
         sty     CURLIN+1
 SYNERR4:
         jmp     SYNERR
-L2A6E:
+RESPERR:
 .ifdef CONFIG_CBM_ALL
         lda     Z03
         beq     LCA8F
@@ -2198,6 +2473,10 @@ LCA8F:
 LE920:
         rts
 .ifndef CONFIG_SMALL
+
+; ----------------------------------------------------------------------------
+; "GET" STATEMENT
+; ----------------------------------------------------------------------------
 GET:
         jsr     ERRDIR
 .ifdef CONFIG_CBM_ALL
@@ -2244,6 +2523,10 @@ LCAD8:
         rts
 LCAE0:
 .endif
+
+; ----------------------------------------------------------------------------
+; "INPUT" STATEMENT
+; ----------------------------------------------------------------------------
 INPUT:
 .ifndef KBD
         lsr     Z14
@@ -2312,6 +2595,10 @@ GETC:
         jsr     LF43D
         jmp     LE664
 .endif
+
+; ----------------------------------------------------------------------------
+; "READ" STATEMENT
+; ----------------------------------------------------------------------------
 READ:
         ldx     DATPTR
         ldy     DATPTR+1
@@ -2325,6 +2612,15 @@ L2ABE:
 L2ABE:
         tya
 .endif
+
+; ----------------------------------------------------------------------------
+; PROCESS INPUT LIST
+;
+; (Y,X) IS ADDRESS OF INPUT DATA STRING
+; (A) = VALUE FOR INPUTFLG:  $00 FOR INPUT
+; 				$40 FOR GET
+;				$98 FOR READ
+; ----------------------------------------------------------------------------
 PROCESS_INPUT_LIST:
         sta     INPUTFLG
         stx     INPTR
@@ -2376,6 +2672,8 @@ LCB64:
 L2AF8:
         stx     TXTPTR
         sty     TXTPTR+1
+
+; ----------------------------------------------------------------------------
 INSTART:
         jsr     CHRGET
         bit     VALTYP
@@ -2420,6 +2718,7 @@ L2B28:
         jsr     PUTSTR
 .endif
         jmp     INPUT_MORE
+; ----------------------------------------------------------------------------
 L2B34:
         jsr     FIN
 .ifdef CONFIG_SMALL
@@ -2428,12 +2727,13 @@ L2B34:
         lda     VALTYP+1
         jsr     LET2
 .endif
+; ----------------------------------------------------------------------------
 INPUT_MORE:
         jsr     CHRGOT
         beq     L2B48
         cmp     #$2C
         beq     L2B48
-        jmp     L2A59
+        jmp     INPUTERR
 L2B48:
         lda     TXTPTR
         ldy     TXTPTR+1
@@ -2447,6 +2747,7 @@ L2B48:
         beq     INPDONE
         jsr     CHKCOM
         jmp     PROCESS_INPUT_ITEM
+; ----------------------------------------------------------------------------
 FINDATA:
         jsr     DATAN
         iny
@@ -2470,6 +2771,7 @@ L2B7C:
         cpx     #$83
         bne     FINDATA
         jmp     INSTART
+; ---NO MORE INPUT REQUESTED------
 INPDONE:
         lda     INPTR
         ldy     INPTR+1
@@ -2494,6 +2796,7 @@ L2B94:
 L2BA1:
         rts
 
+; ----------------------------------------------------------------------------
 ERREXTRA:
 .ifdef KBD
         .byte   "?Extra"
@@ -2516,6 +2819,10 @@ LEA30:
         .byte   $00,$1B,$0D,$13
         .byte   " BASIC"
 .endif
+
+; ----------------------------------------------------------------------------
+; "NEXT" STATEMENT
+; ----------------------------------------------------------------------------
 NEXT:
         bne     NEXT1
         ldy     #$00
@@ -2592,13 +2899,31 @@ L2C22:
         bne     L2C1F
         jsr     CHRGET
         jsr     NEXT1
+
+; ----------------------------------------------------------------------------
+; EVALUATE EXPRESSION, MAKE SURE IT IS NUMERIC
+; ----------------------------------------------------------------------------
 FRMNUM:
         jsr     FRMEVL
+
+; ----------------------------------------------------------------------------
+; MAKE SURE (FAC) IS NUMERIC
+; ----------------------------------------------------------------------------
 CHKNUM:
         clc
         .byte   $24
+
+; ----------------------------------------------------------------------------
+; MAKE SURE (FAC) IS STRING
+; ----------------------------------------------------------------------------
 CHKSTR:
         sec
+
+; ----------------------------------------------------------------------------
+; MAKE SURE (FAC) IS CORRECT TYPE
+; IF C=0, TYPE MUST BE NUMERIC
+; IF C=1, TYPE MUST BE STRING
+; ----------------------------------------------------------------------------
 CHKVAL:
         bit     VALTYP
         bmi     L2C41
@@ -2611,6 +2936,12 @@ L2C43:
         ldx     #ERR_BADTYPE
 JERROR:
         jmp     ERROR
+
+; ----------------------------------------------------------------------------
+; EVALUATE THE EXPRESSION AT TXTPTR, LEAVING THE
+; RESULT IN FAC.  WORKS FOR BOTH STRING AND NUMERIC
+; EXPRESSIONS.
+; ----------------------------------------------------------------------------
 FRMEVL:
         ldx     TXTPTR
         bne     L2C4E
@@ -2675,6 +3006,10 @@ L2CA4:
         tax
         beq     GOEX
         bne     FRM_PERFORM2
+
+; ----------------------------------------------------------------------------
+; FOUND ONE OR MORE RELATIONAL OPERATORS <,=,>
+; ----------------------------------------------------------------------------
 FRM_RELATIONAL:
         lsr     VALTYP
         txa
@@ -2691,6 +3026,11 @@ PREFNC:
         cmp     MATHTBL,y
         bcs     FRM_PERFORM2
         bcc     L2CA3
+
+; ----------------------------------------------------------------------------
+; STACK THIS OPERATION AND CALL FRMEVL FOR
+; ANOTHER ONE
+; ----------------------------------------------------------------------------
 FRM_RECURSE:
         lda     MATHTBL+2,y
         pha
@@ -2701,9 +3041,21 @@ FRM_RECURSE:
         jmp     FRMEVL1
 SNTXERR:
         jmp     SYNERR
+
+; ----------------------------------------------------------------------------
+; STACK (FAC)
+; THREE ENTRY POINTS:
+; 	1, FROM FRMEVL
+;	2, FROM "STEP"
+;	3, FROM "FOR"
+; ----------------------------------------------------------------------------
 FRM_STACK1:
         lda     FACSIGN
         ldx     MATHTBL,y
+
+; ----------------------------------------------------------------------------
+; ENTER HERE FROM "STEP", TO PUSH STEP SIGN AND VALUE
+; ----------------------------------------------------------------------------
 FRM_STACK2:
         tay
         pla
@@ -2721,7 +3073,12 @@ LEB69:
 .endif
         tya
         pha
-L2CED:
+
+; ----------------------------------------------------------------------------
+; ENTER HERE FROM "FOR", WITH (INDEX) = STEP,
+; TO PUSH INITIAL VALUE OF "FOR" VARIABLE
+; ----------------------------------------------------------------------------
+FRM_STACK3:
         jsr     ROUND_FAC
 .ifndef CONFIG_SMALL
         lda     FAC+4
