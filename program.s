@@ -106,7 +106,7 @@ NUMBERED_LINE:
         jsr     PARSE_INPUT_LINE
         sty     EOLPNTR
 .ifdef KBD
-        jsr     LFD3E
+        jsr     FNDLIN2
         lda     JMPADRS+1
         sta     LOWTR
         sta     $96
@@ -209,14 +209,14 @@ PUT_NEW_LINE:
         beq     L2351
         clc
 .else
-.ifndef KBD
+  .ifndef KBD
         lda     INPUTBUFFER
         beq     FIX_LINKS
         lda     MEMSIZ
         ldy     MEMSIZ+1
         sta     FRETOP
         sty     FRETOP+1
-.endif
+  .endif
 .endif
         lda     VARTAB
         sta     HIGHTR
@@ -272,8 +272,8 @@ L23FA:
 .else
         bne     L2403
         jmp     L2351
-.endif
 L2403:
+.endif
         ldy     #$04
 L2405:
         iny
@@ -291,7 +291,9 @@ L2405:
         sta     (INDEX),y
         stx     INDEX
         sta     INDEX+1
-        bcc     L23FA
+        bcc     L23FA	; always
+
+; ----------------------------------------------------------------------------
 .ifdef KBD
 SLOD:
         ldx     #$01
@@ -310,9 +312,9 @@ PLOD:
         jsr     LE39A
         jsr     LE33D
         jmp     CLEARC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
+        .byte   $FF,$FF,$FF
+
+; ----------------------------------------------------------------------------
 VER:
         lda     #$13
         ldx     FAC
@@ -330,13 +332,32 @@ LE39A:
         sta     VARTAB+1,y
 RET3:
         rts
-.else
+.endif
+
+.ifdef CBM2
+RET3:
+		rts
+.endif
+
+.if .def(CBM1) || .def(OSI) || .def(KIM)
+L2420:
+  .ifdef OSI
+        jsr     OUTDO
+  .endif
+        dex
+        bpl     INLIN2
+L2423:
+  .ifdef OSI
+        jsr     OUTDO
+  .endif
+        jsr     CRDO
+.endif
 
 ; ----------------------------------------------------------------------------
 ; READ A LINE, AND STRIP OFF SIGN BITS
 ; ----------------------------------------------------------------------------
-.ifdef APPLE
 INLIN:
+.ifdef APPLE
         ldx     #$DD
 INLIN1:
         stx     $33
@@ -350,37 +371,22 @@ L0C32:
         ldx     #<INPUTBUFFER-1
         ldy     #>INPUTBUFFER-1
         rts
-RDKEY:
-        jsr     LFD0C
-        and     #$7F
-.else
-.ifdef CBM2
-RET3:
-		rts
-.else
-L2420:
-.ifdef OSI
-        jsr     OUTDO
 .endif
-        dex
-        bpl     INLIN2
-L2423:
-.ifdef OSI
-        jsr     OUTDO
-.endif
-        jsr     CRDO
-.endif
-INLIN:
+
+
+
+.ifndef KBD
+  .ifndef APPLE
         ldx     #$00
 INLIN2:
         jsr     GETLN
-.ifndef CONFIG_CBM_ALL
+    .ifndef CONFIG_CBM_ALL
         cmp     #$07
         beq     L2443
-.endif
+    .endif
         cmp     #$0D
         beq     L2453
-.ifndef CONFIG_CBM_ALL
+    .ifndef CONFIG_CBM_ALL
         cmp     #$20 ; line editing
         bcc     INLIN2
         cmp     #$7D
@@ -392,31 +398,36 @@ INLIN2:
 L2443:
         cpx     #$47
         bcs     L244C
-.endif
+    .endif
         sta     INPUTBUFFER,x
         inx
-.ifdef OSI
+    .ifdef OSI
         .byte   $2C
-.else
+    .else
         bne     INLIN2
-.endif
+    .endif
 L244C:
-.ifndef CONFIG_CBM_ALL
+    .ifndef CONFIG_CBM_ALL
         lda     #$07
         jsr     OUTDO
         bne     INLIN2
-.endif
+    .endif
 L2453:
         jmp     L29B9
+  .endif
+.endif
+
+.ifndef KBD
+  .ifndef APPLE
 GETLN:
-.ifdef CONFIG_CBM_ALL
+    .ifdef CONFIG_CBM_ALL
         jsr     CHRIN
         ldy     Z03
         bne     L2465
-.else
+    .else
         jsr     MONRDKEY
-.endif
-.ifdef OSI
+    .endif
+    .ifdef OSI
         nop
         nop
         nop
@@ -432,8 +443,13 @@ GETLN:
         nop
         nop
         and     #$7F
-.endif
-.endif
+    .endif
+  .endif /* APPLE */
+  .ifdef APPLE
+RDKEY:
+        jsr     LFD0C
+        and     #$7F
+  .endif
         cmp     #$0F
         bne     L2465
         pha

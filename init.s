@@ -1,10 +1,12 @@
 .segment "INIT"
 
 .ifdef KBD
-LFD3E:
+FNDLIN2:
         php
         jmp     FNDLIN
 .endif
+
+; ----------------------------------------------------------------------------
 COLD_START:
 .ifdef KBD
         lda     #$81
