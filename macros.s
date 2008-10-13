@@ -57,6 +57,16 @@ DUMMY_START:
 		NUM_TOKENS := <(*-DUMMY_START)
 .endmacro
 
+.macro init_error_table
+        .segment "ERROR"
+ERROR_MESSAGES:
+.endmacro
+
+.macro define_error error, msg
+        .segment "ERROR"
+		error := <(*-ERROR_MESSAGES)
+		htasc msg
+.endmacro
 
 ;---------------------------------------------
 ; set the MSB of every byte of a string

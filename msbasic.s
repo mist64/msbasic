@@ -60,261 +60,12 @@ STACK           := $0100
         .byte   $00,$13,$56
 .endif
 
-		init_token_tables
+.include "token.s"
 
-		keyword_rts "END", END
-		keyword_rts "FOR", FOR
-		keyword_rts "NEXT", NEXT
-		keyword_rts "DATA", DATA
-.ifdef CONFIG_CBM_ALL
-		keyword_rts "INPUT#", INPUTH
-.endif
-		keyword_rts "INPUT", INPUT
-		keyword_rts "DIM", DIM
-		keyword_rts "READ", READ
-.ifdef APPLE
-		keyword_rts "PLT", PLT
-.else
-		keyword_rts "LET", LET
-.endif
-		keyword_rts "GOTO", GOTO, TOKEN_GOTO
-		keyword_rts "RUN", RUN
-		keyword_rts "IF", IF
-		keyword_rts "RESTORE", RESTORE
-		keyword_rts "GOSUB", GOSUB, TOKEN_GOSUB
-		keyword_rts "RETURN", POP
-.ifdef APPLE
-		keyword_rts "TEX", TEX, TOKEN_REM
-.else
-		keyword_rts "REM", REM, TOKEN_REM
-.endif
-		keyword_rts "STOP", STOP
-		keyword_rts "ON", ON
-.ifdef CONFIG_NULL
-		keyword_rts "NULL", NULL
-.endif
-.ifdef KBD
-		keyword_rts "PLOD", PLOD
-		keyword_rts "PSAV", PSAV
-		keyword_rts "VLOD", VLOD
-		keyword_rts "VSAV", VSAV
-.else
-		keyword_rts "WAIT", WAIT
-		keyword_rts "LOAD", LOAD
-		keyword_rts "SAVE", SAVE
-.endif
-.ifdef CONFIG_CBM_ALL
-		keyword_rts "VERIFY", VERIFY
-.endif
-		keyword_rts "DEF", DEF
-.ifdef KBD
-		keyword_rts "SLOD", SLOD
-.else
-		keyword_rts "POKE", POKE
-.endif
-.ifdef CONFIG_CBM_ALL
-		keyword_rts "PRINT#", PRINTH
-.endif
-		keyword_rts "PRINT", PRINT, TOKEN_PRINT
-		keyword_rts "CONT", CONT
-		keyword_rts "LIST", LIST
-.ifdef CONFIG_CBM_ALL
-		keyword_rts "CLR", CLEAR
-.else
-		keyword_rts "CLEAR", CLEAR
-.endif
-.ifdef CONFIG_CBM_ALL
-		keyword_rts "CMD", CMD
-		keyword_rts "SYS", SYS
-		keyword_rts "OPEN", OPEN
-		keyword_rts "CLOSE", CLOSE
-.endif
-.ifndef CONFIG_SMALL
-		keyword_rts "GET", GET
-.endif
-.ifdef KBD
-		keyword_rts "PRT", PRT
-.endif
-		keyword_rts "NEW", NEW
+.include "error.s"
 
-		count_tokens
+.segment "CODE"
 
-		keyword	"TAB(", TOKEN_TAB
-		keyword	"TO", TOKEN_TO
-		keyword	"FN", TOKEN_FN
-		keyword	"SPC(", TOKEN_SPC
-		keyword	"THEN", TOKEN_THEN
-		keyword	"NOT", TOKEN_NOT
-		keyword	"STEP", TOKEN_STEP
-		keyword	"+", TOKEN_PLUS
-		keyword	"-", TOKEN_MINUS
-		keyword	"*"
-		keyword	"/"
-.ifdef KBD
-		keyword	"#"
-.else
-		keyword	"^"
-.endif
-		keyword	"AND"
-		keyword	"OR"
-		keyword	">", TOKEN_GREATER
-		keyword	"=", TOKEN_EQUAL
-		keyword	"<"
-
-        .segment "VECTORS"
-UNFNC:
-
-		keyword_addr "SGN", SGN, TOKEN_SGN
-		keyword_addr "INT", INT
-		keyword_addr "ABS", ABS
-.ifdef KBD
-		keyword_addr "VER", VER
-.else
-.ifdef KIM
-		keyword_addr "USR", IQERR
-.else
-		keyword_addr "USR", USR
-.endif
-.endif
-		keyword_addr "FRE", FRE
-		keyword_addr "POS", POS
-		keyword_addr "SQR", SQR
-		keyword_addr "RND", RND
-		keyword_addr "LOG", LOG
-		keyword_addr "EXP", EXP
-		keyword_addr "COS", COS
-		keyword_addr "SIN", SIN
-		keyword_addr "TAN", TAN
-		keyword_addr "ATN", ATN
-.ifdef KBD
-		keyword_addr "GETC", GETC
-.else
-		keyword_addr "PEEK", PEEK
-.endif
-		keyword_addr "LEN", LEN
-		keyword_addr "STR$", STR
-		keyword_addr "VAL", VAL
-		keyword_addr "ASC", ASC
-		keyword_addr "CHR$", CHRSTR
-		keyword_addr "LEFT$", LEFTSTR, TOKEN_LEFTSTR
-		keyword_addr "RIGHT$", RIGHTSTR
-		keyword_addr "MID$", MIDSTR
-.ifdef CBM2_KBD
-		keyword	"GO"
-.endif
-        .segment "KEYWORDS"
-		.byte   0
-
-        .segment "VECTORS"
-MATHTBL:
-        .byte   $79
-        .word   FADDT-1
-        .byte   $79
-        .word   FSUBT-1
-        .byte   $7B
-        .word   FMULTT-1
-        .byte   $7B
-        .word   FDIVT-1
-        .byte   $7F
-        .word   FPWRT-1
-        .byte   $50
-        .word   TAND-1
-        .byte   $46
-        .word   OR-1
-        .byte   $7D
-        .word   NEGOP-1
-        .byte   $5A
-        .word   EQUOP-1
-        .byte   $64
-        .word   RELOPS-1
-
-        .segment "CODE"
-ERROR_MESSAGES:
-.ifdef CONFIG_SMALL
-.define ERRSTR_NOFOR "NF"
-.define ERRSTR_SYNTAX "SN"
-.define ERRSTR_NOGOSUB "RG"
-.define ERRSTR_NODATA "OD"
-.define ERRSTR_ILLQTY "FC"
-.define ERRSTR_OVERFLOW "OV"
-.define ERRSTR_MEMFULL "OM"
-.define ERRSTR_UNDEFSTAT "US"
-.define ERRSTR_BADSUBS "BS"
-.define ERRSTR_REDIMD "DD"
-.define ERRSTR_ZERODIV "/0"
-.define ERRSTR_ILLDIR "ID"
-.define ERRSTR_BADTYPE "TM"
-.define ERRSTR_STRLONG "LS"
-.define ERRSTR_FRMCPX "ST"
-.define ERRSTR_CANTCONT "CN"
-.define ERRSTR_UNDEFFN "UF"
-.else
-.define ERRSTR_NOFOR "NEXT WITHOUT FOR"
-.define ERRSTR_SYNTAX "SYNTAX"
-.define ERRSTR_NOGOSUB "RETURN WITHOUT GOSUB"
-.define ERRSTR_NODATA "OUT OF DATA"
-.define ERRSTR_ILLQTY "ILLEGAL QUANTITY"
-.define ERRSTR_OVERFLOW "OVERFLOW"
-.define ERRSTR_MEMFULL "OUT OF MEMORY"
-.define ERRSTR_UNDEFSTAT "UNDEF'D STATEMENT"
-.define ERRSTR_BADSUBS "BAD SUBSCRIPT"
-.define ERRSTR_REDIMD "REDIM'D ARRAY"
-.define ERRSTR_ZERODIV "DIVISION BY ZERO"
-.define ERRSTR_ILLDIR "ILLEGAL DIRECT"
-.define ERRSTR_BADTYPE "TYPE MISMATCH"
-.define ERRSTR_STRLONG "STRING TOO LONG"
-.ifdef CBM1
-.define ERRSTR_BADDATA "BAD DATA"
-.endif
-.ifdef CBM2
-.define ERRSTR_BADDATA "FILE DATA"
-.endif
-.define ERRSTR_FRMCPX "FORMULA TOO COMPLEX"
-.define ERRSTR_CANTCONT "CAN'T CONTINUE"
-.define ERRSTR_UNDEFFN "UNDEF'D FUNCTION"
-.endif
-
-ERR_NOFOR	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_NOFOR
-ERR_SYNTAX	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_SYNTAX
-ERR_NOGOSUB	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_NOGOSUB
-ERR_NODATA	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_NODATA
-ERR_ILLQTY	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_ILLQTY
-.ifdef CBM1
-	.byte 0,0,0,0,0
-.endif
-ERR_OVERFLOW	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_OVERFLOW
-ERR_MEMFULL	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_MEMFULL
-ERR_UNDEFSTAT	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_UNDEFSTAT
-ERR_BADSUBS	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_BADSUBS
-ERR_REDIMD	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_REDIMD
-ERR_ZERODIV	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_ZERODIV
-ERR_ILLDIR	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_ILLDIR
-ERR_BADTYPE	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_BADTYPE
-ERR_STRLONG	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_STRLONG
-.ifdef CONFIG_CBM_ALL
-ERR_BADDATA	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_BADDATA
-.endif
-ERR_FRMCPX	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_FRMCPX
-ERR_CANTCONT	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_CANTCONT
-ERR_UNDEFFN	:= <(*-ERROR_MESSAGES)
-	htasc ERRSTR_UNDEFFN
 QT_ERROR:
 .ifdef KBD
         .byte   " err"
@@ -1863,6 +1614,18 @@ L28BE:
         sta     INDEX
         cmp     #$19
         bcs     L28A0
+; <<<<<DANGEROUS CODE>>>>>
+; NOTE THAT IF (A) = $AB ON THE LINE ABOVE,
+; ON.1 WILL COMPARE = AND CAUSE A CATASTROPHIC
+; JUMP TO $22D9 (FOR GOTO), OR OTHER LOCATIONS
+; FOR OTHER CALLS TO LINGET.
+;
+; YOU CAN SEE THIS IS YOU FIRST PUT "BRK" IN $22D9,
+; THEN TYPE "GO TO 437761".
+;
+; ANY VALUE FROM 437760 THROUGH 440319 WILL CAUSE
+; THE PROBLEM.  ($AB00 - $ABFF)
+; <<<<<DANGEROUS CODE>>>>>
         lda     LINNUM
         asl     a
         rol     INDEX
