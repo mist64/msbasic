@@ -94,12 +94,12 @@ L2923:
 LETSTRING:
 .ifndef CONFIG_SMALL
         pla
+.endif
 
 ; ----------------------------------------------------------------------------
 ; INSTALL STRING, DESCRIPTOR ADDRESS IS AT FAC+3,4
 ; ----------------------------------------------------------------------------
 PUTSTR:
-.endif
 .ifdef CONFIG_CBM_ALL
         ldy     FORPNT+1
 .ifdef CBM1
@@ -110,7 +110,7 @@ PUTSTR:
         bne     LC92B
         jsr     FREFAC
         cmp     #$06
-.ifdef CBM2_KBD
+.ifdef CBM2
         bne     IQERR1
 .else
         beq     LC8E2
@@ -155,7 +155,7 @@ LC912:
         rts
 LC91C:
         lda     (INDEX),y
-        jsr     L00CF
+        jsr     CHRGOT2
         bcc     LC926
 IQERR1:
         jmp     IQERR

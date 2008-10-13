@@ -12,6 +12,7 @@ GENERIC_TXTPTR = GENERIC_CHRGOT + 1
 .endif
         cmp     #$3A
         bcs     L4058
+GENERIC_CHRGOT2:
         cmp     #$20
         beq     GENERIC_CHRGET
         sec

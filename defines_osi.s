@@ -36,8 +36,6 @@ INPUTFLG        := $0062
 CPRMASK         := $0063
 Z14             := $0064                        ; Ctrl+O flag
 
-RNDSEED			:= $00D4
-
 L0207           := $0207
 L020A           := $020A
 MONRDKEY        := $FFEB
