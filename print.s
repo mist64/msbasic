@@ -184,31 +184,29 @@ L29F5:
 .endif
         jsr     GTBYTC
         cmp     #')'
-.ifndef CONFIG_11A
-.ifdef APPLE
+.ifdef CONFIG_11A
+  .ifdef CBM2_KBD
+        bne     SYNERR4
+  .else
+        jne     SYNERR
+  .endif
+        plp
+        bcc     L2A09
+.else
+  .ifdef APPLE
         beq     L1185
         jmp     SYNERR
 L1185:
-.else
+  .else
         bne     SYNERR4
-.endif
+  .endif
         pla
         cmp     #TOKEN_TAB
-.ifdef APPLE
+  .ifdef APPLE
         bne     L2A09
-.else
+  .else
         bne     L2A0A
-.endif
-.else
-.ifdef CBM2_KBD
-        bne     SYNERR4
-.else
-        beq     @1
-        jmp     SYNERR
-@1:
-.endif
-        plp	;; XXX c64 has this
-        bcc     L2A09
+  .endif
 .endif
         txa
         sbc     POSX
@@ -267,15 +265,15 @@ L2A22:
         jmp     L2A22
 ; ----------------------------------------------------------------------------
 OUTSP:
-.ifdef CBM2
-        lda     $0E
+.ifdef CONFIG_FILE
+  .ifndef CONFIG_SPC_IS_CRSR_RIGHT
+        lda     Z03
         beq     LCA40
         lda     #$20
         .byte   $2C
 LCA40:
-.endif
-.ifdef CONFIG_CBM_ALL
-        lda     #$1D
+  .endif
+        lda     #$1D ; CRSR RIGHT
 .else
         lda     #$20
 .endif
@@ -295,18 +293,18 @@ OUTDO:
         pha
 .endif
 .ifdef CBM1
-        cmp     #$1D
+        cmp     #$1D ; CRSR RIGHT
         beq     LCA6A
-        cmp     #$9D
+        cmp     #$9D ; CRSR LEFT
         beq     LCA5A
-        cmp     #$14
+        cmp     #$14 ; DEL
         bne     LCA64
 LCA5A:
-        lda     $05
+        lda     POSX
         beq     L2A4E
         lda     Z03
         bne     L2A4E
-        dec     $05
+        dec     POSX
 LCA64:
         and     #$7F
 .endif
@@ -324,13 +322,13 @@ LCA6A:
         lda     POSX
         cmp     Z17
         bne     L2A4C
-.ifdef APPLE
+  .ifdef APPLE
         nop ; PATCH!
         nop ; don't print CR
         nop
-.else
+  .else
         jsr     CRDO
-.endif
+  .endif
 L2A4C:
 .endif
 .ifndef CONFIG_CBM_ALL
@@ -343,11 +341,11 @@ L2A4E:
 .ifdef KIM
         sty     DIMFLG
 .endif
-.ifdef APPLE
+.ifdef CONFIG_IO_MSB
         ora     #$80
 .endif
         jsr     MONCOUT
-.ifdef APPLE
+.ifdef CONFIG_IO_MSB
         and     #$7F
 .endif
 .ifdef KIM
@@ -363,6 +361,10 @@ L2A56:
         and     #$FF
 LE8F2:
         rts
+
+; ----------------------------------------------------------------------------
+; ???
+; ----------------------------------------------------------------------------
 .ifdef KBD
 LE8F3:
         pha

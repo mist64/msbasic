@@ -7,7 +7,7 @@ CBM_APPLE := 1
 KIM_APPLE := 1
 CONFIG_SCRTCH_ORDER := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
-CONFIG_IO_MSB := 1 ; IO is 7 bit, MSB may be randomly set
+CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
 ; INPUTBUFFER > $0100
 
 CRLF_1 := $0D

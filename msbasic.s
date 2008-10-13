@@ -25,9 +25,7 @@
 .include "misc2.s"
 .include "string.s"
 .include "misc3.s"
-.ifndef KBD
 .include "poke.s"
-.endif
 .include "float.s"
 .include "chrget.s"
 .include "rnd.s"

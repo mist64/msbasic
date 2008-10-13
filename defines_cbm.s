@@ -6,6 +6,7 @@ CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
 CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
 CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
+CONFIG_SPC_IS_CRSR_RIGHT := 1; always print CRSR RIGHT for SPC() (otherwise only for screen output)
 ; minor: just code order
 CONFIG_INPUTBUFFER_ORDER := 1 ; ldx/ldy or ldy/ldx
 .else
@@ -45,7 +46,7 @@ GOSTROUT        := $0006
 GOGIVEAYF       := $0008
 
 Z15             := $0004
-POSX             := $0005
+POSX            := $0005
 Z17             := $0006
 Z18             := $0007
 LINNUM          := $0008
