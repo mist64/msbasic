@@ -703,7 +703,7 @@ ASC:
         ldy     #$00
         lda     (INDEX),y
         tay
-.ifndef CONFIG_11_NOAPPLE
+.ifndef CONFIG_11A
         jmp     SNGFLT1
 .else
         jmp     SNGFLT

@@ -11,7 +11,7 @@ CONFIG_INPUTBUFFER_ORDER := 1 ; ldx/ldy or ldy/ldx
 .else
 CONFIG_CBM_ALL := 1
 CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
+CONFIG_11A := 1
 CBM2_KBD := 1
 CBM2_KIM := 1
 CBM2_APPLE := 1
@@ -45,7 +45,7 @@ GOSTROUT        := $0006
 GOGIVEAYF       := $0008
 
 Z15             := $0004
-Z16             := $0005
+POSX             := $0005
 Z17             := $0006
 Z18             := $0007
 LINNUM          := $0008
@@ -94,7 +94,7 @@ GOGIVEAYF       := $0008
 Z03				:= $000E;3 ; same
 LINNUM          := $0011;0008
 Z96 := $00E8-82
-Z16 := $0118-82
+POSX := $0118-82
 TXPSV = LASTOP
 
 INPUTBUFFER     := $0200;00A

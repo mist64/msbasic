@@ -76,8 +76,8 @@ COLD_START2:
         ldy     #>L29D0
 .endif
 .ifdef CBM_APPLE
-        sta     L0001
-        sty     L0001+1
+        sta     USR+1
+        sty     USR+2
 .endif
 .ifndef CONFIG_CBM_ALL
 .ifdef APPLE
@@ -129,7 +129,7 @@ L4098:
         sta     Z15
 .endif
 .ifndef CONFIG_11
-        sta     Z16
+        sta     POSX
 .endif
         pha
         sta     Z14

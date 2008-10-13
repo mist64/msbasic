@@ -3,7 +3,7 @@ CONFIG_SMALL := 1
 CBM2_KBD := 1
 KIM_KBD := 1
 CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
+CONFIG_11A := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
 ; INPUTBUFFER > $0100
 
@@ -21,7 +21,7 @@ GOGIVEAYF       := $0008
 
 USR             := $000A
 Z15             := $000D
-Z16             := $0010
+POSX            := $0010
 Z17             := $06FC;$000F
 Z18             := $06FD;$0010
 LINNUM          := $0013;11

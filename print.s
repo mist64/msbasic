@@ -37,7 +37,7 @@ PRINT2:
         ldy     #$00
         lda     (FAC_LAST-1),y
         clc
-        adc     Z16
+        adc     POSX
   .ifdef KBD
         cmp     #$28
   .else
@@ -103,7 +103,7 @@ LC9D8:
 .endif
         lda     #CRLF_1
 .ifndef CONFIG_CBM_ALL
-        sta     Z16
+        sta     POSX
 .endif
         jsr     OUTDO
 LE882:
@@ -135,7 +135,7 @@ L29D3:
         dex
         bne     L29D3
 L29D9:
-        stx     Z16
+        stx     POSX
         pla
         tax
   .else
@@ -149,13 +149,13 @@ L29D9:
 L29DD:
         rts
 L29DE:
-        lda     Z16
-.ifndef CONFIG_CBM_ALL
-.ifdef KBD
+        lda     POSX
+.ifndef CONFIG_NO_CR
+  .ifdef KBD
         cmp     #$1A
-.else
+  .else
         cmp     Z18
-.endif
+  .endif
         bcc     L29EA
         jsr     CRDO
         jmp     L2A0D
@@ -166,25 +166,25 @@ L29EB:
 .ifdef CONFIG_CBM_ALL
         sbc     #$0A
 .else
-.ifdef KBD
+  .ifdef KBD
         sbc     #$0D
-.else
+  .else
         sbc     #$0E
-.endif
+  .endif
 .endif
         bcs     L29EB
         eor     #$FF
         adc     #$01
         bne     L2A08
 L29F5:
-.ifdef CONFIG_11_NOAPPLE
+.ifdef CONFIG_11A
         php
 .else
         pha
 .endif
         jsr     GTBYTC
-        cmp     #$29
-.ifndef CONFIG_11_NOAPPLE
+        cmp     #')'
+.ifndef CONFIG_11A
 .ifdef APPLE
         beq     L1185
         jmp     SYNERR
@@ -211,7 +211,7 @@ L1185:
         bcc     L2A09
 .endif
         txa
-        sbc     Z16
+        sbc     POSX
         bcc     L2A0D
 .ifndef CONFIG_11
         beq     L2A0D
@@ -321,7 +321,7 @@ LCA6A:
         nop
 .endif
 .ifdef CONFIG_PRINT_CR
-        lda     Z16
+        lda     POSX
         cmp     Z17
         bne     L2A4C
 .ifdef APPLE
@@ -334,7 +334,7 @@ LCA6A:
 L2A4C:
 .endif
 .ifndef CONFIG_CBM_ALL
-        inc     Z16
+        inc     POSX
 .endif
 L2A4E:
 .ifndef CBM2_KBD

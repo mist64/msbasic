@@ -1,6 +1,6 @@
 KIM_KBD := 1
 CONFIG_11 := 1
-CONFIG_11_NOAPPLE := 1
+CONFIG_11A := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
 CBM2_KIM_APPLE := 1 ; OUTDO difference
 KIM_APPLE := 1
@@ -33,7 +33,7 @@ INPUTFLG        := $0012
 CPRMASK         := $0013
 Z14             := $0014                        ; Ctrl+O flag
 Z15             := $0015
-Z16             := $0016
+POSX            := $0016
 Z17             := $0017
 Z18             := $0018
 LINNUM          := $0019

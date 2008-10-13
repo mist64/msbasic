@@ -31,7 +31,7 @@ GIVAYF:
         ldx     #$90
         jmp     FLOAT1
 POS:
-        ldy     Z16
+        ldy     POSX
 
 ; ----------------------------------------------------------------------------
 ; FLOAT (Y) INTO FAC, GIVING VALUE 0-255

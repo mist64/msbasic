@@ -140,7 +140,7 @@ NEWSTT2:
 ; CARRY IS SET
 ; ----------------------------------------------------------------------------
 EXECUTE_STATEMENT:
-.ifndef CONFIG_11_NOAPPLE
+.ifndef CONFIG_11A
         beq     RET1
 .ifndef APPLE
         sec
@@ -338,7 +338,7 @@ LE68E:
 .endif
 .if .def(CONFIG_NULL) || .def(CBM1)
 ; CBM1 has the keyword removed,
-; but the code is, still here
+; but the code is still here
 NULL:
         jsr     GETBYT
         bne     RET1
@@ -351,7 +351,7 @@ NULL:
 L2739:
         jmp     IQERR
 .endif
-.ifndef CONFIG_11_NOAPPLE
+.ifndef CONFIG_11A
 CLEAR:
         bne     RET1
         jmp     CLEARC
