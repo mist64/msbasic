@@ -36,8 +36,11 @@
 		keyword_rts "PSAV", PSAV
 		keyword_rts "VLOD", VLOD
 		keyword_rts "VSAV", VSAV
-.else
+.endif
+.ifndef CONFIG_NO_POKE
 		keyword_rts "WAIT", WAIT
+.endif
+.ifndef KBD
 		keyword_rts "LOAD", LOAD
 		keyword_rts "SAVE", SAVE
 .endif
@@ -47,7 +50,8 @@
 		keyword_rts "DEF", DEF
 .ifdef KBD
 		keyword_rts "SLOD", SLOD
-.else
+.endif
+.ifndef CONFIG_NO_POKE
 		keyword_rts "POKE", POKE
 .endif
 .ifdef CONFIG_FILE
@@ -126,7 +130,8 @@ UNFNC:
 		keyword_addr "ATN", ATN
 .ifdef KBD
 		keyword_addr "GETC", GETC
-.else
+.endif
+.ifndef CONFIG_NO_POKE
 		keyword_addr "PEEK", PEEK
 .endif
 		keyword_addr "LEN", LEN

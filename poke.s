@@ -1,6 +1,45 @@
 .segment "CODE"
 
-.ifndef KBD
+.ifndef CONFIG_NO_POKE
+; ----------------------------------------------------------------------------
+; EVALUATE "EXP1,EXP2"
+;
+; CONVERT EXP1 TO 16-BIT NUMBER IN LINNUM
+; CONVERT EXP2 TO 8-BIT NUMBER IN X-REG
+; ----------------------------------------------------------------------------
+GTNUM:
+        jsr     FRMNUM
+        jsr     GETADR
+
+; ----------------------------------------------------------------------------
+; EVALUATE ",EXPRESSION"
+; CONVERT EXPRESSION TO SINGLE BYTE IN X-REG
+; ----------------------------------------------------------------------------
+COMBYTE:
+        jsr     CHKCOM
+        jmp     GETBYT
+
+; ----------------------------------------------------------------------------
+; CONVERT (FAC) TO A 16-BIT VALUE IN LINNUM
+; ----------------------------------------------------------------------------
+GETADR:
+        lda     FACSIGN
+  .ifdef APPLE
+        nop ; PATCH
+        nop
+  .else
+        bmi     GOIQ
+  .endif
+        lda     FAC
+        cmp     #$91
+        bcs     GOIQ
+        jsr     QINT
+        lda     FAC_LAST-1
+        ldy     FAC_LAST
+        sty     LINNUM
+        sta     LINNUM+1
+        rts
+
 ; ----------------------------------------------------------------------------
 ; "PEEK" FUNCTION
 ; ----------------------------------------------------------------------------
