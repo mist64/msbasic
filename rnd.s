@@ -1,3 +1,9 @@
+.segment "CODE"
+
+; ----------------------------------------------------------------------------
+; "RND" FUNCTION
+; ----------------------------------------------------------------------------
+
 .ifdef KBD
 RND:
         ldx     #$10
@@ -43,6 +49,8 @@ GOMOVMF:
         bne     LFBFA
         .byte   $F0
 .else
+; <<< THESE ARE MISSING ONE BYTE FOR FP VALUES >>>
+; (non CONFIG_SMALL)
 CONRND1:
         .byte   $98,$35,$44,$7A
 CONRND2:
@@ -71,7 +79,7 @@ LDF63:
         jsr     LOAD_FAC_FROM_YA
 .ifndef CONFIG_CBM_ALL
         txa
-        beq     L3EDA
+        beq     RTS19
 .endif
         lda     #<CONRND1
         ldy     #>CONRND1
@@ -103,3 +111,26 @@ LDF88:
 GOMOVMF:
         jmp     STORE_FAC_AT_YX_ROUNDED
 .endif
+
+; ----------------------------------------------------------------------------
+; INITIAL VALUE FOR RANDOM NUMBER, ALSO COPIED
+; IN ALONG WITH CHRGET, BUT ERRONEOUSLY:
+; <<< THE LAST BYTE IS NOT COPIED >>>
+; ----------------------------------------------------------------------------
+
+.segment "CHRGET"
+
+GENERIC_RNDSEED:
+.ifndef KBD
+; random number seed
+.ifdef OSI
+        .byte   $80,$4F,$C7,$52
+.endif
+.ifdef CONFIG_11
+        .byte   $80,$4F,$C7,$52,$58
+.endif
+.ifdef CBM1
+        .byte   $80,$4F,$C7,$52,$59
+.endif
+.endif
+GENERIC_CHRGET_END:

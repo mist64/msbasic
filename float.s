@@ -1,3 +1,5 @@
+.segment "CODE"
+
 TEMP1X = TEMP1+(5-BYTES_FP)
 
 ; ----------------------------------------------------------------------------
@@ -1885,5 +1887,5 @@ L3ECB:
         ldy     #$00
         dec     SERLEN
         bne     L3EBE
-L3EDA:
+RTS19:
         rts
