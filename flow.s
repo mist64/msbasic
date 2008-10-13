@@ -82,13 +82,13 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         cpy     #>INPUTBUFFER
 .endif
 .ifdef CBM2
         nop
 .endif
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         beq     LC6D4
 .else
         beq     L2683
@@ -112,7 +112,7 @@ LA5DC:
         ldy     #$02
         lda     (TXTPTR),y
         clc
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         jeq     L2701
 .else
         beq     L2701
@@ -156,7 +156,7 @@ EXECUTE_STATEMENT1:
         bcc     LET1
 .endif
         cmp     #NUM_TOKENS
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         bcs     LC721
 .else
         bcs     SYNERR1
@@ -177,7 +177,7 @@ COLON:
 SYNERR1:
         jmp     SYNERR
 .endif
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
 LC721:
 .ifdef KBD
         cmp     #$45
@@ -267,7 +267,7 @@ END2:
         bne     RET1
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         ldx     CURLIN+1
         inx
 .endif
@@ -444,7 +444,7 @@ L281E:
 POP:
         bne     L281E
         lda     #$FF
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         sta     FORPNT+1 ; bugfix, wrong in AppleSoft
 .else
         sta     FORPNT

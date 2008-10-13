@@ -28,7 +28,7 @@ NEG32768:
 ; ----------------------------------------------------------------------------
 MAKINT:
         jsr     CHRGET
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         jsr     FRMEVL
 .else
         jsr     FRMNUM
@@ -39,7 +39,7 @@ MAKINT:
 ; MUST BE POSITIVE AND LESS THAN 32768
 ; ----------------------------------------------------------------------------
 MKINT:
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         jsr     CHKNUM
 .endif
         lda     FACSIGN

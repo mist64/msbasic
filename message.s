@@ -47,6 +47,9 @@ QT_BREAK:
         .byte   $54,$D0 ; ???
 .else
 		.byte $0D,$0A
+.ifdef MICROTAN
+		.byte   " "
+.endif
         .byte   "BREAK"
         .byte   $00
 .endif

@@ -13,7 +13,9 @@ CONFIG_INPUTBUFFER_ORDER := 1 ; ldx/ldy or ldy/ldx
 CONFIG_CBM_ALL := 1
 CONFIG_11 := 1
 CONFIG_11A := 1
+CONFIG_2 := 1
 CBM2_KBD := 1
+CBM2_MICROTAN := 1
 CBM2_KIM := 1
 CBM2_APPLE := 1
 CBM2_KIM_APPLE := 1 ; OUTDO difference
@@ -25,6 +27,7 @@ CONFIG_DATAFLAG := 1
 ; common:
 CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
 CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
+CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
 
 CRLF_1 := $0D
 CRLF_2 := $0A
@@ -94,6 +97,7 @@ Z18             := $0007
 GOGIVEAYF       := $0008
 Z03				:= $000E;3 ; same
 LINNUM          := $0011;0008
+
 Z96 := $00E8-82
 POSX := $0118-82
 TXPSV = LASTOP

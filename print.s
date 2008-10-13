@@ -15,7 +15,7 @@ PRINT2:
         cmp     #TOKEN_TAB
         beq     L29F5
         cmp     #TOKEN_SPC
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         clc	; also AppleSoft II
 .endif
         beq     L29F5
@@ -185,7 +185,7 @@ L29F5:
         jsr     GTBYTC
         cmp     #')'
 .ifdef CONFIG_11A
-  .ifdef CBM2_KBD
+  .ifdef CONFIG_2
         bne     SYNERR4
   .else
         jne     SYNERR
@@ -289,7 +289,7 @@ OUTDO:
         bit     Z14
         bmi     L2A56
 .endif
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         pha
 .endif
 .ifdef CBM1
@@ -335,7 +335,7 @@ L2A4C:
         inc     POSX
 .endif
 L2A4E:
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         pla
 .endif
 .ifdef KIM

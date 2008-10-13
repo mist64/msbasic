@@ -117,7 +117,7 @@ PUTEMP:
         ldy     #$00
         stx     FAC_LAST-1
         sty     FAC_LAST
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         sty     FACEXTENSION
 .endif
         dey
@@ -189,7 +189,7 @@ FINDHIGHESTSTRING:
         sta     FRETOP+1
         ldy     #$00
         sty     FNCNAM+1
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         sty     FNCNAM
 .endif
         lda     STREND
@@ -356,7 +356,7 @@ L33FA:
 ; TO TOP AND GO BACK FOR ANOTHER
 ; ----------------------------------------------------------------------------
 MOVE_HIGHEST_STRING_TO_TOP:
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         lda     FNCNAM+1
         ora     FNCNAM
 .else
@@ -616,7 +616,7 @@ MIDSTR:
         jsr     GETBYT
 L353F:
         jsr     SUBSTRING_SETUP
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         beq     GOIQ
 .endif
         dex
@@ -665,7 +665,7 @@ SUBSTRING_SETUP:
 .endif
         ldy     #$00
         txa
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         beq     GOIQ
 .endif
 .ifndef CONFIG_11

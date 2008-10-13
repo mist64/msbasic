@@ -1683,7 +1683,7 @@ DECTBL_END:
 		.byte	$FF,$FF,$FD,$A8
 		.byte	$00,$00,$00,$3C
 .endif
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
 C_ZERO = CON_HALF + 2
 .endif
 

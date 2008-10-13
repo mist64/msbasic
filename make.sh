@@ -1,5 +1,5 @@
 # 1.0
-for i in cbmbasic1 cbmbasic2 kbdbasic osi kb9 applesoft; do
+for i in cbmbasic1 cbmbasic2 kbdbasic osi kb9 applesoft microtan; do
 
 echo $i
 ca65 -D $i msbasic.s -o tmp/$i.o &&

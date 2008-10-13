@@ -202,7 +202,7 @@ L23AD:
 .endif
 ; ----------------------------------------------------------------------------
 PUT_NEW_LINE:
-.ifdef CBM2
+.ifdef CBM2_MICROTAN
         jsr     SETPTRS
         jsr     LE33D
         lda     INPUTBUFFER
@@ -254,7 +254,7 @@ L23E6:
 ; ----------------------------------------------------------------------------
 FIX_LINKS:
         jsr     SETPTRS
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         jsr     LE33D
         jmp     L2351
 LE33D:
@@ -267,7 +267,7 @@ LE33D:
 L23FA:
         ldy     #$01
         lda     (INDEX),y
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         beq     RET3
 .else
         bne     L2403
@@ -334,12 +334,12 @@ RET3:
         rts
 .endif
 
-.ifdef CBM2
+.ifdef CBM2_MICROTAN
 RET3:
 		rts
 .endif
 
-.if .def(CBM1) || .def(OSI) || .def(KIM)
+.if .def(CBM1) || .def(OSI) || .def(KIM) || .def(MICROTAN)
 L2420:
   .ifdef OSI
         jsr     OUTDO
@@ -380,23 +380,35 @@ L0C32:
         ldx     #$00
 INLIN2:
         jsr     GETLN
-    .ifndef CONFIG_CBM_ALL
+    .ifndef CONFIG_NO_LINE_EDITING
         cmp     #$07
         beq     L2443
     .endif
         cmp     #$0D
         beq     L2453
-    .ifndef CONFIG_CBM_ALL
+    .ifndef CONFIG_NO_LINE_EDITING
         cmp     #$20 ; line editing
         bcc     INLIN2
+.ifdef MICROTAN
+        cmp     #$80
+.else
         cmp     #$7D
+.endif
         bcs     INLIN2
         cmp     #$40 ; @
         beq     L2423
+.ifdef MICROTAN
+        cmp     #$7F ; _
+.else
         cmp     #$5F ; _
+.endif
         beq     L2420
 L2443:
+.ifdef MICROTAN
+        cpx     #$4F
+.else
         cpx     #$47
+.endif
         bcs     L244C
     .endif
         sta     INPUTBUFFER,x
@@ -407,7 +419,7 @@ L2443:
         bne     INLIN2
     .endif
 L244C:
-    .ifndef CONFIG_CBM_ALL
+    .ifndef CONFIG_NO_LINE_EDITING
         lda     #$07
         jsr     OUTDO
         bne     INLIN2
@@ -420,7 +432,7 @@ L2453:
 .ifndef KBD
   .ifndef APPLE
 GETLN:
-    .ifdef CONFIG_CBM_ALL
+    .ifdef CONFIG_FILE
         jsr     CHRIN
         ldy     Z03
         bne     L2465
@@ -514,7 +526,7 @@ L2498:
         jsr     GET_UPPER
 .else
         lda     INPUTBUFFERX,x
-  .ifndef CBM2
+  .ifndef CBM2_MICROTAN
         cmp     #$20
         beq     L2497
   .endif
@@ -669,7 +681,7 @@ SCRTCH:
         iny
         sta     (TXTTAB),y
         lda     TXTTAB
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
 		clc
 .endif
         adc     #$02
@@ -716,7 +728,7 @@ STKINI:
         ldx     #TEMPST
         stx     TEMPPT
         pla
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
 		tay
 .else
 .ifdef APPLE
@@ -726,7 +738,7 @@ STKINI:
 .endif
 .endif
         pla
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
 .ifdef APPLE
         sta     STACK+250
 .else
@@ -735,7 +747,7 @@ STKINI:
 .endif
         ldx     #STACK_TOP
         txs
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         pha
         tya
         pha
@@ -758,6 +770,8 @@ STXTPT:
         adc     #$FF
         sta     TXTPTR+1
         rts
+
+; ----------------------------------------------------------------------------
 .ifdef KBD
 LE4C0:
         ldy     #<LE444
@@ -778,11 +792,13 @@ LE4D4:
         cmp     JMPADRS+1
 LE4DE:
         rts
+.endif
 
 ; ----------------------------------------------------------------------------
 ; "LIST" STATEMENT
 ; ----------------------------------------------------------------------------
 LIST:
+.ifdef KBD
         jsr     LE440
         bne     LE4DE
         pla
@@ -790,30 +806,53 @@ LIST:
 L25A6:
         jsr     CRDO
 .else
-LIST:
+.ifdef MICROTAN
+        php
+        jmp     LE21C
+LC57E:
+.else
         bcc     L2581
         beq     L2581
         cmp     #TOKEN_MINUS
         bne     L256A
 L2581:
         jsr     LINGET
+.endif
         jsr     FNDLIN
+.ifdef MICROTAN
+        plp
+        beq     LC598
+.endif
         jsr     CHRGOT
         beq     L2598
         cmp     #TOKEN_MINUS
         bne     L2520
         jsr     CHRGET
+.ifdef MICROTAN
+        beq     LC598
+        jsr     LINGET
+        beq     L25A6
+        rts
+LC598:
+.else
         jsr     LINGET
         bne     L2520
+.endif
 L2598:
+.ifndef MICROTAN
         pla
         pla
         lda     LINNUM
         ora     LINNUM+1
         bne     L25A6
+.endif
         lda     #$FF
         sta     LINNUM
         sta     LINNUM+1
+.ifdef MICROTAN
+        pla
+        pla
+.endif
 L25A6:
 .endif
         ldy     #$01

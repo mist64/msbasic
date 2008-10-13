@@ -95,7 +95,7 @@ COLD_START2:
 .endif
         sta     Z18
 .endif
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         lda     #$28
         sta     $0F
         lda     #$1E
@@ -116,7 +116,7 @@ L4098:
         sta     STRNG2+1,x
         dex
         bne     L4098
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         lda     #$03
         sta     DSCLEN
 .endif
@@ -135,7 +135,7 @@ L4098:
 .endif
         pha
         sta     Z14
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         inx
         stx     $01FD
         stx     $01FC
@@ -172,17 +172,17 @@ L4098:
         tay
         bne     L40EE
 .endif
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         lda     #<RAMSTART2
 .endif
         ldy     #>RAMSTART2
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         sta     $28
         sty     $29
 .endif
         sta     LINNUM
         sty     LINNUM+1
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
 		tay
 .else
         ldy     #$00
@@ -196,11 +196,11 @@ L40D7:
         cmp     #$80
         beq     L40FA
 .endif
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         bmi     L40FA
 .endif
 L40DD:
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         lda     #$55
 .else
         lda     #$92
@@ -317,7 +317,7 @@ L4183:
         tya
         sta     (TXTTAB),y
         inc     TXTTAB
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         bne     L4192
         inc     TXTTAB+1
 L4192:
@@ -325,7 +325,7 @@ L4192:
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         lda     #<QT_BASIC
         ldy     #>QT_BASIC
         jsr     STROUT
@@ -392,7 +392,7 @@ QT_BYTES_FREE:
 .ifndef CBM_APPLE
         .byte   $0D,$0A,$0D,$0A
 .endif
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         .byte   $0D,$00
 .endif
 .ifdef APPLE

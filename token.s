@@ -142,7 +142,7 @@ UNFNC:
 		keyword_addr "LEFT$", LEFTSTR, TOKEN_LEFTSTR
 		keyword_addr "RIGHT$", RIGHTSTR
 		keyword_addr "MID$", MIDSTR
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
 		keyword	"GO"
 .endif
         .segment "KEYWORDS"

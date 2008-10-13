@@ -49,7 +49,7 @@ ERRDIR:
         inx
         bne     RTS9
         ldx     #ERR_ILLDIR
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         .byte   $2C
 LD288:
         ldx     #ERR_UNDEFFN
@@ -102,18 +102,18 @@ L31F3:
         pla
         sta     FNCNAM+1
         ldy     #$02
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         ldx     #ERR_UNDEFFN
 .endif
         lda     (FNCNAM),y
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         beq     L31AF
 .endif
         sta     VARPNT
         tax
         iny
         lda     (FNCNAM),y
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         beq     LD288
 .endif
         sta     VARPNT+1

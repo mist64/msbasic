@@ -16,6 +16,9 @@ CBM2 := 1
 .elseif .def(kbdbasic)
 KBD := 1
 .include "defines_kbd.s"
+.elseif .def(microtan)
+MICROTAN := 1
+.include "defines_microtan.s"
 .endif
 
 .ifdef CONFIG_SMALL

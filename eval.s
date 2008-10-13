@@ -19,14 +19,14 @@ GERR:
         beq     JERROR
 NEXT3:
         txs
-.ifndef CBM2_KBD
+.ifndef CONFIG_2
         inx
         inx
         inx
         inx
 .endif
         txa
-.ifdef CBM2_KBD
+.ifdef CONFIG_2
         clc
         adc     #$04
         pha
