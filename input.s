@@ -186,7 +186,7 @@ GETC:
 READ:
         ldx     DATPTR
         ldy     DATPTR+1
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         lda     #$98 ; AppleSoft, too
         .byte   $2C
 L2ABE:

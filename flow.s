@@ -82,13 +82,13 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         cpy     #>INPUTBUFFER
 .endif
 .ifdef CBM2
         nop
 .endif
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         beq     LC6D4
 .else
         beq     L2683
@@ -179,7 +179,7 @@ SYNERR1:
 .endif
 .ifdef CONFIG_2
 LC721:
-.ifdef KBD
+.ifdef KBD_MICROTAN
         cmp     #$45
 .else
         cmp     #$4B
@@ -206,11 +206,11 @@ SETDA:
         sty     DATPTR+1
 RET2:
         rts
-.ifndef CONFIG_CBM_ALL
 
 ; ----------------------------------------------------------------------------
 ; SEE IF CONTROL-C TYPED
 ; ----------------------------------------------------------------------------
+.ifndef CONFIG_CBM_ALL
 ISCNTC:
 .endif
 .ifdef KBD
@@ -251,6 +251,17 @@ L0ECC:
         clc
         cmp     #$03
 .endif
+.ifdef MICROTAN
+        lda     $01
+        cmp     #$03
+        beq     LC6EF
+        lda     #$01
+        rts
+LC6EF:
+        nop
+        nop
+        cmp     #$03
+.endif
 
 ; ----------------------------------------------------------------------------
 ; "STOP" STATEMENT
@@ -267,7 +278,7 @@ END2:
         bne     RET1
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         ldx     CURLIN+1
         inx
 .endif
@@ -362,6 +373,9 @@ CLEAR:
 .endif
 .ifdef KIM
 .include "kim_loadsave.s"
+.endif
+.ifdef MICROTAN
+.include "microtan_loadsave.s"
 .endif
 
 ; ----------------------------------------------------------------------------

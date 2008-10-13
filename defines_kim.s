@@ -6,6 +6,7 @@ CBM2_KIM_APPLE := 1 ; OUTDO difference
 KIM_APPLE := 1
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
+KIM_MICROTAN := 1
 
 CRLF_1 := $0D
 CRLF_2 := $0A

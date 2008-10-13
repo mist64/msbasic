@@ -5,3 +5,4 @@ AppleSoft I          1977   1.1            N      Y        Apple      CONFIG_11
 KIM BASIC            1977   1.1            N      Y          -        CONFIG_11A
 Commodore BASIC 2    1979                  Y      Y         CBM       CONFIG_2
 KBD BASIC            1980                  Y      N         KBD
+MicroTAN             1980                  Y      Y          -

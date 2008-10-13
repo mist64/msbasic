@@ -5,6 +5,8 @@ CONFIG_SAFE_NAMENOTFOUND := 1
 CBM2_KIM_APPLE := 1 ; OUTDO difference
 KIM_APPLE := 1
 CBM2_MICROTAN := 1
+KBD_MICROTAN := 1
+KIM_MICROTAN := 1
 
 CONFIG_2 := 1
 
@@ -52,7 +54,7 @@ MONCOUT         := $1EA0
 
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
-NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
+NULL_MAX		:= $F0 ; probably different in original version; the image I have seems to be modified; see PDF
 
 
 RAMSTART2 := $AAAA
@@ -60,3 +62,8 @@ USR := $AAAA
 SAVE := $AAAA
 LOAD := $AAAA
 LE21C := $AAAA
+LC3F0 := $AAAA
+LFE73 := $AAAA
+LFE75 := $AAAA
+LFDFA := $AAAA
+LE219 := $AAAA

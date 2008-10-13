@@ -86,6 +86,9 @@ L29B9:
         sty     INPUTBUFFER,x
         ldx     #LINNUM+1
     .endif
+    .ifdef MICROTAN
+        bne     LE882
+	.endif
   .endif
   .ifdef CONFIG_FILE
         lda     Z03
@@ -289,7 +292,7 @@ OUTDO:
         bit     Z14
         bmi     L2A56
 .endif
-.ifndef CONFIG_2
+.ifndef CBM2_KBD
         pha
 .endif
 .ifdef CBM1
@@ -335,10 +338,10 @@ L2A4C:
         inc     POSX
 .endif
 L2A4E:
-.ifndef CONFIG_2
+.ifndef CBM2_KBD
         pla
 .endif
-.ifdef KIM
+.ifdef KIM_MICROTAN
         sty     DIMFLG
 .endif
 .ifdef CONFIG_IO_MSB
@@ -348,7 +351,7 @@ L2A4E:
 .ifdef CONFIG_IO_MSB
         and     #$7F
 .endif
-.ifdef KIM
+.ifdef KIM_MICROTAN
         ldy     DIMFLG
 .endif
 .ifdef OSI
