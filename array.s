@@ -21,6 +21,10 @@ L2FAF:
 NEG32768:
         .byte   $90,$80,$00,$00
 
+.ifdef MICROTAN
+		.byte	0
+.endif
+
 ; ----------------------------------------------------------------------------
 ; EVALUATE NUMERIC FORMULA AT TXTPTR
 ; CONVERTING RESULT TO INTEGER 0 <= X <= 32767

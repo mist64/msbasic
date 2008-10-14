@@ -115,16 +115,16 @@ POLY_SIN:
         .byte   $07,$FB,$F8,$87,$99,$68,$89,$01
         .byte   $87,$23,$35,$DF,$E1,$86,$A5,$5D
         .byte   $E7,$28,$83,$49,$0F,$DA,$A2
-.ifndef CONFIG_CBM_ALL
-MICROSOFT:
-        .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
-        .byte   $CE,$CA
-.endif
-.ifdef CBM2
+  .ifdef CBM2_MICROTAN
 MICROSOFT:
         .byte   $A1,$54,$46,$8F,$13,$8F,$52,$43
         .byte   $89,$CD
-.endif
+  .elseif .def(CONFIG_CBM_ALL)
+  .else
+MICROSOFT:
+        .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
+        .byte   $CE,$CA
+  .endif
 .endif
 
 ; ----------------------------------------------------------------------------

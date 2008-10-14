@@ -7,6 +7,7 @@ KIM_APPLE := 1
 CBM2_MICROTAN := 1
 KBD_MICROTAN := 1
 KIM_MICROTAN := 1
+APPLE_MICROTAN := 1
 
 CONFIG_2 := 1
 
@@ -21,12 +22,12 @@ ZP_START = $85
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
-Z00             := $0000
+Z00             := $0017
 L0001           := $0001
 L0002           := $0002
-GOWARM          := $0003
-GOSTROUT        := $0006
-GOGIVEAYF       := $0008
+GOWARM          := $001A
+GOSTROUT        := $001D
+GOGIVEAYF       := $001F
 
 CHARAC          := $000A+$1A
 ENDCHR          := $000B+$1A
@@ -43,7 +44,7 @@ POSX            := $0016+$1A
 Z17             := $0017+$1A
 Z18             := $0018+$1A
 LINNUM          := $0019+$1A
-TXPSV           := $0019+$1A
+TXPSV           := $00BA
 INPUTBUFFER     := $001B+$1A
 INPUTBUFFERX    := $0000
 
@@ -63,7 +64,10 @@ SAVE := $AAAA
 LOAD := $AAAA
 LE21C := $AAAA
 LC3F0 := $AAAA
-LFE73 := $AAAA
-LFE75 := $AAAA
-LFDFA := $AAAA
 LE219 := $AAAA
+LE21F := $AAAA
+
+LFDFA := $FDFA
+LFE73 := $FE73
+LFE75 := $FE75
+L000A := $0A

@@ -44,7 +44,7 @@ GETADR:
 ; "PEEK" FUNCTION
 ; ----------------------------------------------------------------------------
 PEEK:
-.ifdef CBM2
+.ifdef CBM2_MICROTAN
         lda     LINNUM+1
         pha
         lda     LINNUM
@@ -71,7 +71,7 @@ LD6F3:
 .endif
         lda     (LINNUM),y
         tay
-.ifdef CBM2
+.ifdef CBM2_MICROTAN
         pla
         sta     LINNUM
         pla

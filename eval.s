@@ -240,12 +240,12 @@ FRM_STACK2:
         tay
         pla
         sta     INDEX
-.ifndef KBD
+.ifndef KBD_MICROTAN
         inc     INDEX ; bug: assumes not on page boundary
 .endif
         pla
         sta     INDEX+1
-.ifdef KBD
+.ifdef KBD_MICROTAN
         inc     INDEX
         bne     LEB69
         inc     INDEX+1
@@ -448,18 +448,18 @@ FRM_VARIABLE_CALL	= *-1
         ldx     VALTYP
         beq     L2DB1
 .ifdef CONFIG_CBM_ALL
-.ifdef CONFIG_CBM1_PATCHES
+  .ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH2
         clc
 LCE3B:
-.else
+  .else
         ldx     #$00
         stx     $6D
         bit     $62
         bpl     LCE53
         cmp     #$54
         bne     LCE53
-.endif
+  .endif
         cpy     #$C9
         bne     LCE53
         jsr     LCE76
@@ -473,7 +473,7 @@ LCE3B:
         jmp     LD353
 LCE53:
 .endif
-.ifdef KBD
+.ifdef KBD_MICROTAN
         ldx     #$00
         stx     STRNG1+1
 .endif

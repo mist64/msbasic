@@ -232,13 +232,19 @@ PROCESS_INPUT_ITEM:
   .endif
         sta     INPUTBUFFER
   .ifdef CONFIG_INPUTBUFFER_ORDER
+; the order is about whether
+; the beq/bne is taken or not
         ldy     #>(INPUTBUFFER-1)
         ldx     #<(INPUTBUFFER-1)
   .else
         ldx     #<(INPUTBUFFER-1)
         ldy     #>(INPUTBUFFER-1)
   .endif
+  .ifdef MICROTAN
+        beq     L2AF8
+  .else
         bne     L2AF8
+  .endif
 L2AF0:
 .endif
         bmi     FINDATA

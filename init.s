@@ -59,7 +59,7 @@ COLD_START2:
         sta     GOWARM
         sta     JMPADRS
 .endif
-.ifdef APPLE
+.ifdef APPLE_MICROTAN
         sta     L000A
 .endif
 .ifdef CONFIG_SMALL
@@ -135,13 +135,15 @@ L4098:
 .endif
         pha
         sta     Z14
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         inx
         stx     $01FD
         stx     $01FC
 .else
+  .ifndef MICROTAN
         lda     #$03
         sta     DSCLEN
+  .endif
 .ifndef KIM_APPLE
         lda     #$2C
         sta     LINNUM+1
@@ -172,7 +174,7 @@ L4098:
         tay
         bne     L40EE
 .endif
-.ifndef CONFIG_2
+.ifndef CBM2_KBD
         lda     #<RAMSTART2
 .endif
         ldy     #>RAMSTART2
@@ -182,7 +184,7 @@ L4098:
 .endif
         sta     LINNUM
         sty     LINNUM+1
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
 		tay
 .else
         ldy     #$00
@@ -196,7 +198,7 @@ L40D7:
         cmp     #$80
         beq     L40FA
 .endif
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         bmi     L40FA
 .endif
 L40DD:
@@ -233,8 +235,10 @@ L40FA:
         ldy     LINNUM+1
         sta     MEMSIZ
         sty     MEMSIZ+1
+.ifndef MICROTAN
         sta     FRETOP
         sty     FRETOP+1
+.endif
 L4106:
 .ifndef CONFIG_CBM_ALL
 .ifdef APPLE

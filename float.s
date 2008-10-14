@@ -131,8 +131,8 @@ L369B:
         sbc     4,x
         sta     FAC+4
 .endif
-        lda     GOWARM,y
-        sbc     GOWARM,x
+        lda     3,y
+        sbc     3,x
         sta     FAC+3
         lda     2,y
         sbc     2,x
@@ -169,8 +169,8 @@ L36C7:
 .endif
         sty     FACEXTENSION
         adc     #$08
-.ifdef KBD
-        cmp     #$20
+.ifdef KBD_MICROTAN
+        cmp     #(MANTISSA_BYTES+1)*8
 .else
         cmp     #MANTISSA_BYTES*8
 .endif
@@ -235,7 +235,7 @@ NORMALIZE_FAC5:
 NORMALIZE_FAC6:
         inc     FAC
         beq     OVERFLOW
-.ifndef KIM
+.ifndef KIM_MICROTAN
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
@@ -372,7 +372,7 @@ SHIFT_RIGHT:
         tay
         lda     FACEXTENSION
         bcs     SHIFT_RIGHT5
-.ifndef KIM
+.ifndef KIM_MICROTAN
 LB588:
         asl     1,x
         bcc     LB58E
@@ -387,9 +387,9 @@ LB58E:
 SHIFT_RIGHT4:
         ror     2,x
         ror     3,x
-.ifndef CONFIG_SMALL
+  .ifndef CONFIG_SMALL
         ror     4,x
-.endif
+  .endif
         ror     a
         iny
         bne     LB588
@@ -577,7 +577,7 @@ L38A7:
         adc     ARG+1
         sta     RESULT
 L38C3:
-.ifndef KIM
+.ifndef KIM_MICROTAN
         ror     RESULT
         ror     RESULT+1
 .ifdef APPLE
@@ -1224,7 +1224,7 @@ FIN3:
         beq     FIN4
         bne     FIN6
 L3BA6:
-.ifndef KIM
+.ifndef KIM_MICROTAN
         ror     EXPSGN
 .else
         lda     #$00
@@ -1251,7 +1251,7 @@ FIN6:
 ; FOUND A DECIMAL POINT
 ; ----------------------------------------------------------------------------
 FIN10:
-.ifndef KIM
+.ifndef KIM_MICROTAN
         ror     LOWTR
 .else
         lda     #$00
@@ -1488,17 +1488,9 @@ L3CBE:
         ldx     #$01
         lda     INDX
         clc
-.ifdef CONFIG_SMALL
-        adc     #$07
-.else
-        adc     #$0A
-.endif
+        adc     #3*BYTES_FP-5
         bmi     L3CD3
-.ifdef CONFIG_SMALL
-        cmp     #$08
-.else
-        cmp     #$0B
-.endif
+        cmp     #3*BYTES_FP-4
         bcs     L3CD4
         adc     #$FF
         tax

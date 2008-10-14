@@ -806,54 +806,54 @@ LIST:
 L25A6:
         jsr     CRDO
 .else
-.ifdef MICROTAN
+  .ifdef MICROTAN
         php
         jmp     LE21C
 LC57E:
-.else
+  .else
         bcc     L2581
         beq     L2581
         cmp     #TOKEN_MINUS
         bne     L256A
 L2581:
         jsr     LINGET
-.endif
+  .endif
         jsr     FNDLIN
-.ifdef MICROTAN
+  .ifdef MICROTAN
         plp
         beq     LC598
-.endif
+  .endif
         jsr     CHRGOT
         beq     L2598
         cmp     #TOKEN_MINUS
         bne     L2520
         jsr     CHRGET
-.ifdef MICROTAN
+  .ifdef MICROTAN
         beq     LC598
         jsr     LINGET
         beq     L25A6
         rts
 LC598:
-.else
+  .else
         jsr     LINGET
         bne     L2520
-.endif
+  .endif
 L2598:
-.ifndef MICROTAN
+  .ifndef MICROTAN
         pla
         pla
         lda     LINNUM
         ora     LINNUM+1
         bne     L25A6
-.endif
+  .endif
         lda     #$FF
         sta     LINNUM
         sta     LINNUM+1
-.ifdef MICROTAN
-        pla
-        pla
-.endif
 L25A6:
+  .ifdef MICROTAN
+        pla
+        pla
+  .endif
 .endif
         ldy     #$01
 .ifdef CONFIG_DATAFLAG
@@ -861,7 +861,11 @@ L25A6:
 .endif
         lda     (LOWTRX),y
         beq     L25E5
+.ifdef MICROTAN
+        jmp     LE21F                           ; C5A6 4C 1F E2                 L..
+.else
         jsr     ISCNTC
+.endif
 .ifndef KBD
         jsr     CRDO
 .endif
