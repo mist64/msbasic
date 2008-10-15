@@ -20,21 +20,21 @@ COLD_START:
         lda     $0353
         sta     $05
 .else
-.ifndef CONFIG_CBM_ALL
+  .ifndef CONFIG_CBM_ALL
         lda     #<QT_WRITTEN_BY
         ldy     #>QT_WRITTEN_BY
         jsr     STROUT
-.endif
+  .endif
 COLD_START2:
-.ifndef CBM2
+  .ifndef CBM2
         ldx     #$FF
         stx     CURLIN+1
-.endif
-.if INPUTBUFFER >= $0100
+  .endif
+  .if INPUTBUFFER >= $0100
         ldx     #$FB
-.endif
+  .endif
         txs
-.ifndef CONFIG_CBM_ALL
+  .ifndef CONFIG_CBM_ALL
         lda     #<COLD_START2
         ldy     #>COLD_START2
         sta     Z00+1
@@ -49,59 +49,60 @@ COLD_START2:
         ldy     #>GIVAYF
         sta     GOGIVEAYF
         sty     GOGIVEAYF+1
-.endif
+  .endif
         lda     #$4C
-.ifdef CONFIG_CBM_ALL
+  .ifdef CONFIG_CBM_ALL
         sta     JMPADRS
         sta     Z00
-.else
+  .else
         sta     Z00
         sta     GOWARM
         sta     JMPADRS
-.endif
-.ifdef APPLE_MICROTAN
+  .endif
+  .ifdef APPLE
         sta     L000A
-.endif
-.ifdef CONFIG_SMALL
+  .endif
+  .if .def(CONFIG_SMALL) || .def(MICROTAN)
         sta     USR
-        lda     #$88
-        ldy     #$AE
-        sta     $0B
-        sty     $0C
-.endif
-.ifdef CONFIG_CBM_ALL
-        lda     #<IQERR
-        ldy     #>IQERR
-.endif
-.ifdef APPLE
-        lda     #<L29D0
-        ldy     #>L29D0
-.endif
-.ifdef CBM_APPLE
-        sta     USR+1
-        sty     USR+2
-.endif
-.ifndef CONFIG_CBM_ALL
-.ifdef APPLE
+  .endif
+
+  .ifndef KIM
+    .ifdef APPLE
+          lda     #<USR_FUNC
+          ldy     #>USR_FUNC
+    .else
+          lda     #<IQERR
+          ldy     #>IQERR
+    .endif
+          sta     USR+1
+          sty     USR+2
+  .endif
+  .ifndef CONFIG_CBM_ALL
+    .ifdef APPLE
         lda     #$28
-.else
+    .else
+	  .ifdef MICROTAN
+        lda     #$50
+      .else
         lda     #$48
-.endif
+      .endif
+    .endif
         sta     Z17
-.ifdef APPLE
+    .ifdef APPLE
         lda     #$0E
-.else
+    .else
         lda     #$38
-.endif
+    .endif
         sta     Z18
-.endif
-.ifdef CONFIG_2
+  .endif
+  .ifdef CBM2_KBD
         lda     #$28
         sta     $0F
         lda     #$1E
         sta     $10
-.endif
-.endif
+  .endif
+.endif /* KBD */
+
 .ifdef CONFIG_SMALL
 .ifdef KBD
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET+4
@@ -179,8 +180,8 @@ L4098:
 .endif
         ldy     #>RAMSTART2
 .ifdef CONFIG_2
-        sta     $28
-        sty     $29
+        sta     TXTTAB
+        sty     TXTTAB+1
 .endif
         sta     LINNUM
         sty     LINNUM+1
@@ -321,15 +322,18 @@ L4183:
         tya
         sta     (TXTTAB),y
         inc     TXTTAB
-.ifndef CONFIG_2
+.ifndef CBM2_KBD
         bne     L4192
         inc     TXTTAB+1
 L4192:
 .endif
+.if CONFIG_SCRTCH_ORDER = 1
+        jsr     SCRTCH
+.endif
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         lda     #<QT_BASIC
         ldy     #>QT_BASIC
         jsr     STROUT
@@ -346,7 +350,7 @@ L4192:
         lda     #<QT_BYTES_FREE
         ldy     #>QT_BYTES_FREE
         jsr     STROUT
-.ifndef CONFIG_SCRTCH_ORDER
+.if CONFIG_SCRTCH_ORDER = 2
         jsr     SCRTCH
 .endif
 .ifdef CONFIG_CBM_ALL
@@ -356,8 +360,8 @@ L4192:
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.ifdef CONFIG_SCRTCH_ORDER
-        jsr     SCRTCH
+.if CONFIG_SCRTCH_ORDER = 3
+         jsr     SCRTCH
 .endif
         lda     #<RESTART
         ldy     #>RESTART
@@ -365,7 +369,8 @@ L4192:
         sty     Z00+2
         jmp     (Z00+1)
 .endif
-.ifndef CBM_APPLE
+
+.if .def(KIM) || .def(OSI)
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
         .byte   $00
@@ -396,7 +401,7 @@ QT_BYTES_FREE:
 .ifndef CBM_APPLE
         .byte   $0D,$0A,$0D,$0A
 .endif
-.ifdef CONFIG_2
+.ifdef CBM2_KBD
         .byte   $0D,$00
 .endif
 .ifdef APPLE
@@ -408,6 +413,9 @@ QT_BASIC:
 .endif
 .ifdef KIM
         .byte   "MOS TECH 6502 BASIC V1.1"
+.endif
+.ifdef MICROTAN
+        .byte   "MICROTAN BASIC"
 .endif
 .ifdef CBM1
         .byte   $13
@@ -424,7 +432,11 @@ QT_BASIC:
 .endif
 .ifndef CONFIG_CBM_ALL
         .byte   $0D,$0A
+.ifdef MICROTAN
+        .byte   "(C) 1980 MICROSOFT"            ; E1F2 28 43 29 20 31 39 38 30  (C) 1980
+.else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
+.endif
         .byte   $0D,$0A,$00
 .endif
 .endif /* KBD */

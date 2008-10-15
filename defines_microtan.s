@@ -13,6 +13,7 @@ CONFIG_2 := 1
 
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
+.define CONFIG_SCRTCH_ORDER 1
 
 CRLF_1 := $0D
 CRLF_2 := $0A
@@ -58,8 +59,8 @@ SPACE_FOR_GOSUB := $3E
 NULL_MAX		:= $F0 ; probably different in original version; the image I have seems to be modified; see PDF
 
 
-RAMSTART2 := $AAAA
-USR := $AAAA
+RAMSTART2 := $0400
+USR := $0021
 SAVE := $AAAA
 LOAD := $AAAA
 LE21C := $AAAA
