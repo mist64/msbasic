@@ -226,7 +226,11 @@ PROCESS_INPUT_ITEM:
         bit     INPUTFLG
 .ifndef CONFIG_SMALL ; GET
         bvc     L2AF0
+  .ifdef MICROTAN
+        jsr     MONRDKEY2
+  .else
         jsr     MONRDKEY
+  .endif
   .ifdef CONFIG_IO_MSB
         and     #$7F
   .endif

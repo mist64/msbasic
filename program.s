@@ -824,7 +824,11 @@ L2581:
         beq     LC598
   .endif
         jsr     CHRGOT
+  .ifdef MICROTAN
+        beq     L25A6
+  .else
         beq     L2598
+  .endif
         cmp     #TOKEN_MINUS
         bne     L2520
         jsr     CHRGET
@@ -854,6 +858,7 @@ L25A6:
         pla
         pla
   .endif
+L25A6X:
 .endif
         ldy     #$01
 .ifdef CONFIG_DATAFLAG
@@ -863,6 +868,7 @@ L25A6:
         beq     L25E5
 .ifdef MICROTAN
         jmp     LE21F                           ; C5A6 4C 1F E2                 L..
+LC5A9:
 .else
         jsr     ISCNTC
 .endif
@@ -911,7 +917,11 @@ LA519:
         lda     (LOWTRX),y
         stx     LOWTRX
         sta     LOWTRX+1
+.ifdef MICROTAN
+        bne     L25A6X
+.else
         bne     L25A6
+.endif
 L25E5:
         jmp     RESTART
 L25E8:

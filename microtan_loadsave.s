@@ -1,5 +1,6 @@
 .segment "CODE"
 
+SAVE:
         ldy     #$00
         beq     LC74D
 LC74B:
@@ -39,7 +40,7 @@ LC764:
         .byte   $0D,$0A,$00
         .byte   "SAVED"
         .byte   $0D,$0A,$00
-LC789:
+LOAD:
         jsr     LC74B
         ldx     #$FF
         tsx
@@ -51,7 +52,7 @@ LC789:
         lda     $9C
         tax
         ldy     $9D
-        jmp     LC3F0
+        jmp     FIX_LINKS
         nop
 LC7A5:
         pha
@@ -71,4 +72,4 @@ LC7AD:
         inc     $8A17
         stx     $9C
         sty     $9D
-        jmp     LC3F0
+        jmp     FIX_LINKS

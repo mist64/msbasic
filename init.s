@@ -463,3 +463,7 @@ QT_BASIC:
 .ifdef APPLE
 .include "apple_extra.s"
 .endif
+
+.ifdef MICROTAN
+.include "microtan_extra.s"
+.endif

@@ -49,10 +49,9 @@ TXPSV           := $00BA
 INPUTBUFFER     := $001B+$1A
 INPUTBUFFERX    := $0000
 
-L1800           := $1800
-L1873           := $1873
-MONRDKEY        := $1E5A
-MONCOUT         := $1EA0
+MONRDKEY        := $E210
+MONRDKEY2       := $E213
+MONCOUT         := $E216
 
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
@@ -61,14 +60,19 @@ NULL_MAX		:= $F0 ; probably different in original version; the image I have seem
 
 RAMSTART2 := $0400
 USR := $0021
-SAVE := $AAAA
-LOAD := $AAAA
-LE21C := $AAAA
-LC3F0 := $AAAA
-LE219 := $AAAA
-LE21F := $AAAA
 
+L000A := $0A
+
+LF000 := $F000
+LF003 := $F003
+LF006 := $F006
+LF009 := $F009
+LF00C := $F00C
+LF00F := $F00F
+LF018 := $F018
+LF01B := $F01B
+LF01E := $F01E
+LF021 := $F021
 LFDFA := $FDFA
 LFE73 := $FE73
 LFE75 := $FE75
-L000A := $0A
