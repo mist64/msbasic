@@ -155,7 +155,7 @@ LCB0C:
 
 NXIN:
 .ifdef KBD
-        jsr     LFDDA
+        jsr     INLIN
         bmi     RTS20
         pla
         jmp     LE86C

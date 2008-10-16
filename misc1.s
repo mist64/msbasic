@@ -210,7 +210,7 @@ L2963:
         lda     (DSCPTR),y
         sta     (FORPNT),y
         rts
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
 PRINTH:
         jsr     CMD
         jmp     LCAD6

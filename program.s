@@ -66,7 +66,7 @@ RESTART:
 L2351X:
         jsr     OKPRT
 L2351:
-        jsr     LFDDA
+        jsr     INLIN
 LE28E:
         bpl     RESTART
 .else
@@ -85,6 +85,9 @@ L2351:
         sty     TXTPTR+1
         jsr     CHRGET
 .ifdef CONFIG_11
+; bug in pre-1.1: CHRGET sets Z on '\0'
+; and ':' - a line starting with ':' in
+; direct mode gets ignored
         tax
 .endif
 .ifdef KBD
@@ -109,42 +112,42 @@ NUMBERED_LINE:
         jsr     FNDLIN2
         lda     JMPADRS+1
         sta     LOWTR
-        sta     $96
+        sta     Z96
         lda     JMPADRS+2
         sta     LOWTR+1
-        sta     $97
-        lda     $13
-        sta     $06FE
-        lda     $14
-        sta     $06FF
-        inc     $13
+        sta     Z96+1
+        lda     LINNUM
+        sta     L06FE
+        lda     LINNUM+1
+        sta     L06FE+1
+        inc     LINNUM
         bne     LE2D2
-        inc     $14
+        inc     LINNUM+1
         bne     LE2D2
         jmp     SYNERR
 LE2D2:
         jsr     LF457
-        ldx     #$96
-        jsr     LE4D4
+        ldx     #Z96
+        jsr     CMPJMPADRS
         bcs     LE2FD
 LE2DC:
         ldx     #$00
         lda     (JMPADRS+1,x)
-        sta     ($96,x)
+        sta     (Z96,x)
         inc     JMPADRS+1
         bne     LE2E8
         inc     JMPADRS+2
 LE2E8:
-        inc     $96
+        inc     Z96
         bne     LE2EE
-        inc     $97
+        inc     Z96+1
 LE2EE:
-        ldx     #$2B
-        jsr     LE4D4
+        ldx     #VARTAB
+        jsr     CMPJMPADRS
         bne     LE2DC
-        lda     $96
+        lda     Z96
         sta     VARTAB
-        lda     $97
+        lda     Z96+1
         sta     VARTAB+1
 LE2FD:
         jsr     SETPTRS
@@ -356,8 +359,9 @@ L2423:
 ; ----------------------------------------------------------------------------
 ; READ A LINE, AND STRIP OFF SIGN BITS
 ; ----------------------------------------------------------------------------
+.ifndef KBD
 INLIN:
-.ifdef APPLE
+  .ifdef APPLE
         ldx     #$DD
 INLIN1:
         stx     $33
@@ -371,11 +375,8 @@ L0C32:
         ldx     #<INPUTBUFFER-1
         ldy     #>INPUTBUFFER-1
         rts
-.endif
+  .endif
 
-
-
-.ifndef KBD
   .ifndef APPLE
         ldx     #$00
 INLIN2:
@@ -389,26 +390,26 @@ INLIN2:
     .ifndef CONFIG_NO_LINE_EDITING
         cmp     #$20 ; line editing
         bcc     INLIN2
-.ifdef MICROTAN
+      .ifdef MICROTAN
         cmp     #$80
-.else
+      .else
         cmp     #$7D
-.endif
+      .endif
         bcs     INLIN2
         cmp     #$40 ; @
         beq     L2423
-.ifdef MICROTAN
+      .ifdef MICROTAN
         cmp     #$7F ; _
-.else
+      .else
         cmp     #$5F ; _
-.endif
+      .endif
         beq     L2420
 L2443:
-.ifdef MICROTAN
+      .ifdef MICROTAN
         cpx     #$4F
-.else
+      .else
         cpx     #$47
-.endif
+      .endif
         bcs     L244C
     .endif
         sta     INPUTBUFFER,x
@@ -631,8 +632,8 @@ LE444:
 LE461:
         jmp     SYNERR
 LE464:
-        stx     $13
-        stx     $14
+        stx     LINNUM
+        stx     LINNUM+1
 .else
         lda     TXTTAB
         ldx     TXTTAB+1
@@ -784,11 +785,12 @@ LE4C4:
         adc     #$08
         sta     $0504
         rts
-LE4D4:
-        lda     $01,x
+
+CMPJMPADRS:
+        lda     1,x
         cmp     JMPADRS+2
         bne     LE4DE
-        lda     $00,x
+        lda     0,x
         cmp     JMPADRS+1
 LE4DE:
         rts

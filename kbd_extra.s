@@ -26,23 +26,23 @@
 OUTQUESSP:
         jsr     OUTQUES
         jmp     OUTSP
-LFDDA:
+INLIN:
         ldy     #$FF
 LFDDC:
         iny
 LFDDD:
-        jsr     LF43B
-        cmp     #$03
+        jsr     GETLN
+        cmp     #$03	; CTRL+C
         beq     LFDF7
         cmp     #$20
-        bcs     LFDEC
+        bcs     LFDEC	; no control char
         sbc     #$09
         bne     LFDDD
 LFDEC:
         sta     INPUTBUFFER,y
         tax
         bne     LFDDC
-        jsr     LE882
+        jsr     CRDO2
         ldy     #$06
 LFDF7:
         tax

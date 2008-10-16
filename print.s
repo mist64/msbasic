@@ -87,7 +87,7 @@ L29B9:
         ldx     #LINNUM+1
     .endif
     .ifdef MICROTAN
-        bne     LE882
+        bne     CRDO2
 	.endif
   .endif
   .ifdef CONFIG_FILE
@@ -109,7 +109,7 @@ LC9D8:
         sta     POSX
 .endif
         jsr     OUTDO
-LE882:
+CRDO2:
         lda     #CRLF_2
         jsr     OUTDO
 

@@ -21,6 +21,8 @@ CBM2_APPLE := 1
 CBM2_KIM_APPLE := 1 ; OUTDO difference
 CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
+CONFIG_EASTER_EGG := 1
+; CONFIG_SMALL := 1 ; test :-) 
 ; INPUTBUFFER > $0100
 .endif
 

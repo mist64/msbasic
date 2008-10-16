@@ -98,7 +98,7 @@ WAIT:
         stx     FORPNT
         ldx     #$00
         jsr     CHRGOT
-.ifdef CBM2
+.ifdef CONFIG_EASTER_EGG
         beq     EASTER_EGG
 .else
         beq     L3628

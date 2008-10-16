@@ -43,6 +43,9 @@ Z14             := $000F;64                        ; Ctrl+O flag
 
 JMPADRS         := $0093;A1
 LOWTRX          := $0094;AA                        ; $AB also EXPSGN?
+Z96				:= $0096
+
+L06FE			:= $06FE
 
 L0207           := $0207
 L020A           := $020A
