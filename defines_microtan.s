@@ -27,7 +27,7 @@ Z00             := $0017
 L0001           := $0001
 L0002           := $0002
 GOWARM          := $001A
-GOSTROUT        := $001D
+GOAYINT         := $001D
 GOGIVEAYF       := $001F
 
 CHARAC          := $000A+$1A
@@ -55,7 +55,7 @@ MONCOUT         := $E216
 
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
-NULL_MAX		:= $F0 ; probably different in original version; the image I have seems to be modified; see PDF
+NULL_MAX		:= $F0
 
 
 RAMSTART2 := $0400

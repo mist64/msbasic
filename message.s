@@ -1,55 +1,64 @@
+; global messages: "error", "in", "ready", "break"
+
 .segment "CODE"
+
+CR=13
+LF=10
 
 QT_ERROR:
 .ifdef KBD
         .byte   " err"
 .else
-.ifdef APPLE
+  .ifdef APPLE
         .byte   " ERR"
 		.byte	$07,$07
-.else
+  .else
         .byte   " ERROR"
+  .endif
 .endif
-.endif
-        .byte   $00
+        .byte   0
+
 .ifndef KBD
 QT_IN:
         .byte   " IN "
         .byte   $00
-QT_OK:
-.ifdef APPLE
-        .byte   $0D,$00,$00
-        .byte   "K"
-.else
-		.byte   $0D,$0A
-.ifdef CONFIG_CBM_ALL
-        .byte   "READY."
-.else
-        .byte   "OK"
 .endif
-.endif
-        .byte   $0D,$0A,$00
-.else
+
+.ifdef KBD
 		.byte	$54,$D2 ; ???
 OKPRT:
 		jsr     LDE42
-        .byte   $0D,$0D
-        .byte   ">>"
-        .byte   $0D,$0A,$00
+        .byte   CR,CR,">>",CR,LF
+		.byte	0
         rts
         nop
+.else
+QT_OK:
+  .ifdef CONFIG_CBM_ALL
+		.byte   CR,LF,"READY.",CR,LF
+  .else
+    .ifdef APPLE
+		; binary patch!
+        .byte   CR,0,0,"K",CR,LF
+    .else
+		.byte   CR,LF,"OK",CR,LF
+    .endif
+  .endif
+		.byte	0
 .endif
+
 QT_BREAK:
+
 .ifdef KBD
-		.byte	$0D,$0A
-        .byte   " Brk"
-        .byte   $00
+		.byte	CR,LF," Brk"
+        .byte   0
         .byte   $54,$D0 ; ???
 .else
-		.byte $0D,$0A
 .ifdef MICROTAN
-		.byte   " "
+		.byte CR,LF," BREAK"
+        .byte   0
+.else
+		.byte CR,LF,"BREAK"
+        .byte   0
 .endif
-        .byte   "BREAK"
-        .byte   $00
 .endif

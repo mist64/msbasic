@@ -1,3 +1,7 @@
+; generic stack and memory management code
+; this code is identical across all versions of
+; BASIC
+
 .segment "CODE"
 
 ; ----------------------------------------------------------------------------

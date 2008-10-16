@@ -95,7 +95,7 @@ USR_FUNC:
         sta     FAC+5
         jmp     (FAC+4)
 L29DA:
-        jmp     (GOSTROUT)
+        jmp     (GOAYINT)
         brk
         brk
         brk

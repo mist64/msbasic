@@ -12,7 +12,7 @@ MEMERR:
 ; ----------------------------------------------------------------------------
 ERROR:
         lsr     Z14
-.ifdef CONFIG_CBM_ALL
+.ifdef CONFIG_FILE
         lda     Z03       ; output
         beq     LC366     ; is screen
         jsr     CLRCH     ; otherwise redirect output back to screen
@@ -950,5 +950,5 @@ L25FD:
         lda     TOKEN_NAME_TABLE,y
         bmi     L25CA
         jsr     OUTDO
-        bne     L25FD
+        bne     L25FD	; always
 

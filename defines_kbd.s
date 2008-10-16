@@ -19,7 +19,7 @@ Z00             := $0700
 L0001           := $0001
 L0002           := $0002
 GOWARM          := $0003
-GOSTROUT        := $0006
+GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
 USR             := $000A

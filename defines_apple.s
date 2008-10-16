@@ -24,7 +24,7 @@ LOWTRX = LOWTR
 Z00             := $0000
 L0001           := $000B
 GOWARM          := $0003
-GOSTROUT        := $0006
+GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
 USR				:= $000A

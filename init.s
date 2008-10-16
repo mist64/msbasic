@@ -43,8 +43,8 @@ COLD_START2:
         sty     GOWARM+2
         lda     #<AYINT
         ldy     #>AYINT
-        sta     GOSTROUT
-        sty     GOSTROUT+1
+        sta     GOAYINT
+        sty     GOAYINT+1
         lda     #<GIVAYF
         ldy     #>GIVAYF
         sta     GOGIVEAYF
@@ -104,11 +104,11 @@ COLD_START2:
 .endif /* KBD */
 
 .ifdef CONFIG_SMALL
-.ifdef KBD
+  .ifdef KBD
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET+4
-.else
+  .else
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET
-.endif
+  .endif
 .else
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET-1 ; XXX
 .endif
@@ -124,31 +124,31 @@ L4098:
 .ifndef KBD
         txa
         sta     SHIFTSIGNEXT
-.ifdef CONFIG_CBM_ALL
+  .ifdef CONFIG_CBM_ALL
         sta     Z03
-.endif
+  .endif
         sta     LASTPT+1
-.if .defined(CONFIG_NULL) || .defined(CONFIG_PRINTNULLS)
+  .if .defined(CONFIG_NULL) || .defined(CONFIG_PRINTNULLS)
         sta     Z15
-.endif
-.ifndef CONFIG_11
+  .endif
+  .ifndef CONFIG_11
         sta     POSX
-.endif
+  .endif
         pha
         sta     Z14
-.ifdef CBM2_KBD
+  .ifdef CBM2_KBD
         inx
         stx     $01FD
         stx     $01FC
-.else
-  .ifndef MICROTAN
+  .else
+    .ifndef MICROTAN
         lda     #$03
         sta     DSCLEN
-  .endif
-.ifndef KIM_APPLE
+    .endif
+  .ifndef KIM_APPLE
         lda     #$2C
         sta     LINNUM+1
-.endif
+  .endif
         jsr     CRDO
 .endif
 .ifdef APPLE
@@ -162,11 +162,11 @@ L4098:
         lda     #<QT_MEMORY_SIZE
         ldy     #>QT_MEMORY_SIZE
         jsr     STROUT
-.ifdef APPLE
+  .ifdef APPLE
         jsr     INLINX
-.else
+  .else
         jsr     NXIN
-.endif
+  .endif
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
@@ -217,13 +217,13 @@ L40DD:
 .ifdef CONFIG_CBM_ALL
         beq     L40D7
 .else
-.ifdef CONFIG_SMALL
+  .ifdef CONFIG_SMALL
         beq     L40D7
         bne     L40FA
-.else
+  .else
         bne     L40FA
         beq     L40D7
-.endif
+  .endif
 L40EE:
         jsr     CHRGOT
         jsr     LINGET
@@ -242,17 +242,17 @@ L40FA:
 .endif
 L4106:
 .ifndef CONFIG_CBM_ALL
-.ifdef APPLE
+  .ifdef APPLE
         lda     #$FF
         jmp     L2829
         .word	STROUT ; PATCH!
         jsr     NXIN
-.else
+  .else
         lda     #<QT_TERMINAL_WIDTH
         ldy     #>QT_TERMINAL_WIDTH
         jsr     STROUT
         jsr     NXIN
-.endif
+  .endif
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
@@ -276,7 +276,7 @@ L4129:
         sta     Z18
 L4136:
 .endif
-.ifdef KIM
+.ifdef KIM /* RAM? */
         lda     #<QT_WANT
         ldy     #>QT_WANT
         jsr     STROUT
@@ -360,9 +360,9 @@ L4192:
         ldy     #>STROUT
         sta     GOWARM+1
         sty     GOWARM+2
-.if CONFIG_SCRTCH_ORDER = 3
+  .if CONFIG_SCRTCH_ORDER = 3
          jsr     SCRTCH
-.endif
+  .endif
         lda     #<RESTART
         ldy     #>RESTART
         sta     Z00+1

@@ -46,7 +46,7 @@ L0001           := $0001
 L0002           := $0002
 GOWARM          := $0003
 Z03				:= $0003 ; same
-GOSTROUT        := $0006
+GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
 Z15             := $0004
@@ -93,7 +93,7 @@ CPRMASK         := $0063-82-5
 Z14             := $0064-82-5                        ; Ctrl+O flag
 
 Z17             := $0006
-GOSTROUT        := $0006
+GOAYINT         := $0006
 Z18             := $0007
 GOGIVEAYF       := $0008
 Z03				:= $000E;3 ; same

@@ -109,7 +109,7 @@ UNFNC:
 		keyword_addr "SGN", SGN, TOKEN_SGN
 		keyword_addr "INT", INT
 		keyword_addr "ABS", ABS
-.ifdef KBD
+.ifdef CONFIG_NO_POKE
 		keyword_addr "VER", VER
 .else
 .ifdef KIM
