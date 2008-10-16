@@ -37,10 +37,10 @@ COLD_START2:
   .ifndef CONFIG_CBM_ALL
         lda     #<COLD_START2
         ldy     #>COLD_START2
-        sta     Z00+1
-        sty     Z00+2
-        sta     GOWARM+1
-        sty     GOWARM+2
+        sta     GORESTART+1
+        sty     GORESTART+2
+        sta     GOSTROUT+1
+        sty     GOSTROUT+2
         lda     #<AYINT
         ldy     #>AYINT
         sta     GOAYINT
@@ -53,10 +53,10 @@ COLD_START2:
         lda     #$4C
   .ifdef CONFIG_CBM_ALL
         sta     JMPADRS
-        sta     Z00
-  .else
-        sta     Z00
-        sta     GOWARM
+  .endif
+        sta     GORESTART
+  .ifndef CONFIG_CBM_ALL
+        sta     GOSTROUT
         sta     JMPADRS
   .endif
   .ifdef APPLE
@@ -358,16 +358,16 @@ L4192:
 .else
         lda     #<STROUT
         ldy     #>STROUT
-        sta     GOWARM+1
-        sty     GOWARM+2
+        sta     GOSTROUT+1
+        sty     GOSTROUT+2
   .if CONFIG_SCRTCH_ORDER = 3
          jsr     SCRTCH
   .endif
         lda     #<RESTART
         ldy     #>RESTART
-        sta     Z00+1
-        sty     Z00+2
-        jmp     (Z00+1)
+        sta     GORESTART+1
+        sty     GORESTART+2
+        jmp     (GORESTART+1)
 .endif
 
 .if .def(KIM) || .def(OSI)

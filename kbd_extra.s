@@ -39,7 +39,7 @@ LFDDD:
         sbc     #$09
         bne     LFDDD
 LFDEC:
-        sta     Z00,y
+        sta     INPUTBUFFER,y
         tax
         bne     LFDDC
         jsr     LE882

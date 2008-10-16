@@ -31,9 +31,9 @@ L2329:
         jsr     OUTDO
 .ifdef CONFIG_SMALL
         lda     ERROR_MESSAGES+1,x
-.ifdef KBD
+  .ifdef KBD
         and     #$7F
-.endif
+  .endif
         jsr     OUTDO
 .else
         inx
@@ -73,11 +73,11 @@ LE28E:
         lsr     Z14
         lda     #<QT_OK
         ldy     #>QT_OK
-.ifdef CONFIG_CBM_ALL
+  .ifdef CONFIG_CBM_ALL
         jsr     STROUT
-.else
-        jsr     GOWARM
-.endif
+  .else
+        jsr     GOSTROUT
+  .endif
 L2351:
         jsr     INLIN
 .endif
@@ -149,7 +149,7 @@ LE2EE:
 LE2FD:
         jsr     SETPTRS
         jsr     LE33D
-        lda     Z00
+        lda     INPUTBUFFER
 LE306:
         beq     LE28E
         cmp     #$A5

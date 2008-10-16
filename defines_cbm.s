@@ -40,11 +40,11 @@ JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 USR				:= $0000
-Z00             := $0000
+GORESTART       := $0000
 INPUTBUFFERX    := $0000
 L0001           := $0001
 L0002           := $0002
-GOWARM          := $0003
+GOSTROUT        := $0003
 Z03				:= $0003 ; same
 GOAYINT         := $0006
 GOGIVEAYF       := $0008
@@ -76,10 +76,10 @@ JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 USR				:= $0000
-Z00             := $0000
+GORESTART       := $0000
 L0001           := $0001
 L0002           := $0002
-GOWARM          := $0003
+GOSTROUT        := $0003
 Z15             := $0004
 CHARAC          := $005A-82-5
 ENDCHR          := $005B-82-5

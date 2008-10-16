@@ -17,10 +17,10 @@ ZP_START = $63
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
-Z00             := $0000
+GORESTART       := $0000
 L0001           := $0001
 L0002           := $0002
-GOWARM          := $0003
+GOSTROUT        := $0003
 GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
