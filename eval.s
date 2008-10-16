@@ -242,6 +242,7 @@ FRM_STACK2:
         sta     INDEX
 .ifndef KBD_MICROTAN
         inc     INDEX ; bug: assumes not on page boundary
+; bug exists on AppleSoft II
 .endif
         pla
         sta     INDEX+1
@@ -473,7 +474,7 @@ LCE3B:
         jmp     LD353
 LCE53:
 .endif
-.ifdef KBD_MICROTAN ; also AppleSoft 2
+.ifdef KBD_MICROTAN ; also AppleSoft II
 ; bugfix?
         ldx     #$00
         stx     STRNG1+1

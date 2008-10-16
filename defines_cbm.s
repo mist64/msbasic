@@ -14,6 +14,7 @@ CONFIG_CBM_ALL := 1
 CONFIG_11 := 1
 CONFIG_11A := 1
 CONFIG_2 := 1
+CONFIG_2A := 1
 CBM2_KBD := 1 ; 2 weird instances
 CBM2_MICROTAN := 1
 CBM2_KIM := 1

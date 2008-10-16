@@ -276,7 +276,7 @@ END2:
         ldy     TXTPTR+1
 .if (INPUTBUFFER >=$0100) && .def(CONFIG_2)
 ; BUG on AppleSoft I
-; exists on AppleSoft II
+; fix exists on AppleSoft II
 ; TXTPTR+1 will always be > 0
         ldx     CURLIN+1
         inx
@@ -459,7 +459,7 @@ POP:
         bne     L281E
         lda     #$FF
 .ifdef CONFIG_2
-        sta     FORPNT+1 ; bugfix, wrong in AppleSoft
+        sta     FORPNT+1 ; bugfix, wrong in AppleSoft II
 .else
         sta     FORPNT
 .endif

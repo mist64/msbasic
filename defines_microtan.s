@@ -8,6 +8,7 @@ CONFIG_MONCOUT_DESTROYS_Y := 1
 APPLE_MICROTAN := 1
 
 CONFIG_2 := 1
+CONFIG_2A := 1
 
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached

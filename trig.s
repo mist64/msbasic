@@ -115,12 +115,16 @@ POLY_SIN:
         .byte   $07,$FB,$F8,$87,$99,$68,$89,$01
         .byte   $87,$23,$35,$DF,$E1,$86,$A5,$5D
         .byte   $E7,$28,$83,$49,$0F,$DA,$A2
-  .ifdef CBM2_MICROTAN
+  .ifdef CBM1
+; no easter egg text on CBM1
+  .elseif .def(CONFIG_2A)
+; PET encoded easter egg text since CBM2
 MICROSOFT:
         .byte   $A1,$54,$46,$8F,$13,$8F,$52,$43
         .byte   $89,$CD
-  .elseif .def(CONFIG_CBM_ALL)
   .else
+; ASCII encoded easter egg in between
+; also AppleSoft II
 MICROSOFT:
         .byte   $A6,$D3,$C1,$C8,$D4,$C8,$D5,$C4
         .byte   $CE,$CA

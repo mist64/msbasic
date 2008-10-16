@@ -205,14 +205,14 @@ L23AD:
 .endif
 ; ----------------------------------------------------------------------------
 PUT_NEW_LINE:
-.ifdef CBM2_MICROTAN
+.ifndef KBD
+  .ifdef CONFIG_2
         jsr     SETPTRS
         jsr     LE33D
         lda     INPUTBUFFER
         beq     L2351
         clc
-.else
-  .ifndef KBD
+  .else
         lda     INPUTBUFFER
         beq     FIX_LINKS
         lda     MEMSIZ
@@ -333,11 +333,9 @@ LE39A:
         lda     VARTAB+1,x
         adc     $051C,y
         sta     VARTAB+1,y
-RET3:
-        rts
 .endif
 
-.ifdef CBM2_MICROTAN
+.ifdef CONFIG_2
 RET3:
 		rts
 .endif
@@ -527,7 +525,7 @@ L2498:
         jsr     GET_UPPER
 .else
         lda     INPUTBUFFERX,x
-  .ifndef CBM2_MICROTAN
+  .ifndef CONFIG_2
         cmp     #$20
         beq     L2497
   .endif
