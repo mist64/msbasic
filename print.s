@@ -341,7 +341,7 @@ L2A4E:
 .ifndef CBM2_KBD
         pla
 .endif
-.ifdef KIM_MICROTAN
+.ifdef CONFIG_MONCOUT_DESTROYS_Y
         sty     DIMFLG
 .endif
 .ifdef CONFIG_IO_MSB
@@ -351,7 +351,7 @@ L2A4E:
 .ifdef CONFIG_IO_MSB
         and     #$7F
 .endif
-.ifdef KIM_MICROTAN
+.ifdef CONFIG_MONCOUT_DESTROYS_Y
         ldy     DIMFLG
 .endif
 .ifdef OSI

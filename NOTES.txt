@@ -6,4 +6,4 @@ KIM BASIC             1977     1.1            N      Y          -        CONFIG_
 Commodore BASIC 2     1979                    Y      Y         CBM       CONFIG_2
 AppleSoft II          1978                    Y      Y        Apple
 KBD BASIC             1980                    Y      N         KBD
-MicroTAN              1980                    Y      Y          -
+MicroTAN              1979                    Y      Y          -

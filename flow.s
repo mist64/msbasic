@@ -329,6 +329,7 @@ RET1:
 PRT:
         jsr     GETBYT
         txa
+; not ROR bug safe
         ror     a
         ror     a
         ror     a

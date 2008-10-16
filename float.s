@@ -236,13 +236,13 @@ NORMALIZE_FAC5:
 NORMALIZE_FAC6:
         inc     FAC
         beq     OVERFLOW
-.ifndef KIM_MICROTAN
+.ifndef CONFIG_ROR_WORKAROUND
         ror     FAC+1
         ror     FAC+2
         ror     FAC+3
-.ifndef CONFIG_SMALL
+  .ifndef CONFIG_SMALL
         ror     FAC+4
-.endif
+  .endif
         ror     FACEXTENSION
 .else
         lda     #$00
@@ -373,7 +373,7 @@ SHIFT_RIGHT:
         tay
         lda     FACEXTENSION
         bcs     SHIFT_RIGHT5
-.ifndef KIM_MICROTAN
+.ifndef CONFIG_ROR_WORKAROUND
 LB588:
         asl     1,x
         bcc     LB58E
@@ -578,7 +578,7 @@ L38A7:
         adc     ARG+1
         sta     RESULT
 L38C3:
-.ifndef KIM_MICROTAN
+.ifndef CONFIG_ROR_WORKAROUND
         ror     RESULT
         ror     RESULT+1
 .ifdef APPLE
@@ -1225,7 +1225,7 @@ FIN3:
         beq     FIN4
         bne     FIN6
 L3BA6:
-.ifndef KIM_MICROTAN
+.ifndef CONFIG_ROR_WORKAROUND
         ror     EXPSGN
 .else
         lda     #$00
@@ -1252,7 +1252,7 @@ FIN6:
 ; FOUND A DECIMAL POINT
 ; ----------------------------------------------------------------------------
 FIN10:
-.ifndef KIM_MICROTAN
+.ifndef CONFIG_ROR_WORKAROUND
         ror     LOWTR
 .else
         lda     #$00
