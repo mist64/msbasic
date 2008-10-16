@@ -145,17 +145,17 @@ L4098:
         lda     #$03
         sta     DSCLEN
     .endif
-  .ifndef KIM_APPLE
+    .ifndef CONFIG_11
         lda     #$2C
         sta     LINNUM+1
-  .endif
+    .endif
         jsr     CRDO
-.endif
-.ifdef APPLE
+  .endif
+  .ifdef APPLE
         lda     #$01
         sta     $01FD
         sta     $01FC
-.endif
+  .endif
         ldx     #TEMPST
         stx     TEMPPT
 .ifndef CONFIG_CBM_ALL
