@@ -175,7 +175,7 @@ L4098:
         tay
         bne     L40EE
 .endif
-.ifndef CBM2_KBD
+.ifndef CBM2
         lda     #<RAMSTART2
 .endif
         ldy     #>RAMSTART2
@@ -185,7 +185,7 @@ L4098:
 .endif
         sta     LINNUM
         sty     LINNUM+1
-.ifdef CBM2_KBD
+.ifdef CBM2
 		tay
 .else
         ldy     #$00

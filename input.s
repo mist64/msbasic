@@ -187,12 +187,13 @@ READ:
         ldx     DATPTR
         ldy     DATPTR+1
 .ifdef CBM2_KBD
-        lda     #$98 ; AppleSoft, too
+; AppleSoft II, too
+        lda     #$98	; READ
         .byte   $2C
 L2ABE:
-        lda     #$00
+        lda     #$00	; INPUT
 .else
-        .byte   $A9
+        .byte   $A9	; LDA #$98
 L2ABE:
         tya
 .endif

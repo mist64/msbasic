@@ -82,15 +82,15 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2_KBD
+.if (INPUTBUFFER >=$0100) && .def(CONFIG_2)
         cpy     #>INPUTBUFFER
-.endif
-.ifdef CBM2
+  .ifdef CBM2
         nop
-.endif
-.ifdef CBM2_KBD
+  .endif
         beq     LC6D4
 .else
+; BUG on AppleSoft I,
+; fixed differently on AppleSoft II (ldx/inx)
         beq     L2683
 .endif
         sta     OLDTEXT
@@ -274,7 +274,10 @@ END2:
         bne     RET1
         lda     TXTPTR
         ldy     TXTPTR+1
-.ifdef CBM2_KBD
+.if (INPUTBUFFER >=$0100) && .def(CONFIG_2)
+; BUG on AppleSoft I
+; exists on AppleSoft II
+; TXTPTR+1 will always be > 0
         ldx     CURLIN+1
         inx
 .endif
