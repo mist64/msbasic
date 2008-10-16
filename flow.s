@@ -179,11 +179,7 @@ SYNERR1:
 .endif
 .ifdef CONFIG_2
 LC721:
-.ifdef KBD_MICROTAN
-        cmp     #$45
-.else
-        cmp     #$4B
-.endif
+        cmp     #TOKEN_GO-$80
         bne     SYNERR1
         jsr     CHRGET
         lda     #TOKEN_TO

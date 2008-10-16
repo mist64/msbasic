@@ -170,6 +170,7 @@ L36C7:
         sty     FACEXTENSION
         adc     #$08
 .ifdef KBD_MICROTAN
+; bugfix? does not exist on AppleSoft 2
         cmp     #(MANTISSA_BYTES+1)*8
 .else
         cmp     #MANTISSA_BYTES*8

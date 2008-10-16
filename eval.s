@@ -312,7 +312,7 @@ FRM_PERFORM2:
 .endif
         sta     ARGSIGN
         eor     FACSIGN
-        sta     STRNG1
+        sta     SGNCPR
 EXIT:
         lda     FAC
         rts
@@ -457,10 +457,10 @@ LCE3B:
         stx     $6D
         bit     $62
         bpl     LCE53
-        cmp     #$54
+        cmp     #$54	; T
         bne     LCE53
   .endif
-        cpy     #$C9
+        cpy     #$C9	; I$
         bne     LCE53
         jsr     LCE76
         sty     EXPON
@@ -473,7 +473,8 @@ LCE3B:
         jmp     LD353
 LCE53:
 .endif
-.ifdef KBD_MICROTAN
+.ifdef KBD_MICROTAN ; also AppleSoft 2
+; bugfix?
         ldx     #$00
         stx     STRNG1+1
 .endif

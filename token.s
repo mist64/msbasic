@@ -143,7 +143,7 @@ UNFNC:
 		keyword_addr "RIGHT$", RIGHTSTR
 		keyword_addr "MID$", MIDSTR
 .ifdef CONFIG_2
-		keyword	"GO"
+		keyword	"GO", TOKEN_GO
 .endif
         .segment "KEYWORDS"
 		.byte   0
