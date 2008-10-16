@@ -1,7 +1,7 @@
 .define CONFIG_SCRTCH_ORDER 3
 CONFIG_SMALL := 1
 CONFIG_2 := 1
-CBM2_KBD := 1
+CBM2_KBD := 1 ; 2 weird instances
 KBD_MICROTAN := 1
 CONFIG_11 := 1
 CONFIG_11A := 1

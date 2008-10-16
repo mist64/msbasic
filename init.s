@@ -95,7 +95,7 @@ COLD_START2:
     .endif
         sta     Z18
   .endif
-  .ifdef CBM2_KBD
+  .ifdef CBM2
         lda     #$28
         sta     $0F
         lda     #$1E
@@ -136,7 +136,7 @@ L4098:
   .endif
         pha
         sta     Z14
-  .ifdef CBM2_KBD
+  .ifdef CBM2
         inx
         stx     $01FD
         stx     $01FC
@@ -199,7 +199,7 @@ L40D7:
         cmp     #$80
         beq     L40FA
 .endif
-.ifdef CBM2_KBD
+.ifdef CBM2
         bmi     L40FA
 .endif
 L40DD:
@@ -322,7 +322,7 @@ L4183:
         tya
         sta     (TXTTAB),y
         inc     TXTTAB
-.ifndef CBM2_KBD
+.ifndef CBM2
         bne     L4192
         inc     TXTTAB+1
 L4192:
@@ -333,7 +333,7 @@ L4192:
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
-.ifdef CBM2_KBD
+.ifdef CBM2
         lda     #<QT_BASIC
         ldy     #>QT_BASIC
         jsr     STROUT
@@ -401,7 +401,7 @@ QT_BYTES_FREE:
 .ifndef CBM_APPLE
         .byte   $0D,$0A,$0D,$0A
 .endif
-.ifdef CBM2_KBD
+.ifdef CBM2
         .byte   $0D,$00
 .endif
 .ifdef APPLE
