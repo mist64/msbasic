@@ -240,13 +240,13 @@ FRM_STACK2:
         tay
         pla
         sta     INDEX
-.ifndef KBD_MICROTAN
+.ifndef CONFIG_2B
         inc     INDEX ; bug: assumes not on page boundary
 ; bug exists on AppleSoft II
 .endif
         pla
         sta     INDEX+1
-.ifdef KBD_MICROTAN
+.ifdef CONFIG_2B
         inc     INDEX
         bne     LEB69
         inc     INDEX+1
@@ -474,10 +474,13 @@ LCE3B:
         jmp     LD353
 LCE53:
 .endif
-.ifdef KBD_MICROTAN ; also AppleSoft II
+.ifdef CONFIG_2
+  .ifndef CBM2
 ; bugfix?
+; fixed on AppleSoft II, not on any CBM
         ldx     #$00
         stx     STRNG1+1
+  .endif
 .endif
         rts
 L2DB1:
