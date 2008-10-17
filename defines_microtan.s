@@ -1,43 +1,49 @@
 CONFIG_11 := 1
 CONFIG_11A := 1
-CONFIG_SAFE_NAMENOTFOUND := 1
-CONFIG_PEEK_SAVE_LINNUM := 1
-CONFIG_ROR_WORKAROUND := 1
-CONFIG_MONCOUT_DESTROYS_Y := 1
-
 CONFIG_2 := 1
 CONFIG_2A := 1
 CONFIG_2B := 1
 
 CONFIG_NULL := 1
+CONFIG_MONCOUT_DESTROYS_Y := 1
+CONFIG_PEEK_SAVE_LINNUM := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
+CONFIG_ROR_WORKAROUND := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 1
 
 CRLF_1 := CR
 CRLF_2 := LF
 
-ZP_START = $85
+ZP_START1 = $24
+ZP_START = $56
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 GORESTART       := $0017
-L0001           := $0001
-L0002           := $0002
 GOSTROUT        := $001A
 GOAYINT         := $001D
 GOGIVEAYF       := $001F
 
-CHARAC          := $000A+$1A
-ENDCHR          := $000B+$1A
-EOLPNTR         := $000C+$1A
-DIMFLG          := $000D+$1A
-VALTYP          := $000E+$1A
-DATAFLG         := $0010+$1A
-SUBFLG          := $0011+$1A
-INPUTFLG        := $0012+$1A
-CPRMASK         := $0013+$1A
-Z14             := $0014+$1A                        ; Ctrl+O flag
+;.segment "ZEROPAGE"
+;.org $21
+;USR:
+;.res 1
+;.segment "CODE"
+USR := $0021
+
+;CHARAC          := $000A+$1A
+;ENDCHR          := $000B+$1A
+;EOLPNTR         := $000C+$1A
+;DIMFLG          := $000D+$1A
+;VALTYP          := $000E+$1A
+;DATAFLG         := $0010+$1A
+;SUBFLG          := $0011+$1A
+;INPUTFLG        := $0012+$1A
+;CPRMASK         := $0013+$1A
+;Z14             := $0014+$1A                        ; Ctrl+O flag
+
 Z15             := $0015+$1A
 POSX            := $0016+$1A
 Z17             := $0017+$1A
@@ -55,11 +61,7 @@ STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
 NULL_MAX		:= $F0
 
-
 RAMSTART2 := $0400
-USR := $0021
-
-L000A := $0A
 
 LF000 := $F000
 LF003 := $F003

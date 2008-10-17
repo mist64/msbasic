@@ -37,16 +37,16 @@ LOAD:
         sta     $17F9
         lda     #<L27A6
         ldy     #>L27A6
-        sta     L0001
-        sty     L0001+1
+        sta     GORESTART+1
+        sty     GORESTART+2
         jmp     L1873
 L27A6:
         ldx     #$FF
         txs
         lda     #<RESTART
         ldy     #>RESTART
-        sta     L0001
-        sty     L0001+1
+        sta     GORESTART+1
+        sty     GORESTART+2
         lda     #<QT_LOADED
         ldy     #>QT_LOADED
         jsr     STROUT

@@ -1,6 +1,34 @@
 .zeropage
 
+.res ZP_START1
+
+CHARAC:
+	.res 1
+ENDCHR:
+	.res 1
+EOLPNTR:
+	.res 1
+DIMFLG:
+	.res 1
+VALTYP:
+.ifdef CONFIG_SMALL
+	.res 1
+.else
+	.res 2
+.endif
+DATAFLG:
+	.res 1
+SUBFLG:
+	.res 1
+INPUTFLG:
+	.res 1
+CPRMASK:
+	.res 1
+Z14:
+	.res 1
+
 .res ZP_START
+
 TEMPPT:
 	.res 1
 LASTPT:

@@ -1,21 +1,19 @@
-CONFIG_SMALL := 1
+CONFIG_DATAFLAG := 1
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
-CONFIG_DATAFLAG := 1
-
 CONFIG_SCRTCH_ORDER := 3
+CONFIG_SMALL := 1
 
 CRLF_1 := CR
 CRLF_2 := LF
 
-ZP_START = $65
+ZP_START1 = $5B
+ZP_START = $00
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 GORESTART       := $0000
-L0001           := $0001
-L0002           := $0002
 GOSTROUT        := $0003
 GOAYINT         := $0006
 GOGIVEAYF       := $0008
@@ -29,16 +27,17 @@ LINNUM          := $0011
 TXPSV           := $0011
 INPUTBUFFER     := $0013
 INPUTBUFFERX    := $0000
-CHARAC          := $005B
-ENDCHR          := $005C
-EOLPNTR         := $005D
-DIMFLG          := $005E
-VALTYP          := $005F
-DATAFLG         := $0060
-SUBFLG          := $0061
-INPUTFLG        := $0062
-CPRMASK         := $0063
-Z14             := $0064                        ; Ctrl+O flag
+
+;CHARAC          := $005B
+;ENDCHR          := $005C
+;EOLPNTR         := $005D
+;DIMFLG          := $005E
+;VALTYP          := $005F
+;DATAFLG         := $0060
+;SUBFLG          := $0061
+;INPUTFLG        := $0062
+;CPRMASK         := $0063
+;Z14             := $0064                        ; Ctrl+O flag
 
 L0207           := $0207
 L020A           := $020A

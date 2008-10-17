@@ -11,27 +11,28 @@ CONFIG_SCRTCH_ORDER := 2
 CRLF_1 := CR
 CRLF_2 := LF
 
-ZP_START = $63
+ZP_START1 = $0A
+ZP_START = $4E
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 GORESTART       := $0000
-L0001           := $0001
 GOSTROUT        := $0003
 GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
-CHARAC          := $000A
-ENDCHR          := $000B
-EOLPNTR         := $000C
-DIMFLG          := $000D
-VALTYP          := $000E
-DATAFLG         := $0010
-SUBFLG          := $0011
-INPUTFLG        := $0012
-CPRMASK         := $0013
-Z14             := $0014                        ; Ctrl+O flag
+;CHARAC          := $000A
+;ENDCHR          := $000B
+;EOLPNTR         := $000C
+;DIMFLG          := $000D
+;VALTYP          := $000E
+;DATAFLG         := $0010
+;SUBFLG          := $0011
+;INPUTFLG        := $0012
+;CPRMASK         := $0013
+;Z14             := $0014                        ; Ctrl+O flag
+
 Z15             := $0015
 POSX            := $0016
 Z17             := $0017
