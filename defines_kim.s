@@ -9,12 +9,9 @@ CONFIG_ROR_WORKAROUND := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 2
 
-CRLF_1 := CR
-CRLF_2 := LF
-
 ; zero page
-ZP_START1 = $0A
-ZP_START = $4E
+ZP_START = $0A
+ZP_HOLE = $4E
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
@@ -29,6 +26,7 @@ POSX            := $0016
 Z17             := $0017
 Z18             := $0018
 LINNUM          := $0019
+
 TXPSV           := $0019
 INPUTBUFFER     := $001B
 INPUTBUFFERX    := $0000
@@ -45,4 +43,6 @@ MONCOUT         := $1EA0
 STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $36
 NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
+CRLF_1 := CR
+CRLF_2 := LF
 

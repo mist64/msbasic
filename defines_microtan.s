@@ -13,12 +13,9 @@ CONFIG_ROR_WORKAROUND := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 1
 
-CRLF_1 := CR
-CRLF_2 := LF
-
 ; zero page
-ZP_START1 = $24
-ZP_START = $56
+ZP_START = $24
+ZP_HOLE = $56
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
@@ -30,19 +27,22 @@ GOGIVEAYF       := $001F
 
 USR := $0021
 
-Z15             := $0015+$1A
-POSX            := $0016+$1A
-Z17             := $0017+$1A
-Z18             := $0018+$1A
-LINNUM          := $0019+$1A
+Z15             := $002F
+POSX            := $0030
+Z17             := $0031
+Z18             := $0032
+LINNUM          := $0033
+
 TXPSV           := $00BA
-INPUTBUFFER     := $001B+$1A
+INPUTBUFFER     := $0035
 INPUTBUFFERX    := $0000
 
 ; constants
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
 NULL_MAX		:= $F0
+CRLF_1 := CR
+CRLF_2 := LF
 
 ; memory layout
 RAMSTART2 := $0400

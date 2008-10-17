@@ -5,12 +5,9 @@ CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_SCRTCH_ORDER := 3
 CONFIG_SMALL := 1
 
-CRLF_1 := CR
-CRLF_2 := LF
-
 ; zero page
-ZP_START1 = $5B
-ZP_START = $00
+ZP_START = $5B
+ZP_HOLE = $00
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
@@ -21,11 +18,13 @@ GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
 USR             := $000A
+
 Z15             := $000D
 POSX            := $000E
 Z17             := $000F
 Z18             := $0010
 LINNUM          := $0011
+
 TXPSV           := $0011
 INPUTBUFFER     := $0013
 INPUTBUFFERX    := $0000
@@ -34,6 +33,8 @@ INPUTBUFFERX    := $0000
 STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $33
 NULL_MAX		:= $0A
+CRLF_1 := CR
+CRLF_2 := LF
 
 ; memory layout
 RAMSTART2		:= $0300

@@ -1,6 +1,6 @@
 .zeropage
 
-.res ZP_START1
+.res ZP_START
 
 CHARAC:
 	.res 1
@@ -27,7 +27,7 @@ CPRMASK:
 Z14:
 	.res 1
 
-.res ZP_START
+.res ZP_HOLE
 
 TEMPPT:
 	.res 1

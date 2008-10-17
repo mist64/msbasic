@@ -29,8 +29,8 @@ CONFIG_PEEK_SAVE_LINNUM := 1
 
 .ifdef CBM1
 ; zero page
-ZP_START1 = $5A
-ZP_START = $00
+ZP_START = $5A
+ZP_HOLE = $00
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
@@ -52,8 +52,8 @@ NULL_MAX		:= $0A
 .else
 
 ; zero page
-ZP_START1 = $03
-ZP_START = $05
+ZP_START = $03
+ZP_HOLE = $05
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
@@ -64,8 +64,8 @@ GORESTART       := $0000
 Z03				:= $000E
 LINNUM          := $0011
 
-Z96 := $00E8-82
-POSX := $0118-82
+Z96 := $0096
+POSX := $00C6
 TXPSV = LASTOP
 
 INPUTBUFFER     := $0200

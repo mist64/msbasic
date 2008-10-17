@@ -12,18 +12,16 @@ CONFIG_SCRTCH_ORDER := 3
 CONFIG_SMALL := 1
 ; INPUTBUFFER > $0100
 
-CRLF_1 := LF
-CRLF_2 := CR
-
 ; zero page
-ZP_START1 = $6
-ZP_START = $05
+ZP_START = $6
+ZP_HOLE = $05
 
 
 POSX            := $0010
 Z17             := $06FC
 Z18             := $06FD
 LINNUM          := $0013
+
 TXPSV           := $0049
 INPUTBUFFER     := $0700
 INPUTBUFFERX    := $0700
@@ -40,6 +38,8 @@ L6874			:= $6874
 ; constants
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $49
+CRLF_1 := LF
+CRLF_2 := CR
 
 ; memory layout
 RAMSTART2		:= $0300

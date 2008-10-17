@@ -9,8 +9,8 @@ CONFIG_SCRTCH_ORDER := 3
 ; INPUTBUFFER > $0100
 
 ; zero page
-ZP_START1 = $0D
-ZP_START = $3D
+ZP_START = $0D
+ZP_HOLE = $3D
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
@@ -26,6 +26,7 @@ POSX            := $0050
 Z17             := $0051
 Z18             := $0052
 LINNUM          := $0053
+
 TXPSV           := $0053
 INPUTBUFFER     := $0200
 INPUTBUFFERX    := $0200
