@@ -1,3 +1,4 @@
+; configuration
 ; common:
 CONFIG_CBM_ALL := 1
 
@@ -26,11 +27,8 @@ CONFIG_PEEK_SAVE_LINNUM := 1
 ; INPUTBUFFER > $0100
 .endif
 
-
-CRLF_1 := CR
-CRLF_2 := LF
-
 .ifdef CBM1
+; zero page
 ZP_START1 = $5A
 ZP_START = $00
 
@@ -40,7 +38,7 @@ LOWTRX = LOWTR
 USR				:= $0000
 GORESTART       := $0000
 INPUTBUFFERX    := $0000
-Z03				:= $0003 ; same
+Z03				:= $0003
 
 Z15             := $0004
 POSX            := $0005
@@ -53,6 +51,7 @@ Z96				:= $020C
 NULL_MAX		:= $0A
 .else
 
+; zero page
 ZP_START1 = $03
 ZP_START = $05
 
@@ -62,17 +61,18 @@ LOWTRX = LOWTR
 USR				:= $0000
 GORESTART       := $0000
 
-Z03				:= $000E;3 ; same
-LINNUM          := $0011;0008
+Z03				:= $000E
+LINNUM          := $0011
 
 Z96 := $00E8-82
 POSX := $0118-82
 TXPSV = LASTOP
 
-INPUTBUFFER     := $0200;00A
+INPUTBUFFER     := $0200
 INPUTBUFFERX    := $0200
 .endif
 
+; constants
 .ifdef CBM1
 SPACE_FOR_GOSUB := $36
 STACK_TOP		:= $FC
@@ -80,10 +80,13 @@ STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $3E
 STACK_TOP		:= $FA
 .endif
+CRLF_1 := CR
+CRLF_2 := LF
 
 RAMSTART2		:= $0400
 
 
+; monitor functions
 OPEN	:= $FFC0
 CLOSE	:= $FFC3
 CHKIN	:= $FFC6
@@ -98,10 +101,7 @@ SYS		:= $FFDE
 ISCNTC	:= $FFE1
 GETIN	:= $FFE4
 CLALL	:= $FFE7
-
-; for CBM1
-LE7F3	:= $E7F3
-
+LE7F3	:= $E7F3; for CBM1
 MONCOUT	:= CHROUT
 MONRDKEY := GETIN
 

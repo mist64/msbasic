@@ -1,3 +1,4 @@
+; configuration
 CONFIG_11 := 1
 CONFIG_11A := 1
 CONFIG_2 := 1
@@ -15,6 +16,7 @@ CONFIG_SCRTCH_ORDER := 1
 CRLF_1 := CR
 CRLF_2 := LF
 
+; zero page
 ZP_START1 = $24
 ZP_START = $56
 
@@ -37,16 +39,18 @@ TXPSV           := $00BA
 INPUTBUFFER     := $001B+$1A
 INPUTBUFFERX    := $0000
 
-MONRDKEY        := $E210
-MONRDKEY2       := $E213
-MONCOUT         := $E216
-
+; constants
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
 NULL_MAX		:= $F0
 
+; memory layout
 RAMSTART2 := $0400
 
+; monitor functions
+MONRDKEY        := $E210
+MONRDKEY2       := $E213
+MONCOUT         := $E216
 LF000 := $F000
 LF003 := $F003
 LF006 := $F006
