@@ -22,17 +22,6 @@ GOSTROUT        := $0003
 GOAYINT         := $0006
 GOGIVEAYF       := $0008
 
-;CHARAC          := $000A
-;ENDCHR          := $000B
-;EOLPNTR         := $000C
-;DIMFLG          := $000D
-;VALTYP          := $000E
-;DATAFLG         := $0010
-;SUBFLG          := $0011
-;INPUTFLG        := $0012
-;CPRMASK         := $0013
-;Z14             := $0014                        ; Ctrl+O flag
-
 Z15             := $0015
 POSX            := $0016
 Z17             := $0017

@@ -26,23 +26,7 @@ GOSTROUT        := $001A
 GOAYINT         := $001D
 GOGIVEAYF       := $001F
 
-;.segment "ZEROPAGE"
-;.org $21
-;USR:
-;.res 1
-;.segment "CODE"
 USR := $0021
-
-;CHARAC          := $000A+$1A
-;ENDCHR          := $000B+$1A
-;EOLPNTR         := $000C+$1A
-;DIMFLG          := $000D+$1A
-;VALTYP          := $000E+$1A
-;DATAFLG         := $0010+$1A
-;SUBFLG          := $0011+$1A
-;INPUTFLG        := $0012+$1A
-;CPRMASK         := $0013+$1A
-;Z14             := $0014+$1A                        ; Ctrl+O flag
 
 Z15             := $0015+$1A
 POSX            := $0016+$1A

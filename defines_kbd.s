@@ -26,17 +26,6 @@ TXPSV           := $0049
 INPUTBUFFER     := $0700
 INPUTBUFFERX    := $0700
 
-;CHARAC          := $0006;5B
-;ENDCHR          := $0007;5C
-;EOLPNTR         := $0008;5D
-;DIMFLG          := $0009;5E
-;VALTYP          := $000A;5F
-;DATAFLG         := $000B;60
-;SUBFLG          := $000C;61
-;INPUTFLG        := $000D;62
-;CPRMASK         := $000E;63
-;Z14             := $000F;64                        ; Ctrl+O flag
-
 JMPADRS         := $0093;A1
 LOWTRX          := $0094;AA                        ; $AB also EXPSGN?
 Z96				:= $0096

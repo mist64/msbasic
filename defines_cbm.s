@@ -48,17 +48,6 @@ LINNUM          := $0008
 TXPSV			:= $0008
 INPUTBUFFER     := $000A
 
-;CHARAC          := $005A
-;ENDCHR          := $005B
-;EOLPNTR         := $005C
-;DIMFLG          := $005D
-;VALTYP          := $005E
-;DATAFLG         := $0060
-;SUBFLG          := $0061
-;INPUTFLG        := $0062
-;CPRMASK         := $0063
-;Z14             := $0064                        ; Ctrl+O flag
-
 Z96				:= $020C
 
 NULL_MAX		:= $0A
@@ -72,17 +61,6 @@ LOWTRX = LOWTR
 
 USR				:= $0000
 GORESTART       := $0000
-
-;CHARAC          := $005A-82-5
-;ENDCHR          := $005B-82-5
-;EOLPNTR         := $005C-82-5
-;DIMFLG          := $005D-82-5
-;VALTYP          := $005E-82-5
-;DATAFLG         := $0060-82-5
-;SUBFLG          := $0061-82-5
-;INPUTFLG        := $0062-82-5
-;CPRMASK         := $0063-82-5
-;Z14             := $0064-82-5                        ; Ctrl+O flag
 
 Z03				:= $000E;3 ; same
 LINNUM          := $0011;0008

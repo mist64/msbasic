@@ -28,17 +28,6 @@ TXPSV           := $0011
 INPUTBUFFER     := $0013
 INPUTBUFFERX    := $0000
 
-;CHARAC          := $005B
-;ENDCHR          := $005C
-;EOLPNTR         := $005D
-;DIMFLG          := $005E
-;VALTYP          := $005F
-;DATAFLG         := $0060
-;SUBFLG          := $0061
-;INPUTFLG        := $0062
-;CPRMASK         := $0063
-;Z14             := $0064                        ; Ctrl+O flag
-
 L0207           := $0207
 L020A           := $020A
 MONRDKEY        := $FFEB
