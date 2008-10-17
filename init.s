@@ -59,10 +59,7 @@ COLD_START2:
         sta     GOSTROUT
         sta     JMPADRS
   .endif
-  .ifdef APPLE
-        sta     L000A
-  .endif
-  .if .def(CONFIG_SMALL) || .def(MICROTAN)
+  .if .def(CONFIG_SMALL) || .def(MICROTAN) || .def(APPLE)
         sta     USR
   .endif
 

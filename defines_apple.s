@@ -1,10 +1,10 @@
 ; http://apple2.org.za/gswv/a2zine/GS.WorldView/Resources/GS.TECH.INFO/AppleSoft/
 
 CONFIG_11 := 1
+CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
+CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 3
-CONFIG_PRINT_CR := 1 ; print CR when line end reached
-CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
 ; INPUTBUFFER > $0100
 
 CRLF_1 := CR
@@ -16,7 +16,6 @@ JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 GORESTART       := $0000
-L0001           := $000B
 GOSTROUT        := $0003
 GOAYINT         := $0006
 GOGIVEAYF       := $0008
@@ -32,7 +31,6 @@ SUBFLG          := $0014
 INPUTFLG        := $0015
 CPRMASK         := $0016
 Z14             := $0017                        ; Ctrl+O flag
-Z15             := $0018
 POSX            := $0050
 Z17             := $0051
 Z18             := $0052
@@ -61,7 +59,3 @@ LFD6A := $FD6A
 LFECD	:= $FECD
 LFEFD	:= $FEFD
 
-L0008 := $08
-L0006 := $06
-L000A := $0A
-L00A4 := $A4

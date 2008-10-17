@@ -263,15 +263,12 @@ L3376:
 .endif
         iny
         lda     (INDEX),y
-.ifdef KBD
-        ldy     #$00
-.endif
 .ifdef CBM1
         jsr     LE7F3
 .else
-.ifndef CONFIG_SMALL
+  .ifndef OSI
         ldy     #$00
-.endif
+  .endif
         asl     a
         adc     #$05
 .endif
