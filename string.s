@@ -177,7 +177,7 @@ L3311:
 ; ----------------------------------------------------------------------------
 GARBAG:
 
-.ifdef KBD
+.ifdef CONST_MEMSIZ
         ldx     #<CONST_MEMSIZ
         lda     #>CONST_MEMSIZ
 .else
@@ -266,7 +266,7 @@ L3376:
 .ifdef CBM1
         jsr     LE7F3
 .else
-  .ifndef OSI
+  .ifdef CONFIG_11
         ldy     #$00
   .endif
         asl     a

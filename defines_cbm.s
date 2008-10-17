@@ -1,5 +1,12 @@
-.ifdef CBM1
+; common:
+CONFIG_CBM_ALL := 1
 
+CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
+CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
+CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
+CONFIG_SCRTCH_ORDER := 2
+
+.ifdef CBM1
 CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
 CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 CONFIG_DATAFLAG := 1
@@ -11,6 +18,7 @@ CONFIG_11 := 1
 CONFIG_11A := 1
 CONFIG_2 := 1
 CONFIG_2A := 1
+
 CONFIG_DATAFLAG := 1
 CONFIG_EASTER_EGG := 1
 CONFIG_NO_READ_Y_IS_ZERO_HACK := 1
@@ -18,13 +26,6 @@ CONFIG_PEEK_SAVE_LINNUM := 1
 ; INPUTBUFFER > $0100
 .endif
 
-; common:
-CONFIG_CBM_ALL := 1
-
-CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
-CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
-CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
-CONFIG_SCRTCH_ORDER := 2
 
 CRLF_1 := CR
 CRLF_2 := LF

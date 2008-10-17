@@ -1,29 +1,22 @@
-CONFIG_SCRTCH_ORDER := 3
-CONFIG_SMALL := 1
-CONFIG_NO_READ_Y_IS_ZERO_HACK := 1
 CONFIG_11 := 1
 CONFIG_11A := 1
 CONFIG_2 := 1
 CONFIG_2A := 1
 CONFIG_2B := 1
 
-CONFIG_SAFE_NAMENOTFOUND := 1
-; INPUTBUFFER > $0100
 CONFIG_NO_POKE := 1
+CONFIG_NO_READ_Y_IS_ZERO_HACK := 1
+CONFIG_SAFE_NAMENOTFOUND := 1
+CONFIG_SCRTCH_ORDER := 3
+CONFIG_SMALL := 1
+; INPUTBUFFER > $0100
 
 CRLF_1 := LF
 CRLF_2 := CR
 
 ZP_START = $15
 
-L0001           := $0001
-L0002           := $0002
-GOSTROUT        := $0003
-GOAYINT         := $0006
-GOGIVEAYF       := $0008
 
-USR             := $000A
-Z15             := $000D
 POSX            := $0010
 Z17             := $06FC;$000F
 Z18             := $06FD;$0010
@@ -48,13 +41,7 @@ Z96				:= $0096
 
 L06FE			:= $06FE
 
-L0207           := $0207
-L020A           := $020A
-MONRDKEY        := $FFEB
 MONCOUT         := $FDFA
-MONISCNTC       := $FFF1
-LOAD            := $FFF4
-SAVE            := $FFF7
 
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $49

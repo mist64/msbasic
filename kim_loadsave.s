@@ -35,15 +35,16 @@ LOAD:
         sty     $17F6
         lda     #$FF
         sta     $17F9
-        lda     #$A6
-        ldy     #$27 ; XXX
+        lda     #<L27A6
+        ldy     #>L27A6
         sta     L0001
         sty     L0001+1
         jmp     L1873
+L27A6:
         ldx     #$FF
         txs
-        lda     #$48
-        ldy     #$23 ; XXX
+        lda     #<RESTART
+        ldy     #>RESTART
         sta     L0001
         sty     L0001+1
         lda     #<QT_LOADED
