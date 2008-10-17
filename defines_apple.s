@@ -1,10 +1,8 @@
 ; http://apple2.org.za/gswv/a2zine/GS.WorldView/Resources/GS.TECH.INFO/AppleSoft/
 
 CONFIG_11 := 1
-CBM2_APPLE := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
 CBM1_APPLE := 1
-APPLE_MICROTAN := 1
 .define CONFIG_SCRTCH_ORDER 3
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_IO_MSB := 1 ; all I/O has bit #7 set

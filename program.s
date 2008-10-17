@@ -232,7 +232,7 @@ PUT_NEW_LINE:
 L23D6:
         sty     HIGHDS+1
         jsr     BLTU
-.ifdef CBM2_APPLE
+.if INPUTBUFFER = $0200
         lda     LINNUM
         ldy     LINNUM+1
         sta     INPUTBUFFER-2
