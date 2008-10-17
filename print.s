@@ -123,7 +123,7 @@ PRINTNULLS:
     .ifdef CONFIG_FILE
     ; Although there is no statement for it,
     ; CBM1 had NULL support and ignores
-    ; it when not targeting the screem,
+    ; it when not targeting the screen,
     ; CBM2 dropped it completely.
         lda     Z03
         bne     L29DD
@@ -292,7 +292,7 @@ OUTDO:
         bit     Z14
         bmi     L2A56
 .endif
-.ifndef CBM2_KBD
+.if .def(CONFIG_PRINT_CR) || .def(CBM1)
         pha
 .endif
 .ifdef CBM1
@@ -338,7 +338,7 @@ L2A4C:
         inc     POSX
 .endif
 L2A4E:
-.ifndef CBM2_KBD
+.if .def(CONFIG_PRINT_CR) || .def(CBM1)
         pla
 .endif
 .ifdef CONFIG_MONCOUT_DESTROYS_Y

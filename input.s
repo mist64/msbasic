@@ -186,7 +186,7 @@ GETC:
 READ:
         ldx     DATPTR
         ldy     DATPTR+1
-.ifdef CBM2_KBD
+.ifdef CONFIG_NO_READ_Y_IS_ZERO_HACK
 ; AppleSoft II, too
         lda     #$98	; READ
         .byte   $2C

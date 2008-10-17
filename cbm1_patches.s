@@ -36,10 +36,10 @@ LE1C9:
 PATCH6:
         bne     LE1D8
 LE1CE:
-        inc     $05
+        inc     POSX
         bne     LE1D8
         lda     $E2
-        sta     $05
+        sta     POSX
         bne     LE1CE
 LE1D8:
         rts
