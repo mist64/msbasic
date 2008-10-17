@@ -334,30 +334,28 @@ L3124:
         tay
         lda     STRNG2
 .else
-.ifndef CBM1_APPLE
+  .ifdef CONFIG_11A
         sta     STRNG2+1
-.endif
+  .endif
         ldx     #BYTES_FP
-.ifdef KBD
+  .ifdef KBD
         lda     VARNAM+1
-.else
+  .else
         lda     VARNAM
-.endif
+  .endif
         bpl     L3135
         dex
 L3135:
-.ifndef KBD
+  .ifdef KBD
+        stx     RESULT+1
+  .else
         lda     VARNAM+1
         bpl     L313B
         dex
         dex
 L313B:
-.endif
-.ifdef KBD
-        stx     RESULT+1
-.else
         stx     RESULT+2
-.endif
+  .endif
         lda     #$00
         jsr     MULTIPLY_SUBS1
         txa

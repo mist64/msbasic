@@ -1,7 +1,6 @@
 .ifdef CBM1
 CONFIG_CBM_ALL := 1
 CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
-CBM1_APPLE := 1
 CONFIG_DATAFLAG := 1
 CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
 CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
@@ -16,7 +15,6 @@ CONFIG_2 := 1
 CONFIG_2A := 1
 CBM2_KBD := 1 ; 2 weird instances
 CONFIG_PEEK_SAVE_LINNUM := 1
-CBM2_KIM := 1
 CONFIG_DATAFLAG := 1
 CONFIG_EASTER_EGG := 1
 ; CONFIG_SMALL := 1 ; test :-) 
