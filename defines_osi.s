@@ -5,8 +5,8 @@ CONFIG_DATAFLAG := 1
 
 .define CONFIG_SCRTCH_ORDER 3
 
-CRLF_1 := $0D
-CRLF_2 := $0A
+CRLF_1 := CR
+CRLF_2 := LF
 
 ZP_START = $65
 

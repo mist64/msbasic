@@ -1581,7 +1581,7 @@ L3D3E:
         cpy     #DECTBL_END-DECTBL
 .ifdef CONFIG_CBM_ALL
         beq     LDD96
-        cpy     #$3C
+        cpy     #$3C ; XXX
 .endif
         bne     L3CF6
 ; ----------------------------------------------------------------------------

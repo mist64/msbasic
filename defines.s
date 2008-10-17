@@ -45,3 +45,6 @@ MAX_EXPON = 10
 .endif
 
 STACK           := $0100
+
+CR=13
+LF=10

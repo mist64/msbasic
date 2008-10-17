@@ -398,14 +398,13 @@ QT_TERMINAL_WIDTH:
 .endif
 QT_BYTES_FREE:
         .byte   " BYTES FREE"
-.ifndef CBM_APPLE
-        .byte   $0D,$0A,$0D,$0A
-.endif
-.ifdef CBM2
+.ifdef CBM1
+.elseif .def(CBM2)
         .byte   $0D,$00
-.endif
-.ifdef APPLE
+.elseif .def(APPLE)
         .byte   $00
+.else
+        .byte   $0D,$0A,$0D,$0A
 .endif
 QT_BASIC:
 .ifdef OSI

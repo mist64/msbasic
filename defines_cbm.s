@@ -2,7 +2,6 @@
 CONFIG_CBM_ALL := 1
 CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 CBM1_APPLE := 1
-CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
 CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
 CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
@@ -19,7 +18,6 @@ CBM2_KBD := 1 ; 2 weird instances
 CBM2_MICROTAN := 1
 CBM2_KIM := 1
 CBM2_APPLE := 1
-CBM_APPLE := 1
 CONFIG_DATAFLAG := 1
 CONFIG_EASTER_EGG := 1
 ; CONFIG_SMALL := 1 ; test :-) 
@@ -32,8 +30,8 @@ CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
 CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
 .define CONFIG_SCRTCH_ORDER 2
 
-CRLF_1 := $0D
-CRLF_2 := $0A
+CRLF_1 := CR
+CRLF_2 := LF
 
 .ifdef CBM1
 ZP_START = $65

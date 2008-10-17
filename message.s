@@ -2,9 +2,6 @@
 
 .segment "CODE"
 
-CR=13
-LF=10
-
 QT_ERROR:
 .ifdef KBD
         .byte   " err"
