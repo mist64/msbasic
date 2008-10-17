@@ -25,7 +25,7 @@ CONFIG_EASTER_EGG := 1
 CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
 CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
 CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
-.define CONFIG_SCRTCH_ORDER 2
+CONFIG_SCRTCH_ORDER := 2
 
 CRLF_1 := CR
 CRLF_2 := LF

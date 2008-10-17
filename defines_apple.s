@@ -2,7 +2,7 @@
 
 CONFIG_11 := 1
 CONFIG_SAFE_NAMENOTFOUND := 1
-.define CONFIG_SCRTCH_ORDER 3
+CONFIG_SCRTCH_ORDER := 3
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
 ; INPUTBUFFER > $0100

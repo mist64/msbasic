@@ -3,7 +3,7 @@ CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_DATAFLAG := 1
 
-.define CONFIG_SCRTCH_ORDER 3
+CONFIG_SCRTCH_ORDER := 3
 
 CRLF_1 := CR
 CRLF_2 := LF

@@ -11,7 +11,7 @@ CONFIG_2B := 1
 
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
-.define CONFIG_SCRTCH_ORDER 1
+CONFIG_SCRTCH_ORDER := 1
 
 CRLF_1 := CR
 CRLF_2 := LF
