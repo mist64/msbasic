@@ -50,12 +50,10 @@ QT_BREAK:
 		.byte	CR,LF," Brk"
         .byte   0
         .byte   $54,$D0 ; ???
-.else
-.ifdef MICROTAN
+.elseif .def(MICROTAN)
 		.byte CR,LF," BREAK"
         .byte   0
 .else
 		.byte CR,LF,"BREAK"
         .byte   0
-.endif
 .endif

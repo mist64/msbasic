@@ -1,3 +1,5 @@
+; MICROTAN has some nonstandard extension to LIST here
+
 .segment "CODE"
 
 MEMERR:
@@ -298,49 +300,16 @@ L2405:
 
 ; ----------------------------------------------------------------------------
 .ifdef KBD
-SLOD:
-        ldx     #$01
-        .byte   $2C
-PLOD:
-        ldx     #$00
-        ldy     CURLIN+1
-        iny
-        sty     JMPADRS
-        jsr     LFFD3
-        jsr     VARTAB_MINUS_2_TO_AY
-        ldx     #$02
-        jsr     LFF64
-        ldx     #$6F
-        ldy     #$00
-        jsr     LE39A
-        jsr     LE33D
-        jmp     CLEARC
-        .byte   $FF,$FF,$FF
-
-; ----------------------------------------------------------------------------
-VER:
-        lda     #$13
-        ldx     FAC
-        beq     LE397
-        lda     $DFF9
-LE397:
-        jmp     FLOAT
-LE39A:
-        lda     VARTAB,x
-        clc
-        adc     $051B,y
-        sta     VARTAB,y
-        lda     VARTAB+1,x
-        adc     $051C,y
-        sta     VARTAB+1,y
+.include "kbd_loadsave.s"
 .endif
 
 .ifdef CONFIG_2
+; !!! kbd_loadsave.s requires an RTS here!
 RET3:
 		rts
 .endif
 
-.if .def(CBM1) || .def(OSI) || .def(KIM) || .def(MICROTAN)
+.ifndef CONFIG_NO_INPUTBUFFER_ZP
 L2420:
   .ifdef OSI
         jsr     OUTDO
@@ -386,7 +355,7 @@ INLIN2:
         cmp     #$0D
         beq     L2453
     .ifndef CONFIG_NO_LINE_EDITING
-        cmp     #$20 ; line editing
+        cmp     #$20
         bcc     INLIN2
       .ifdef MICROTAN
         cmp     #$80
@@ -397,7 +366,7 @@ INLIN2:
         cmp     #$40 ; @
         beq     L2423
       .ifdef MICROTAN
-        cmp     #$7F ; _
+        cmp     #$7F ; DEL
       .else
         cmp     #$5F ; _
       .endif
@@ -413,13 +382,13 @@ L2443:
         sta     INPUTBUFFER,x
         inx
     .ifdef OSI
-        .byte   $2C
+        .byte   $2C; XXX
     .else
         bne     INLIN2
     .endif
 L244C:
     .ifndef CONFIG_NO_LINE_EDITING
-        lda     #$07
+        lda     #$07 ; BEL
         jsr     OUTDO
         bne     INLIN2
     .endif
@@ -808,7 +777,7 @@ L25A6:
 .else
   .ifdef MICROTAN
         php
-        jmp     LE21C
+        jmp     LE21C ; patch
 LC57E:
   .else
         bcc     L2581
@@ -821,7 +790,7 @@ L2581:
         jsr     FNDLIN
   .ifdef MICROTAN
         plp
-        beq     LC598
+        beq     L2598
   .endif
         jsr     CHRGOT
   .ifdef MICROTAN
@@ -833,11 +802,10 @@ L2581:
         bne     L2520
         jsr     CHRGET
   .ifdef MICROTAN
-        beq     LC598
+        beq     L2598
         jsr     LINGET
         beq     L25A6
         rts
-LC598:
   .else
         jsr     LINGET
         bne     L2520
