@@ -13,6 +13,24 @@ GOAYINT:
 GOGIVEAYF:
 	.res 2
 
+.org ZP_START0A
+Z15:
+	.res 1
+.ifndef POSX
+POSX:
+	.res 1
+.endif
+.ifndef Z17
+Z17:
+.endif
+	.res 1
+.ifndef Z18
+Z18:
+.endif
+	.res 1
+LINNUM:
+	.res 2
+
 .ifdef ZP_START1
 .org ZP_START1
 .endif

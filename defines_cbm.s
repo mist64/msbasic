@@ -30,6 +30,7 @@ CONFIG_PEEK_SAVE_LINNUM := 1
 .ifdef CBM1
 ; zero page
 ZP_START0 = $00
+ZP_START0A = $04
 ZP_START1 = $5A
 ZP_START2 = $65
 
@@ -40,9 +41,9 @@ USR				:= $0000
 
 ;GORESTART       := $0000
 
-Z15             := $0004
-POSX            := $0005
-LINNUM          := $0008
+;Z15             := $0004
+;POSX            := $0005
+;LINNUM          := $0008
 INPUTBUFFER     := $000A
 
 TXPSV			:= $0008
@@ -56,6 +57,7 @@ NULL_MAX		:= $0A
 
 ; zero page
 ZP_START0 = $00
+ZP_START0A = $0E
 ZP_START1 = $03
 ZP_START2 = $13
 
@@ -64,11 +66,14 @@ LOWTRX = LOWTR
 
 USR				:= GORESTART ; XXX
 
-LINNUM          := $0011
+;LINNUM          := $0011
 
 Z03				:= $000E
 Z96				:= $0096
+
+; override
 POSX			:= $00C6
+
 TXPSV = LASTOP
 
 INPUTBUFFER     := $0200

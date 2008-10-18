@@ -15,6 +15,7 @@ CONFIG_SCRTCH_ORDER := 1
 
 ; zero page
 ZP_START0 = $17
+ZP_START0A = $2F
 ZP_START1 = $24
 ZP_START2 = $85
 
@@ -23,11 +24,11 @@ LOWTRX = LOWTR
 
 USR				:= $0021
 
-Z15             := $002F
-POSX            := $0030
-Z17             := $0031
-Z18             := $0032
-LINNUM          := $0033
+;Z15             := $002F
+;POSX            := $0030
+;Z17             := $0031
+;Z18             := $0032
+;LINNUM          := $0033
 INPUTBUFFER     := $0035
 
 TXPSV           := $00BA

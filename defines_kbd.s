@@ -14,16 +14,20 @@ CONFIG_SMALL := 1
 
 ; zero page
 ZP_START0 = $00
+ZP_START0A = $0F
 ZP_START1 = $06
 ZP_START2 = $15
 
 JMPADRS         := $0093
 LOWTRX          := $0094                        ; $AB also EXPSGN?
 
-POSX            := $0010
+;POSX            := $0010
+;LINNUM          := $0013
+
+; overrides
 Z17             := $06FC
 Z18             := $06FD
-LINNUM          := $0013
+
 
 TXPSV           := $0049
 INPUTBUFFER     := $0700

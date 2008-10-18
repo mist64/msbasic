@@ -11,17 +11,18 @@ CONFIG_SCRTCH_ORDER := 2
 
 ; zero page
 ZP_START0 = $00
+ZP_START0A = $15
 ZP_START1 = $0A
 ZP_START2 = $63
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
-Z15             := $0015
-POSX            := $0016
-Z17             := $0017
-Z18             := $0018
-LINNUM          := $0019
+;Z15             := $0015
+;POSX            := $0016
+;Z17             := $0017
+;Z18             := $0018
+;LINNUM          := $0019
 
 INPUTBUFFER     := $001B
 
