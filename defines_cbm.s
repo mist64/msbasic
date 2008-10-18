@@ -55,8 +55,6 @@ USR				:= GORESTART ; XXX
 
 ; inputbuffer
 INPUTBUFFER     := $0200
-CONFIG_NO_INPUTBUFFER_ZP := 1
-CONFIG_INPUTBUFFER_0200 := 1
 
 .endif
 
@@ -69,8 +67,6 @@ NULL_MAX		:= $0A
 SPACE_FOR_GOSUB := $3E
 STACK_TOP		:= $FA
 .endif
-CRLF_1 := CR
-CRLF_2 := LF
 
 RAMSTART2		:= $0400
 

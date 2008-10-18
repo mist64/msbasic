@@ -27,7 +27,6 @@ Z18             := $06FD
 
 ; inputbuffer
 INPUTBUFFER     := $0700
-CONFIG_NO_INPUTBUFFER_ZP := 1
 
 ; constants
 STACK_TOP		:= $FE

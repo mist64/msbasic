@@ -46,5 +46,23 @@ MAX_EXPON = 10
 
 STACK           := $0100
 
+.ifdef INPUTBUFFER
+  .if INPUTBUFFER >= $0100
+CONFIG_NO_INPUTBUFFER_ZP := 1
+  .endif
+  .if INPUTBUFFER = $0200
+CONFIG_INPUTBUFFER_0200 := 1
+  .endif
+.endif
+INPUTBUFFERX = INPUTBUFFER & $FF00
+
 CR=13
 LF=10
+
+.ifndef CRLF_1
+CRLF_1 := CR
+CRLF_2 := LF
+.endif
+
+
+

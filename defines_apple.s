@@ -18,8 +18,6 @@ USR				:= $000A
 
 ; inputbuffer
 INPUTBUFFER     := $0200
-CONFIG_NO_INPUTBUFFER_ZP := 1
-CONFIG_INPUTBUFFER_0200 := 1
 
 ; constants
 STACK_TOP		:= $F8

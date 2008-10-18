@@ -27,8 +27,6 @@ TXPSV           := $00BA
 STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
 NULL_MAX		:= $F0
-CRLF_1 := CR
-CRLF_2 := LF
 
 ; memory layout
 RAMSTART2 := $0400

@@ -18,8 +18,6 @@ USR             := $000A
 STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $33
 NULL_MAX		:= $0A
-CRLF_1 := CR
-CRLF_2 := LF
 
 ; memory layout
 RAMSTART2		:= $0300

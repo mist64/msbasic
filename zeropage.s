@@ -1,10 +1,4 @@
 
-; other memory locations
-INPUTBUFFERX = INPUTBUFFER & $FF00
-
-; overlay ZP variables, can be overridden
-
-
 .feature org_per_seg
 .zeropage
 
