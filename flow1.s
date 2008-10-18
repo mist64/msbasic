@@ -296,7 +296,7 @@ LE68E:
         rts
 .endif
 
-.if .def(CONFIG_NULL) || .def(CBM1)
+.if .def(CONFIG_NULL) || .def(CONFIG_PRINTNULLS)
 ; CBM1 has the keyword removed,
 ; but the code is still here
 NULL:

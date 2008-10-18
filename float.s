@@ -582,7 +582,8 @@ L38C3:
 .ifndef CONFIG_ROR_WORKAROUND
         ror     RESULT
         ror     RESULT+1
-.ifdef APPLE
+.ifdef APPLE_BAD_BYTE
+; this seems to be a bad byte in the dump
 		.byte	RESULT+2,RESULT+2 ; XXX BUG!
 .else
         ror     RESULT+2

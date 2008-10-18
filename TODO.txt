@@ -12,3 +12,4 @@
 * reconstruct pre-CBM1, i.e. CBM1 without the patches
 * add some comments to every file
 * clean up all CONFIG_*, maybe some should go away
+* look for all || and && and convert them into CONFIG_*

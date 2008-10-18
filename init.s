@@ -212,7 +212,7 @@ L40DD:
 .ifdef CONFIG_CBM_ALL
         beq     L40D7
 .else
-  .ifdef CONFIG_SMALL
+  .ifndef CONFIG_11
         beq     L40D7
         bne     L40FA
   .else
@@ -365,76 +365,76 @@ L4192:
         jmp     (GORESTART+1)
 .endif
 
-.if .def(CONFIG_RAM) || .def(OSI)
+  .if .def(CONFIG_RAM) || .def(OSI)
 ; OSI is compiled for ROM, but but includes
 ; this unused string
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
         .byte   $00
-.endif
+  .endif
 QT_WRITTEN_BY:
-.ifndef CONFIG_CBM_ALL
-.ifdef APPLE
+  .ifndef CONFIG_CBM_ALL
+    .ifdef APPLE
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
 		.byte	$0D,$00
-.else
+    .else
         .byte   $0D,$0A,$0C
-.ifdef CONFIG_SMALL
+      .ifndef CONFIG_11
         .byte   "WRITTEN BY RICHARD W. WEILAND."
-.else
+      .else
         .byte   "WRITTEN BY WEILAND & GATES"
-.endif
+      .endif
         .byte   $0D,$0A,$00
-.endif
+    .endif
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
         .byte   $00
 QT_TERMINAL_WIDTH:
         .byte   "TERMINAL WIDTH"
         .byte   $00
-.endif
+  .endif
 QT_BYTES_FREE:
         .byte   " BYTES FREE"
-.ifdef CBM1
-.elseif .def(CBM2)
+  .ifdef CBM1
+  .elseif .def(CBM2)
         .byte   $0D,$00
-.elseif .def(APPLE)
+  .elseif .def(APPLE)
         .byte   $00
-.else
+  .else
         .byte   $0D,$0A,$0D,$0A
-.endif
+  .endif
 QT_BASIC:
-.ifdef OSI
+  .ifdef OSI
         .byte   "OSI 6502 BASIC VERSION 1.0 REV 3.2"
-.endif
-.ifdef KIM
+  .endif
+  .ifdef KIM
         .byte   "MOS TECH 6502 BASIC V1.1"
-.endif
-.ifdef MICROTAN
+  .endif
+  .ifdef MICROTAN
         .byte   "MICROTAN BASIC"
-.endif
-.ifdef CBM1
+  .endif
+  .ifdef CBM1
         .byte   $13
         .byte   "*** COMMODORE BASIC ***"
         .byte   $11,$11,$11,$00
-.endif
-.ifdef CBM2
+  .endif
+  .ifdef CBM2
         .byte   "### COMMODORE BASIC ###"
         .byte   $0D,$0D,$00
-.endif
-.ifdef APPLE
+  .endif
+  .ifdef APPLE
         .byte   $0A,$0D,$0A
 		.byte	"APPLE BASIC V1.1"
-.endif
-.ifndef CONFIG_CBM_ALL
+  .endif
+  .ifndef CONFIG_CBM_ALL
         .byte   $0D,$0A
-.ifdef MICROTAN
+    .ifdef MICROTAN
         .byte   "(C) 1980 MICROSOFT"            ; E1F2 28 43 29 20 31 39 38 30  (C) 1980
-.else
+    .else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
-.endif
+    .endif
         .byte   $0D,$0A,$00
-.endif
+  .endif
 .endif /* KBD */
 
 .segment "EXTRA"
