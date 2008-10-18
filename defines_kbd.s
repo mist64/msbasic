@@ -13,8 +13,8 @@ CONFIG_SMALL := 1
 ; INPUTBUFFER > $0100
 
 ; zero page
-ZP_START = $06
-ZP_HOLE = $05
+ZP_HOLE1 = $06
+ZP_HOLE2 = $05
 
 JMPADRS         := $0093
 LOWTRX          := $0094                        ; $AB also EXPSGN?

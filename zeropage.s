@@ -15,7 +15,9 @@ GOGIVEAYF:
   .endif
 .endif
 
-.res ZP_START
+.ifdef ZP_HOLE1
+.res ZP_HOLE1
+.endif
 
 CHARAC:
 	.res 1
@@ -42,7 +44,9 @@ CPRMASK:
 Z14:
 	.res 1
 
-.res ZP_HOLE
+.ifdef ZP_HOLE2
+.res ZP_HOLE2
+.endif
 
 TEMPPT:
 	.res 1
