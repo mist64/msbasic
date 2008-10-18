@@ -1331,11 +1331,11 @@ GETEXP:
         lda     EXPON
         cmp     #MAX_EXPON
         bcc     L3C2C
-.ifndef CBM1
+.ifdef CONFIG_10A
         lda     #$64
 .endif
         bit     EXPSGN
-.ifndef CBM1
+.ifdef CONFIG_10A
         bmi     L3C3A
 .else
         bmi     LDC70

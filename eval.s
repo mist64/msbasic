@@ -499,6 +499,7 @@ L2DC2:
 .endif
 .ifdef CONFIG_CBM1_PATCHES
         jmp     PATCH3
+        .byte   $19
 .endif
 .ifdef CBM2
         bit     $62
@@ -508,9 +509,6 @@ L2DC2:
 .endif
 .ifndef CONFIG_CBM_ALL
         jmp     LOAD_FAC_FROM_YA
-.endif
-.ifdef CBM1
-        .byte   $19
 .endif
 .ifdef CONFIG_CBM_ALL
 LCE69:

@@ -1,3 +1,9 @@
+; error
+; line input, line editing
+; tokenize
+; detokenize
+; BASIC program memory management
+
 ; MICROTAN has some nonstandard extension to LIST here
 
 .segment "CODE"

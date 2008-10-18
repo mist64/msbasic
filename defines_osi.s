@@ -1,4 +1,6 @@
 ; configuration
+CONFIG_10A := 1
+
 CONFIG_DATAFLAG := 1
 CONFIG_NULL := 1
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
