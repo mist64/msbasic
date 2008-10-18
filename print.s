@@ -293,6 +293,7 @@ OUTDO:
         bmi     L2A56
 .endif
 .if .def(CONFIG_PRINT_CR) || .def(CBM1)
+; Commodore forgot to remove this in CBM1
         pha
 .endif
 .ifdef CBM1
@@ -339,6 +340,7 @@ L2A4C:
 .endif
 L2A4E:
 .if .def(CONFIG_PRINT_CR) || .def(CBM1)
+; Commodore forgot to remove this in CBM1
         pla
 .endif
 .ifdef CONFIG_MONCOUT_DESTROYS_Y

@@ -112,25 +112,25 @@ GOMOVMF:
         jmp     STORE_FAC_AT_YX_ROUNDED
 .endif
 
+.segment "CHRGET"
 ; ----------------------------------------------------------------------------
 ; INITIAL VALUE FOR RANDOM NUMBER, ALSO COPIED
 ; IN ALONG WITH CHRGET, BUT ERRONEOUSLY:
 ; <<< THE LAST BYTE IS NOT COPIED >>>
+; (on all non-CONFIG_SMALL)
 ; ----------------------------------------------------------------------------
-
-.segment "CHRGET"
-
 GENERIC_RNDSEED:
 .ifndef KBD
 ; random number seed
-.ifdef OSI
+  .ifdef CONFIG_SMALL
         .byte   $80,$4F,$C7,$52
-.endif
-.ifdef CONFIG_11
+  .else
+    .ifdef CONFIG_11
         .byte   $80,$4F,$C7,$52,$58
-.endif
-.ifdef CBM1
+    .endif
+    .ifdef CBM1
         .byte   $80,$4F,$C7,$52,$59
-.endif
+    .endif
+  .endif
 .endif
 GENERIC_CHRGET_END:

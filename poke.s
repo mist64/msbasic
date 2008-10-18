@@ -53,6 +53,7 @@ PEEK:
         jsr     GETADR
         ldy     #$00
 .ifdef CBM1
+; disallow PEEK between $C000 and $DFFF
         cmp     #$C0
         bcc     LD6F3
         cmp     #$E1

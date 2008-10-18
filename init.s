@@ -100,6 +100,22 @@ COLD_START2:
   .endif
 .endif /* KBD */
 
+; All non-CONFIG_SMALL versions of BASIC have
+; the same bug here: While the number of bytes
+; to be copied is correct for CONFIG_SMALL,
+; it is one byte short on non-CONFIG_SMALL:
+; It seems the "ldx" value below has been
+; hardcoded. So on these configurations,
+; the last byte of GENERIC_RNDSEED, which
+; is 5 bytes instead of 4, does not get copied -
+; which is nothing major, because it is just
+; the least significant 8 bits of the mantissa
+; of the random number seed.
+; KBD added three bytes to CHRGET and removed
+; the random number seed, but only adjusted
+; the number of bytes by adding 3 - this
+; copies four bytes too many, which is no
+; problem.
 .ifdef CONFIG_SMALL
   .ifdef KBD
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET+4
@@ -192,7 +208,7 @@ L40D7:
         bne     L40DD
         inc     LINNUM+1
 .ifdef CBM1
-        lda     $09
+        lda     LINNUM+1
         cmp     #$80
         beq     L40FA
 .endif

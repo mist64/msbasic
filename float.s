@@ -1342,7 +1342,7 @@ GETEXP:
 .endif
         jmp     OVERFLOW
 LDC70:
-.ifdef CBM1
+.ifndef CONFIG_10A
         lda     #$0B
 .endif
 L3C2C:
@@ -1373,7 +1373,7 @@ CON_BILLION:
 CON_99999999_9:
         .byte   $9B,$3E,$BC,$1F,$FD
 CON_999999999:
-.ifdef CBM1
+.ifndef CONFIG_10A
         .byte   $9E,$6E,$6B,$27,$FE
 .else
         .byte   $9E,$6E,$6B,$27,$FD

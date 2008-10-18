@@ -3,3 +3,6 @@
 * move all machine specific code into separate files
 * rename all labels that point to RTS to RTSn
 * add AppleSoft comments
+* look for all " $", i.e. (zeropage) constants, replace them
+  with symbols
+* check all .ifdef OSI; they might be .ifdef CONFIG_SMALL
