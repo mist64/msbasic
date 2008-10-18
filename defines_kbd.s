@@ -8,10 +8,10 @@ CONFIG_SCRTCH_ORDER := 3
 CONFIG_SMALL := 1
 
 ; zero page
-ZP_START0 = $00
-ZP_START0A = $0F
-ZP_START1 = $06
-ZP_START2 = $15
+ZP_START1 = $00
+ZP_START2 = $0F
+ZP_START3 = $06
+ZP_START4 = $15
 
 ; extra/override ZP variables
 TXPSV           := $0049

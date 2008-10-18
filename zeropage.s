@@ -2,7 +2,7 @@
 .feature org_per_seg
 .zeropage
 
-.org ZP_START0
+.org ZP_START1
 
 GORESTART:
 	.res 3
@@ -13,7 +13,7 @@ GOAYINT:
 GOGIVEAYF:
 	.res 2
 
-.org ZP_START0A
+.org ZP_START2
 Z15:
 	.res 1
 .ifndef POSX; allow override
@@ -37,9 +37,7 @@ TXPSV:
 INPUTBUFFER:
 .endif
 
-.ifdef ZP_START1
-.org ZP_START1
-.endif
+.org ZP_START3
 
 CHARAC:
 	.res 1
@@ -66,7 +64,7 @@ CPRMASK:
 Z14:
 	.res 1
 
-.org ZP_START2
+.org ZP_START4
 
 TEMPPT:
 	.res 1

@@ -11,10 +11,10 @@ CONFIG_SCRTCH_ORDER := 3
 BYTES_PER_ELEMENT := 6 ; XXX override
 
 ; zero page
-ZP_START0 = $00
-ZP_START0A = $4F
-ZP_START1 = $0D
-ZP_START2 = $55
+ZP_START1 = $00
+ZP_START2 = $4F
+ZP_START3 = $0D
+ZP_START4 = $55
 
 ;extra ZP variables
 USR				:= $000A

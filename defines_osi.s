@@ -8,10 +8,10 @@ CONFIG_SCRTCH_ORDER := 3
 CONFIG_SMALL := 1
 
 ; zero page
-ZP_START0 = $00
-ZP_START0A = $0D
-ZP_START1 = $5B
-ZP_START2 = $65
+ZP_START1 = $00
+ZP_START2 = $0D
+ZP_START3 = $5B
+ZP_START4 = $65
 
 ;extra ZP variables
 USR             := $000A

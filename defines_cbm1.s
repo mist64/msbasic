@@ -39,10 +39,10 @@ CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
 CONFIG_SPC_IS_CRSR_RIGHT := 1; always print CRSR RIGHT for SPC() (otherwise only for screen output)
 
 ; zero page
-ZP_START0 = $00
-ZP_START0A = $04
-ZP_START1 = $5A
-ZP_START2 = $65
+ZP_START1 = $00
+ZP_START2 = $04
+ZP_START3 = $5A
+ZP_START4 = $65
 
 ; extra ZP variables
 CURDVC			:= $0003
