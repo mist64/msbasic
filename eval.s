@@ -502,7 +502,7 @@ L2DC2:
         .byte   $19
 .endif
 .ifdef CBM2
-        bit     $62
+        bit     FAC+4
         bpl     LCE90
         cmp     #$54
         bne     LCE82

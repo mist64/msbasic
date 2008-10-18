@@ -28,6 +28,7 @@ SPACE_FOR_GOSUB := $36
 CRLF_1 := CR
 CRLF_2 := $80
 WIDTH			:= 40
+WIDTH2			:= 14
 
 ; memory layout
 RAMSTART2	:= $2A00

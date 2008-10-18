@@ -24,6 +24,7 @@ STACK_TOP		:= $FE
 SPACE_FOR_GOSUB := $3E
 NULL_MAX		:= $F0
 WIDTH			:= 80
+WIDTH2			:= 56
 ; memory layout
 RAMSTART2 := $0400
 

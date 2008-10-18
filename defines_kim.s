@@ -20,6 +20,7 @@ STACK_TOP		:= $FC
 SPACE_FOR_GOSUB := $36
 NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
 WIDTH			:= 72
+WIDTH2			:= 56
 
 ; magic memory locations
 L1800           := $1800

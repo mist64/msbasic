@@ -74,21 +74,11 @@ COLD_START2:
           sta     USR+1
           sty     USR+2
   .endif
-  .ifndef CONFIG_CBM_ALL
+  .ifndef CBM1
         lda     #WIDTH
         sta     Z17
-    .ifdef APPLE
-        lda     #14
-    .else
-        lda     #56
-    .endif
+        lda     #WIDTH2
         sta     Z18
-  .endif
-  .ifdef CBM2
-        lda     #$28
-        sta     $0F
-        lda     #$1E
-        sta     $10
   .endif
 .endif /* KBD */
 
