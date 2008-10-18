@@ -9,16 +9,12 @@ CONFIG_SCRTCH_ORDER := 3
 ; INPUTBUFFER > $0100
 
 ; zero page
-ZP_START = $0D
+ZP_START0 = $00
+ZP_START = $03
 ZP_HOLE = $3D
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
-
-GORESTART       := $0000
-GOSTROUT        := $0003
-GOAYINT         := $0006
-GOGIVEAYF       := $0008
 
 USR				:= $000A
 

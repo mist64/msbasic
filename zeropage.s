@@ -1,5 +1,18 @@
 .zeropage
 
+.ifdef ZP_START0
+.res ZP_START0
+
+GORESTART:
+	.res 3
+GOSTROUT:
+	.res 3
+GOAYINT:
+	.res 2
+GOGIVEAYF:
+	.res 2
+.endif
+
 .res ZP_START
 
 CHARAC:

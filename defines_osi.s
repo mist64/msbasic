@@ -6,16 +6,12 @@ CONFIG_SCRTCH_ORDER := 3
 CONFIG_SMALL := 1
 
 ; zero page
-ZP_START = $5B
+ZP_START0 = $00
+ZP_START = $51
 ZP_HOLE = $00
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
-
-GORESTART       := $0000
-GOSTROUT        := $0003
-GOAYINT         := $0006
-GOGIVEAYF       := $0008
 
 USR             := $000A
 

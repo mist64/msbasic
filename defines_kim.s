@@ -10,16 +10,12 @@ CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 2
 
 ; zero page
-ZP_START = $0A
+ZP_START0 = $00
+ZP_START = $00
 ZP_HOLE = $4E
 
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
-
-GORESTART       := $0000
-GOSTROUT        := $0003
-GOAYINT         := $0006
-GOGIVEAYF       := $0008
 
 Z15             := $0015
 POSX            := $0016
