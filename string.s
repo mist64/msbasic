@@ -264,7 +264,7 @@ L3376:
         iny
         lda     (INDEX),y
 .ifdef CBM1
-        jsr     LE7F3
+        jsr     LE7F3 ; XXX patch, call into screen editor
 .else
   .ifdef CONFIG_11
         ldy     #$00
@@ -361,7 +361,7 @@ MOVE_HIGHEST_STRING_TO_TOP:
 .endif
         beq     L33FA
         lda     Z52
-.ifdef CBM1
+.ifndef CONFIG_10A
         sbc     #$03
 .else
         and     #$04

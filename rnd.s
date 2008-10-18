@@ -127,8 +127,7 @@ GENERIC_RNDSEED:
   .else
     .ifdef CONFIG_11
         .byte   $80,$4F,$C7,$52,$58
-    .endif
-    .ifdef CBM1
+    .else
         .byte   $80,$4F,$C7,$52,$59
     .endif
   .endif
