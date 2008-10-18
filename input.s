@@ -9,7 +9,9 @@ INPUTERR:
         lda     INPUTFLG
         beq     RESPERR	; INPUT
 .ifndef CONFIG_SMALL
-.ifndef CONFIG_BUG_GET_ERROR
+.ifdef CONFIG_10A
+; without this, it treats GET errors
+; like READ errors
         bmi     L2A63	; READ
         ldy     #$FF	; GET
         bne     L2A67
@@ -30,7 +32,7 @@ SYNERR4:
         jmp     SYNERR
 RESPERR:
 .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         beq     LCA8F
         ldx     #ERR_BADDATA
         jmp     ERROR
@@ -61,7 +63,7 @@ GET:
         lda     #','
         jsr     SYNCHR
         jsr     CHKIN
-        stx     Z03
+        stx     CURDVC
 LCAB6:
 .endif
         ldx     #<(INPUTBUFFER+1)
@@ -76,7 +78,7 @@ LCAB6:
         jsr     PROCESS_INPUT_LIST
 ; CBM: if GET#, then switch input back
 .ifdef CONFIG_FILE
-        ldx     Z03
+        ldx     CURDVC
         bne     LCAD8
 .endif
         rts
@@ -91,14 +93,14 @@ INPUTH:
         lda     #$2C
         jsr     SYNCHR
         jsr     CHKIN
-        stx     Z03
+        stx     CURDVC
         jsr     L2A9E
 LCAD6:
-        lda     Z03
+        lda     CURDVC
 LCAD8:
         jsr     CLRCH
         ldx     #$00
-        stx     Z03
+        stx     CURDVC
         rts
 LCAE0:
 .endif
@@ -130,7 +132,7 @@ LCAF8:
         bmi     L2ABE
 .else
   .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         beq     LCB0C
         lda     Z96
         and     #$02
@@ -142,7 +144,7 @@ LCB0C:
         lda     INPUTBUFFER
         bne     L2ABE
   .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         bne     LCAF8
   .endif
   .ifdef CONFIG_CBM1_PATCHES
@@ -161,7 +163,7 @@ NXIN:
         jmp     LE86C
 .else
   .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         bne     LCB21
   .endif
         jsr     OUTQUES	; '?'
@@ -265,7 +267,7 @@ L2AF0:
 .endif
         bmi     FINDATA
 .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         bne     LCB64
 .endif
 .ifdef KBD
@@ -393,7 +395,7 @@ L2B94:
         lda     (INPTR),y
         beq     L2BA1
 .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         bne     L2BA1
 .endif
         lda     #<ERREXTRA

@@ -120,7 +120,7 @@ L4098:
         txa
         sta     SHIFTSIGNEXT
   .ifdef CONFIG_CBM_ALL
-        sta     Z03
+        sta     CURDVC
   .endif
         sta     LASTPT+1
   .if .defined(CONFIG_NULL) || .defined(CONFIG_PRINTNULLS)

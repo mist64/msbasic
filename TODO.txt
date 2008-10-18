@@ -9,3 +9,4 @@
 * check for KBD whether it's CONFIG_2 && CONFIG_SMALL (float
   etc.)
 * there must be no platform ifdefs in generic files
+* reconstruct pre-CBM1, i.e. CBM1 without the patches

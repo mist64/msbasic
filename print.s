@@ -91,7 +91,7 @@ L29B9:
 	.endif
   .endif
   .ifdef CONFIG_FILE
-        lda     Z03
+        lda     CURDVC
         bne     L29DD
   .endif
 .endif
@@ -99,7 +99,7 @@ L29B9:
 
 CRDO:
 .if .def(CONFIG_PRINTNULLS) && .def(CONFIG_FILE)
-        lda     Z03
+        lda     CURDVC
         bne     LC9D8
         sta     $05
 LC9D8:
@@ -125,7 +125,7 @@ PRINTNULLS:
     ; CBM1 had NULL support and ignores
     ; it when not targeting the screen,
     ; CBM2 dropped it completely.
-        lda     Z03
+        lda     CURDVC
         bne     L29DD
     .endif
         txa
@@ -270,7 +270,7 @@ L2A22:
 OUTSP:
 .ifdef CONFIG_FILE
   .ifndef CONFIG_SPC_IS_CRSR_RIGHT
-        lda     Z03
+        lda     CURDVC
         beq     LCA40
         lda     #$20
         .byte   $2C
@@ -306,7 +306,7 @@ OUTDO:
 LCA5A:
         lda     POSX
         beq     L2A4E
-        lda     Z03
+        lda     CURDVC
         bne     L2A4E
         dec     POSX
 LCA64:
@@ -318,7 +318,7 @@ LCA64:
 .endif
 LCA6A:
 .ifdef CONFIG_CBM1_PATCHES
-        lda     Z03
+        lda     CURDVC
         jsr     PATCH6
         nop
 .endif

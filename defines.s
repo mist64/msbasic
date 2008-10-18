@@ -1,6 +1,6 @@
 .if .def(cbmbasic1)
 CBM1 := 1
-.include "defines_cbm.s"
+.include "defines_cbm1.s"
 .elseif .def(osi)
 OSI := 1
 .include "defines_osi.s"
@@ -12,7 +12,7 @@ KIM := 1
 .include "defines_kim.s"
 .elseif .def(cbmbasic2)
 CBM2 := 1
-.include "defines_cbm.s"
+.include "defines_cbm2.s"
 .elseif .def(kbdbasic)
 KBD := 1
 .include "defines_kbd.s"

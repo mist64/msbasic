@@ -93,7 +93,7 @@ L2453:
 GETLN:
     .ifdef CONFIG_FILE
         jsr     CHRIN
-        ldy     Z03
+        ldy     CURDVC
         bne     L2465
     .else
         jsr     MONRDKEY

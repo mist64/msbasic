@@ -21,11 +21,11 @@ MEMERR:
 ERROR:
         lsr     Z14
 .ifdef CONFIG_FILE
-        lda     Z03       ; output
+        lda     CURDVC    ; output
         beq     LC366     ; is screen
         jsr     CLRCH     ; otherwise redirect output back to screen
         lda     #$00
-        sta     Z03
+        sta     CURDVC
 LC366:
 .endif
         jsr     CRDO
@@ -695,7 +695,7 @@ L25A6:
 L25A6X:
 .endif
         ldy     #$01
-.ifdef CONFIG_DATAFLAG
+.ifdef CONFIG_DATAFLG
         sty     DATAFLG
 .endif
         lda     (LOWTRX),y
@@ -730,7 +730,7 @@ L25CA:
         and     #$7F
 L25CE:
         jsr     OUTDO
-.ifdef CONFIG_DATAFLAG
+.ifdef CONFIG_DATAFLG
         cmp     #$22
         bne     LA519
         lda     DATAFLG
@@ -760,7 +760,7 @@ L25E5:
         jmp     RESTART
 L25E8:
         bpl     L25CE
-.ifdef CONFIG_DATAFLAG
+.ifdef CONFIG_DATAFLG
         cmp     #$FF
         beq     L25CE
         bit     DATAFLG

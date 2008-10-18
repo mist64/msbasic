@@ -222,7 +222,7 @@ CMD:
 LC98F:
         php
         jsr     CHKOUT
-        stx     Z03
+        stx     CURDVC
         plp
         jmp     PRINT
 .endif
