@@ -1,8 +1,12 @@
+.feature org_per_seg
+
 .zeropage
 
 .ifdef ZP_START0
-.res ZP_START0
+.org ZP_START0
+.endif
 
+.ifdef ZP_START0
 GORESTART:
 	.res 3
   .ifndef CONFIG_NO_EXTRA_GO_PTRS
@@ -15,8 +19,8 @@ GOGIVEAYF:
   .endif
 .endif
 
-.ifdef ZP_HOLE1
-.res ZP_HOLE1
+.ifdef ZP_START1
+.org ZP_START1
 .endif
 
 CHARAC:

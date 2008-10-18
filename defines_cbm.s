@@ -30,7 +30,7 @@ CONFIG_PEEK_SAVE_LINNUM := 1
 .ifdef CBM1
 ; zero page
 ZP_START0 = $00
-ZP_HOLE1 = $57
+ZP_START1 = $5A
 
 CONFIG_NO_EXTRA_GO_PTRS := 1
 
@@ -57,6 +57,7 @@ NULL_MAX		:= $0A
 
 ; zero page
 ZP_START0 = $00
+ZP_START1 = $03
 ZP_HOLE2 = $05
 
 CONFIG_NO_EXTRA_GO_PTRS := 1

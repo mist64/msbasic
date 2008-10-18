@@ -13,7 +13,8 @@ CONFIG_SMALL := 1
 ; INPUTBUFFER > $0100
 
 ; zero page
-ZP_HOLE1 = $06
+ZP_START0 = $00
+ZP_START1 = $06
 ZP_HOLE2 = $05
 
 JMPADRS         := $0093
