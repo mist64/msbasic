@@ -1,0 +1,1 @@
+; nothing - ISCNTC is a KERNAL function
