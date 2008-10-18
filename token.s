@@ -109,14 +109,15 @@ UNFNC:
 		keyword_addr "SGN", SGN, TOKEN_SGN
 		keyword_addr "INT", INT
 		keyword_addr "ABS", ABS
-.ifdef CONFIG_NO_POKE
+.ifdef KBD
 		keyword_addr "VER", VER
-.else
-.ifdef CONFIG_RAM
-		keyword_addr "USR", IQERR
-.else
-		keyword_addr "USR", USR
 .endif
+.ifndef CONFIG_NO_POKE
+  .ifdef CONFIG_RAM
+		keyword_addr "USR", IQERR
+  .else
+		keyword_addr "USR", USR
+  .endif
 .endif
 		keyword_addr "FRE", FRE
 		keyword_addr "POS", POS

@@ -25,16 +25,14 @@
 ; oldest known version, no CONFIG_n
 
 CONFIG_CBM_ALL := 1
+CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 
+CONFIG_DATAFLG := 1
 CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
 CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
 CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
-CONFIG_SCRTCH_ORDER := 2
-
-CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
-CONFIG_DATAFLG := 1
 CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
-CONFIG_SPC_IS_CRSR_RIGHT := 1; always print CRSR RIGHT for SPC() (otherwise only for screen output)
+CONFIG_SCRTCH_ORDER := 2
 
 ; zero page
 ZP_START1 = $00
@@ -46,7 +44,6 @@ ZP_START4 = $65
 CURDVC			:= $0003
 Z96				:= $020C
 USR				:= GORESTART
-
 
 ; constants
 SPACE_FOR_GOSUB := $36
