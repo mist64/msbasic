@@ -308,20 +308,20 @@ L4136:
 L4157:
         ldx     #<IQERR
         ldy     #>IQERR
-        stx     UNFNC+(13*2)
-        sty     UNFNC+(13*2)+1
+        stx     UNFNC_ATN
+        sty     UNFNC_ATN+1
         ldx     #<ATN	; overwrite starting
         ldy     #>ATN	; with ATN
         cmp     #'A'
         beq     L4183
         ldx     #<IQERR
         ldy     #>IQERR
-        stx     UNFNC+(10*2)
-        sty     UNFNC+(10*2)+1
-        stx     UNFNC+(12*2)
-        sty     UNFNC+(12*2)+1
-        stx     UNFNC+(11*2)
-        sty     UNFNC+(11*2)+1
+        stx     UNFNC_COS
+        sty     UNFNC_COS+1
+        stx     UNFNC_TAN
+        sty     UNFNC_TAN+1
+        stx     UNFNC_SIN
+        sty     UNFNC_SIN+1
         ldx     #<SIN_COS_TAN_ATN	; overwrite
         ldy     #>SIN_COS_TAN_ATN	; all of trig.s
 L4183:

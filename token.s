@@ -124,9 +124,17 @@ UNFNC:
 		keyword_addr "RND", RND
 		keyword_addr "LOG", LOG
 		keyword_addr "EXP", EXP
+.segment "VECTORS"
+UNFNC_COS:
 		keyword_addr "COS", COS
+.segment "VECTORS"
+UNFNC_SIN:
 		keyword_addr "SIN", SIN
+.segment "VECTORS"
+UNFNC_TAN:
 		keyword_addr "TAN", TAN
+.segment "VECTORS"
+UNFNC_ATN:
 		keyword_addr "ATN", ATN
 .ifdef KBD
 		keyword_addr "GETC", GETC
