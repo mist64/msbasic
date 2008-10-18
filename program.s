@@ -232,7 +232,7 @@ PUT_NEW_LINE:
 L23D6:
         sty     HIGHDS+1
         jsr     BLTU
-.if INPUTBUFFER = $0200
+.ifdef CONFIG_INPUTBUFFER_0200
         lda     LINNUM
         ldy     LINNUM+1
         sta     INPUTBUFFER-2
@@ -590,7 +590,7 @@ L24DB:
 ; ---END OF LINE------------------
 L24EA:
         sta     INPUTBUFFER-3,y
-.if INPUTBUFFER >= $0100
+.ifdef CONFIG_NO_INPUTBUFFER_ZP
         dec     TXTPTR+1
 .endif
         lda     #<INPUTBUFFER-1

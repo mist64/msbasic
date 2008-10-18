@@ -82,7 +82,7 @@ L32AA:
 L32B6:
         stx     STRNG2+1
         lda     STRNG1+1
-.if INPUTBUFFER >= $0100
+.ifdef CONFIG_NO_INPUTBUFFER_ZP
         beq     LD399
         cmp     #>INPUTBUFFER
 .endif

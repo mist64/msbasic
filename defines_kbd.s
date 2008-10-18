@@ -30,6 +30,9 @@ Z18             := $06FD
 
 
 TXPSV           := $0049
+
+CONFIG_NO_INPUTBUFFER_ZP := 1
+
 INPUTBUFFER     := $0700
 INPUTBUFFERX    := $0700
 

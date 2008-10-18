@@ -30,7 +30,7 @@ COLD_START2:
         ldx     #$FF
         stx     CURLIN+1
   .endif
-  .if INPUTBUFFER >= $0100
+  .ifdef CONFIG_NO_INPUTBUFFER_ZP
         ldx     #$FB
   .endif
         txs

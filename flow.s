@@ -82,7 +82,7 @@ NEWSTT:
         jsr     ISCNTC
         lda     TXTPTR
         ldy     TXTPTR+1
-.if (INPUTBUFFER >=$0100) && .def(CONFIG_2)
+.if .def(CONFIG_NO_INPUTBUFFER_ZP) && .def(CONFIG_2)
         cpy     #>INPUTBUFFER
   .ifdef CBM2
         nop
@@ -274,7 +274,7 @@ END2:
         bne     RET1
         lda     TXTPTR
         ldy     TXTPTR+1
-.if (INPUTBUFFER >=$0100) && .def(CONFIG_2)
+.if .def(CONFIG_NO_INPUTBUFFER_ZP) && .def(CONFIG_2)
 ; BUG on AppleSoft I
 ; fix exists on AppleSoft II
 ; TXTPTR+1 will always be > 0

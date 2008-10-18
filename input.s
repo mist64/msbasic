@@ -66,7 +66,7 @@ LCAB6:
 .endif
         ldx     #<(INPUTBUFFER+1)
         ldy     #>(INPUTBUFFER+1)
-.if INPUTBUFFER >= $0100
+.ifdef CONFIG_NO_INPUTBUFFER_ZP
         lda     #$00
         sta     INPUTBUFFER+1
 .else
