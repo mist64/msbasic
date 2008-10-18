@@ -21,16 +21,16 @@ ZP_HOLE = $56
 JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
-USR := $0021
+USR				:= $0021
 
 Z15             := $002F
 POSX            := $0030
 Z17             := $0031
 Z18             := $0032
 LINNUM          := $0033
+INPUTBUFFER     := $0035
 
 TXPSV           := $00BA
-INPUTBUFFER     := $0035
 INPUTBUFFERX    := $0000
 
 ; constants

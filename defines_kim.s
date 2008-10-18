@@ -23,8 +23,9 @@ Z17             := $0017
 Z18             := $0018
 LINNUM          := $0019
 
-TXPSV           := $0019
 INPUTBUFFER     := $001B
+
+TXPSV           := $0019
 INPUTBUFFERX    := $0000
 
 ; magic memory locations

@@ -14,15 +14,14 @@ JMPADRS = DSCLEN + 1
 LOWTRX = LOWTR
 
 USR             := $000A
-
 Z15             := $000D
 POSX            := $000E
 Z17             := $000F
 Z18             := $0010
 LINNUM          := $0011
+INPUTBUFFER     := $0013
 
 TXPSV           := $0011
-INPUTBUFFER     := $0013
 INPUTBUFFERX    := $0000
 
 ; constants

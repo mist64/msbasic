@@ -16,6 +16,8 @@ CONFIG_SMALL := 1
 ZP_START = $06
 ZP_HOLE = $05
 
+JMPADRS         := $0093
+LOWTRX          := $0094                        ; $AB also EXPSGN?
 
 POSX            := $0010
 Z17             := $06FC
@@ -26,8 +28,6 @@ TXPSV           := $0049
 INPUTBUFFER     := $0700
 INPUTBUFFERX    := $0700
 
-JMPADRS         := $0093
-LOWTRX          := $0094                        ; $AB also EXPSGN?
 Z96				:= $0096
 
 ; magic memory locations

@@ -5,12 +5,14 @@
 
 GORESTART:
 	.res 3
+  .ifndef CONFIG_NO_EXTRA_GO_PTRS
 GOSTROUT:
 	.res 3
 GOAYINT:
 	.res 2
 GOGIVEAYF:
 	.res 2
+  .endif
 .endif
 
 .res ZP_START
