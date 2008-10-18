@@ -24,8 +24,8 @@ Z15:
 	.res 1
 .ifndef POSX; allow override
 POSX:
-	.res 1
 .endif
+	.res 1
 .ifndef Z17; allow override
 Z17:
 .endif

@@ -6,7 +6,6 @@ CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 3
-; INPUTBUFFER > $0100
 
 ; zero page
 ZP_START0 = $00
