@@ -346,7 +346,7 @@ L3124:
         bpl     L3135
         dex
 L3135:
-  .ifdef .def(CONFIG_SMALL) && (.def(CONFIG_2))
+  .if .def(CONFIG_SMALL) && (.def(CONFIG_2))
         stx     RESULT+1
   .else
         lda     VARNAM+1

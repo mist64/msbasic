@@ -287,8 +287,8 @@ L4129:
         clc
         adc     Z17
         sta     Z18
-L4136:
 .endif
+L4136:
 .ifdef KIM /* RAM? */
         lda     #<QT_WANT
         ldy     #>QT_WANT
@@ -308,22 +308,22 @@ L4136:
 L4157:
         ldx     #<IQERR
         ldy     #>IQERR
-        stx     UNFNC+26
-        sty     UNFNC+26+1
-        ldx     #<ATN
-        ldy     #>ATN
+        stx     UNFNC+(13*2)
+        sty     UNFNC+(13*2)+1
+        ldx     #<ATN	; overwrite starting
+        ldy     #>ATN	; with ATN
         cmp     #'A'
         beq     L4183
         ldx     #<IQERR
         ldy     #>IQERR
-        stx     UNFNC+20
-        sty     UNFNC+20+1
-        stx     UNFNC+20+1+3
-        sty     UNFNC+20+1+3+1
-        stx     UNFNC+20+1+1
-        sty     UNFNC+20+1+1+1
-        ldx     #<SIN_COS_TAN_ATN
-        ldy     #>SIN_COS_TAN_ATN
+        stx     UNFNC+(10*2)
+        sty     UNFNC+(10*2)+1
+        stx     UNFNC+(12*2)
+        sty     UNFNC+(12*2)+1
+        stx     UNFNC+(11*2)
+        sty     UNFNC+(11*2)+1
+        ldx     #<SIN_COS_TAN_ATN	; overwrite
+        ldy     #>SIN_COS_TAN_ATN	; all of trig.s
 L4183:
 .else
         ldx     #<RAMSTART2

@@ -142,7 +142,7 @@ NEWSTT2:
 EXECUTE_STATEMENT:
 .ifndef CONFIG_11A
         beq     RET1
-.ifndef APPLE
+.ifndef APPLE; ???
         sec
 .endif
 .else

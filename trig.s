@@ -194,7 +194,8 @@ POLY_ATN:
 		.byte	$7E,$4C,$CC,$91,$C7
 		.byte	$7F,$AA,$AA,$AA,$13
         .byte   $81,$00,$00,$00,$00
+.endif
+
 .ifdef KIM
 		.byte	$00 ; XXX
-.endif
 .endif
