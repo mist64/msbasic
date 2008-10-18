@@ -7,6 +7,8 @@ CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_SAFE_NAMENOTFOUND := 1
 CONFIG_SCRTCH_ORDER := 3
 
+BYTES_PER_ELEMENT := 6 ; XXX override
+
 ; zero page
 ZP_START0 = $00
 ZP_START0A = $4F

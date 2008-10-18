@@ -27,9 +27,7 @@ BYTES_FP		:= 4
 BYTES_FP		:= 5
 .endif
 
-.ifdef APPLE
-BYTES_PER_ELEMENT := 6 ; ???
-.else
+.ifndef BYTES_PER_ELEMENT
 BYTES_PER_ELEMENT := BYTES_FP
 .endif
 BYTES_PER_VARIABLE := BYTES_FP+2
@@ -38,9 +36,7 @@ BYTES_PER_FRAME := 2*BYTES_FP+8
 FOR_STACK1		:= 2*BYTES_FP+5
 FOR_STACK2		:= BYTES_FP+4
 
-.ifdef CBM1
-MAX_EXPON = 12
-.else
+.ifndef MAX_EXPON
 MAX_EXPON = 10
 .endif
 

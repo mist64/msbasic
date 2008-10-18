@@ -63,6 +63,7 @@ INPUTBUFFER     := $0200
 SPACE_FOR_GOSUB := $36
 STACK_TOP		:= $FC
 NULL_MAX		:= $0A
+MAX_EXPON		:= 12 ; XXX override
 .else
 SPACE_FOR_GOSUB := $3E
 STACK_TOP		:= $FA
