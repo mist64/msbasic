@@ -185,7 +185,7 @@ MAKE_NEW_ARRAY:
         tay
         sta     STRNG2+1
         ldx     #BYTES_PER_ELEMENT
-.ifdef OSI
+.if .def(CONFIG_SMALL) && (!.def(CONFIG_2))
         stx     STRNG2
 .endif
         lda     VARNAM
@@ -198,12 +198,12 @@ L3078:
         iny
         lda     VARNAM+1
         sta     (LOWTR),y
-.ifndef OSI
+.if (!.def(CONFIG_SMALL)) || .def(CONFIG_2)
         bpl     L3081
         dex
-.ifndef KBD
+  .if !(.def(CONFIG_SMALL) && .def(CONFIG_2))
         dex
-.endif
+  .endif
 L3081:
         stx     STRNG2
 .endif
@@ -324,7 +324,7 @@ L3124:
         stx     STRNG2
         dec     EOLPNTR
         bne     L30F6
-.ifdef OSI
+.if .def(CONFIG_SMALL) && (!.def(CONFIG_2))
         asl     STRNG2
         rol     a
         bcs     GSE
@@ -338,7 +338,7 @@ L3124:
         sta     STRNG2+1
   .endif
         ldx     #BYTES_FP
-  .ifdef KBD
+  .if .def(CONFIG_SMALL) && (.def(CONFIG_2))
         lda     VARNAM+1
   .else
         lda     VARNAM
@@ -346,7 +346,7 @@ L3124:
         bpl     L3135
         dex
 L3135:
-  .ifdef KBD
+  .ifdef .def(CONFIG_SMALL) && (.def(CONFIG_2))
         stx     RESULT+1
   .else
         lda     VARNAM+1

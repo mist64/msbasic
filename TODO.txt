@@ -6,3 +6,6 @@
 * look for all " $", i.e. (zeropage) constants, replace them
   with symbols
 * check all .ifdef OSI; they might be .ifdef CONFIG_SMALL
+* check for KBD whether it's CONFIG_2 && CONFIG_SMALL (float
+  etc.)
+* there must be no platform ifdefs in generic files

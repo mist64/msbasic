@@ -256,12 +256,7 @@ PROCESS_INPUT_ITEM:
         ldx     #<(INPUTBUFFER-1)
         ldy     #>(INPUTBUFFER-1)
   .endif
-  .ifndef CONFIG_NO_INPUTBUFFER_ZP
-    .ifdef CONFIG_2
-	  __BEQ = 1
-	.endif
-  .endif
-  .ifdef __BEQ
+  .if .def(CONFIG_2) && (!.def(CONFIG_NO_INPUTBUFFER_ZP))
         beq     L2AF8	; always
   .else
         bne     L2AF8	; always
