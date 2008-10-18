@@ -18,30 +18,23 @@ ZP_START0A = $0F
 ZP_START1 = $06
 ZP_START2 = $15
 
+;extra ZP variables
+TXPSV           := $0049
 JMPADRS         := $0093
 LOWTRX          := $0094                        ; $AB also EXPSGN?
+Z96				:= $0096
 
-;POSX            := $0010
-;LINNUM          := $0013
-
-; overrides
+; override ZP variables
 Z17             := $06FC
 Z18             := $06FD
 
-
-TXPSV           := $0049
+INPUTBUFFER     := $0700
 
 CONFIG_NO_INPUTBUFFER_ZP := 1
-
-INPUTBUFFER     := $0700
-INPUTBUFFERX    := $0700
-
-Z96				:= $0096
 
 ; magic memory locations
 L06FE			:= $06FE
 L6874			:= $6874
-
 
 ; constants
 STACK_TOP		:= $FE

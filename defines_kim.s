@@ -15,19 +15,6 @@ ZP_START0A = $15
 ZP_START1 = $0A
 ZP_START2 = $63
 
-JMPADRS = DSCLEN + 1
-LOWTRX = LOWTR
-
-;Z15             := $0015
-;POSX            := $0016
-;Z17             := $0017
-;Z18             := $0018
-;LINNUM          := $0019
-;INPUTBUFFER     := $001B
-
-TXPSV           := $0019
-INPUTBUFFERX    := $0000
-
 ; magic memory locations
 L1800           := $1800
 L1873           := $1873

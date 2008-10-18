@@ -14,26 +14,14 @@ ZP_START0A = $4F
 ZP_START1 = $0D
 ZP_START2 = $55
 
-JMPADRS = DSCLEN + 1
-LOWTRX = LOWTR
-
+;extra ZP variables
 USR				:= $000A
 
-;POSX            := $0050
-;Z17             := $0051
-;Z18             := $0052
-;LINNUM          := $0053
 
-TXPSV           := $0053
+INPUTBUFFER     := $0200
 
 CONFIG_NO_INPUTBUFFER_ZP := 1
 CONFIG_INPUTBUFFER_0200 := 1
-
-INPUTBUFFER     := $0200
-INPUTBUFFERX    := $0200
-
-MONRDKEY        := $FD0C
-MONCOUT         := $FDED
 
 ; constants
 STACK_TOP		:= $F8
@@ -45,6 +33,8 @@ CRLF_2 := $80
 RAMSTART2	:= $2A00
 
 ; monitor functions
+MONRDKEY        := $FD0C
+MONCOUT         := $FDED
 LF689			:= $F689
 LF800			:= $F800
 LF819			:= $F819

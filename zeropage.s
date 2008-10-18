@@ -1,5 +1,20 @@
-.feature org_per_seg
 
+; other memory locations
+INPUTBUFFERX = INPUTBUFFER & $FF00
+
+; overlay ZP variables, can be overridden
+.ifndef JMPADRS
+JMPADRS			:= DSCLEN + 1
+.endif
+.ifndef LOWTRX
+LOWTRX			:= LOWTR
+.endif
+.ifndef TXPSV
+TXPSV           := LINNUM
+.endif
+
+
+.feature org_per_seg
 .zeropage
 
 .org ZP_START0

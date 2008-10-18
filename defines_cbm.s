@@ -34,25 +34,13 @@ ZP_START0A = $04
 ZP_START1 = $5A
 ZP_START2 = $65
 
-JMPADRS = DSCLEN + 1
-LOWTRX = LOWTR
-
-USR				:= $0000
-
-;GORESTART       := $0000
-
-;Z15             := $0004
-;POSX            := $0005
-;LINNUM          := $0008
-;INPUTBUFFER     := $000A
-
-TXPSV			:= $0008
-INPUTBUFFERX    := $0000
-
+;extra ZP variables
 Z03				:= $0003
 Z96				:= $020C
 
-NULL_MAX		:= $0A
+; overlay ZP variables
+USR				:= GORESTART
+
 .else
 
 ; zero page
@@ -61,32 +49,29 @@ ZP_START0A = $0E
 ZP_START1 = $03
 ZP_START2 = $13
 
-JMPADRS = DSCLEN + 1
-LOWTRX = LOWTR
-
-USR				:= GORESTART ; XXX
-
-;LINNUM          := $0011
-
+;extra ZP variables
 Z03				:= $000E
 Z96				:= $0096
 
-; override
+; overlay ZP variables
+TXPSV			:= LASTOP
+USR				:= GORESTART ; XXX
+
+; override ZP variables
 POSX			:= $00C6
 
-TXPSV = LASTOP
+INPUTBUFFER     := $0200
 
 CONFIG_NO_INPUTBUFFER_ZP := 1
 CONFIG_INPUTBUFFER_0200 := 1
 
-INPUTBUFFER     := $0200
-INPUTBUFFERX    := $0200
 .endif
 
 ; constants
 .ifdef CBM1
 SPACE_FOR_GOSUB := $36
 STACK_TOP		:= $FC
+NULL_MAX		:= $0A
 .else
 SPACE_FOR_GOSUB := $3E
 STACK_TOP		:= $FA

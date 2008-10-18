@@ -11,19 +11,8 @@ ZP_START0A = $0D
 ZP_START1 = $5B
 ZP_START2 = $65
 
-JMPADRS = DSCLEN + 1
-LOWTRX = LOWTR
-
+;extra ZP variables
 USR             := $000A
-;Z15             := $000D
-;POSX            := $000E
-;Z17             := $000F
-;Z18             := $0010
-;LINNUM          := $0011
-;INPUTBUFFER     := $0013
-
-TXPSV           := $0011
-INPUTBUFFERX    := $0000
 
 ; constants
 STACK_TOP		:= $FC
