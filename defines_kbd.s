@@ -15,7 +15,7 @@ CONFIG_SMALL := 1
 ; zero page
 ZP_START0 = $00
 ZP_START1 = $06
-ZP_HOLE2 = $05
+ZP_START2 = $15
 
 JMPADRS         := $0093
 LOWTRX          := $0094                        ; $AB also EXPSGN?

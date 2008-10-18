@@ -2,22 +2,16 @@
 
 .zeropage
 
-.ifdef ZP_START0
 .org ZP_START0
-.endif
 
-.ifdef ZP_START0
 GORESTART:
 	.res 3
-  .ifndef CONFIG_NO_EXTRA_GO_PTRS
 GOSTROUT:
 	.res 3
 GOAYINT:
 	.res 2
 GOGIVEAYF:
 	.res 2
-  .endif
-.endif
 
 .ifdef ZP_START1
 .org ZP_START1
@@ -48,9 +42,7 @@ CPRMASK:
 Z14:
 	.res 1
 
-.ifdef ZP_HOLE2
-.res ZP_HOLE2
-.endif
+.org ZP_START2
 
 TEMPPT:
 	.res 1
