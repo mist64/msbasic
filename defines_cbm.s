@@ -11,10 +11,10 @@ CONFIG_SCRTCH_ORDER := 2
 CONFIG_BUG_GET_ERROR := 1; treat GET error like READ error
 CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 CONFIG_DATAFLAG := 1
-CONFIG_INPUTBUFFER_ORDER := 1 ; ldx/ldy or ldy/ldx
 CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
 CONFIG_SPC_IS_CRSR_RIGHT := 1; always print CRSR RIGHT for SPC() (otherwise only for screen output)
 .else
+CONFIG_10A := 1
 CONFIG_11 := 1
 CONFIG_11A := 1
 CONFIG_2 := 1

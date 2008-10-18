@@ -1,9 +1,9 @@
-Name                 Release   MS Version    ROM   9digit   extensions   comment
-Commodore BASIC 1     1977                    Y      Y         CBM
-OSI BASIC             1977     1.0 REV 3.2    Y      N          -
-AppleSoft I           1977     1.1            N      Y        Apple      CONFIG_11
-KIM BASIC             1977     1.1            N      Y          -        CONFIG_11A
-AppleSoft II          1978                    Y      Y        Apple      CONFIG_2
-Commodore BASIC 2     1979                    Y      Y         CBM       CONFIG_2A
-KBD BASIC             1980                    Y      N         KBD       CONFIG_2B
-MicroTAN              1979                    Y      Y          -
+Name                 Release   MS Version    ROM   9digit  INPUTBUFFER   extensions   comment
+Commodore BASIC 1     1977                    Y      Y          ZP          CBM
+OSI BASIC             1977     1.0 REV 3.2    Y      N          ZP            -        CONFIG_10A
+AppleSoft I           1977     1.1            N      Y        $0200         Apple      CONFIG_11
+KIM BASIC             1977     1.1            N      Y          ZP            -        CONFIG_11A
+AppleSoft II          1978                    Y      Y        $0200         Apple      CONFIG_2
+Commodore BASIC 2     1979                    Y      Y        $0200          CBM       CONFIG_2A
+KBD BASIC             1980                    Y      N        $0700          KBD       CONFIG_2B
+MicroTAN              1979                    Y      Y          ZP            -        CONFIG_2C

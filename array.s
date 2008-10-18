@@ -21,8 +21,8 @@ L2FAF:
 NEG32768:
         .byte   $90,$80,$00,$00
 
-.ifdef MICROTAN
-		.byte	0
+.ifdef CONFIG_2C
+		.byte	$00; bugfix: short number
 .endif
 
 ; ----------------------------------------------------------------------------

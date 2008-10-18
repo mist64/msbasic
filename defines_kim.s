@@ -1,4 +1,5 @@
 ; configuration
+CONFIG_10A := 1
 CONFIG_11 := 1
 CONFIG_11A := 1
 

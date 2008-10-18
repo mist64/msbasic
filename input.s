@@ -236,19 +236,35 @@ PROCESS_INPUT_ITEM:
         and     #$7F
   .endif
         sta     INPUTBUFFER
-  .ifdef CONFIG_INPUTBUFFER_ORDER
-; the order is about whether
-; the beq/bne is taken or not
+; BUG: The beq/bne L2AF8 below is supposed
+; to be always taken. For this to happen,
+; the last load must be a 0 for beq
+; and != 0 for bne. The original Microsoft
+; code had ldx/ldy/bne here, which was only
+; correct for a non-ZP INPUTBUFFER. Commodore
+; fixed it in CBMBASIC V1 by swapping the
+; ldx and the ldy. It was broken on OSI and
+; KIM, and okay on APPLE and CBM2, because
+; these used a non-ZP INPUTBUFFER.
+; Microsoft fixed this somewhere after KIM
+; and before MICROTAN, by using beq instead
+; of bne in the ZP case.
+  .ifdef CBM1
         ldy     #>(INPUTBUFFER-1)
         ldx     #<(INPUTBUFFER-1)
   .else
         ldx     #<(INPUTBUFFER-1)
         ldy     #>(INPUTBUFFER-1)
   .endif
-  .ifdef MICROTAN
-        beq     L2AF8
+  .ifndef CONFIG_NO_INPUTBUFFER_ZP
+    .ifdef CONFIG_2
+	  __BEQ = 1
+	.endif
+  .endif
+  .ifdef __BEQ
+        beq     L2AF8	; always
   .else
-        bne     L2AF8
+        bne     L2AF8	; always
   .endif
 L2AF0:
 .endif
