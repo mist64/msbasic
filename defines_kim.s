@@ -15,6 +15,13 @@ ZP_START0A = $15
 ZP_START1 = $0A
 ZP_START2 = $63
 
+; constants
+STACK_TOP		:= $FC
+SPACE_FOR_GOSUB := $36
+NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
+CRLF_1 := CR
+CRLF_2 := LF
+
 ; magic memory locations
 L1800           := $1800
 L1873           := $1873
@@ -22,11 +29,4 @@ L1873           := $1873
 ; monitor functions
 MONRDKEY        := $1E5A
 MONCOUT         := $1EA0
-
-; constants
-STACK_TOP		:= $FC
-SPACE_FOR_GOSUB := $36
-NULL_MAX		:= $F2 ; probably different in original version; the image I have seems to be modified; see PDF
-CRLF_1 := CR
-CRLF_2 := LF
 

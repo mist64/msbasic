@@ -3,15 +3,6 @@
 INPUTBUFFERX = INPUTBUFFER & $FF00
 
 ; overlay ZP variables, can be overridden
-.ifndef JMPADRS
-JMPADRS			:= DSCLEN + 1
-.endif
-.ifndef LOWTRX
-LOWTRX			:= LOWTR
-.endif
-.ifndef TXPSV
-TXPSV           := LINNUM
-.endif
 
 
 .feature org_per_seg
@@ -31,21 +22,24 @@ GOGIVEAYF:
 .org ZP_START0A
 Z15:
 	.res 1
-.ifndef POSX
+.ifndef POSX; allow override
 POSX:
 	.res 1
 .endif
-.ifndef Z17
+.ifndef Z17; allow override
 Z17:
 .endif
 	.res 1
-.ifndef Z18
+.ifndef Z18; allow override
 Z18:
 .endif
 	.res 1
 LINNUM:
+.ifndef TXPSV; allow override
+TXPSV:
+.endif
 	.res 2
-.ifndef INPUTBUFFER
+.ifndef INPUTBUFFER; allow override
 INPUTBUFFER:
 .endif
 
@@ -140,6 +134,9 @@ DSCPTR:
 .endif
 DSCLEN:
 	.res 2
+.ifndef JMPADRS ; allow override
+JMPADRS			:= DSCLEN + 1
+.endif
 Z52:
 	.res 1
 ARGEXTENSION:
@@ -165,6 +162,9 @@ TEMP2:
 EXPON:
 	.res 1
 LOWTR:
+.ifndef LOWTRX ; allow override
+LOWTRX:
+.endif
 	.res 1
 EXPSGN:
 	.res 1

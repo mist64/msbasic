@@ -34,11 +34,9 @@ ZP_START0A = $04
 ZP_START1 = $5A
 ZP_START2 = $65
 
-;extra ZP variables
+; extra ZP variables
 Z03				:= $0003
 Z96				:= $020C
-
-; overlay ZP variables
 USR				:= GORESTART
 
 .else
@@ -49,19 +47,15 @@ ZP_START0A = $0E
 ZP_START1 = $03
 ZP_START2 = $13
 
-;extra ZP variables
+; extra/override ZP variables
 Z03				:= $000E
 Z96				:= $0096
-
-; overlay ZP variables
+POSX			:= $00C6
 TXPSV			:= LASTOP
 USR				:= GORESTART ; XXX
 
-; override ZP variables
-POSX			:= $00C6
-
+; inputbuffer
 INPUTBUFFER     := $0200
-
 CONFIG_NO_INPUTBUFFER_ZP := 1
 CONFIG_INPUTBUFFER_0200 := 1
 
@@ -81,6 +75,12 @@ CRLF_2 := LF
 
 RAMSTART2		:= $0400
 
+; magic memory locations
+.ifdef CBM1
+ENTROPY = $9044
+.else
+ENTROPY = $E844
+.endif
 
 ; monitor functions
 OPEN	:= $FFC0
@@ -100,11 +100,3 @@ CLALL	:= $FFE7
 LE7F3	:= $E7F3; for CBM1
 MONCOUT	:= CHROUT
 MONRDKEY := GETIN
-
-
-.ifdef CBM1
-ENTROPY = $9044
-.else
-ENTROPY = $E844
-.endif
-
