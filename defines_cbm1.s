@@ -1,4 +1,3 @@
-; oldest known version, no CONFIG_n
 ;CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
 ;CONFIG_CBM_ALL := 1
 ;CONFIG_DATAFLG := 1
@@ -21,7 +20,6 @@
 ;CONFIG_SCRTCH_ORDER := 2
 ;CONFIG_SCRTCH_ORDER := 3
 ;CONFIG_SMALL := 1
-;CONFIG_SPC_IS_CRSR_RIGHT := 1; always print CRSR RIGHT for SPC() (otherwise only for screen output)
 
 ; configuration
 ; oldest known version, no CONFIG_n

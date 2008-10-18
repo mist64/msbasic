@@ -269,7 +269,9 @@ L2A22:
 ; ----------------------------------------------------------------------------
 OUTSP:
 .ifdef CONFIG_FILE
-  .ifndef CONFIG_SPC_IS_CRSR_RIGHT
+  .ifndef CBM1
+; on non-screen devices, print SPACE
+; instead of CRSR RIGHT
         lda     CURDVC
         beq     LCA40
         lda     #$20
