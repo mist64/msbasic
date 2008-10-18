@@ -59,7 +59,7 @@ COLD_START2:
         sta     GOSTROUT
         sta     JMPADRS
   .endif
-  .if .def(CONFIG_SMALL) || .def(MICROTAN) || .def(APPLE)
+  .if (!.def(CONFIG_RAM)) && (!.def(CONFIG_CBM_ALL))
         sta     USR
   .endif
 
@@ -75,20 +75,12 @@ COLD_START2:
           sty     USR+2
   .endif
   .ifndef CONFIG_CBM_ALL
-    .ifdef APPLE
-        lda     #$28
-    .else
-	  .ifdef MICROTAN
-        lda     #$50
-      .else
-        lda     #$48
-      .endif
-    .endif
+        lda     #WIDTH
         sta     Z17
     .ifdef APPLE
-        lda     #$0E
+        lda     #14
     .else
-        lda     #$38
+        lda     #56
     .endif
         sta     Z18
   .endif

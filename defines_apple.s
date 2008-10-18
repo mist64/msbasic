@@ -27,6 +27,7 @@ STACK_TOP		:= $F8
 SPACE_FOR_GOSUB := $36
 CRLF_1 := CR
 CRLF_2 := $80
+WIDTH			:= 40
 
 ; memory layout
 RAMSTART2	:= $2A00
