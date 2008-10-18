@@ -196,6 +196,6 @@ POLY_ATN:
         .byte   $81,$00,$00,$00,$00
 .endif
 
-.ifdef KIM
+.if .def(CONFIG_11A) && (!.def(CONFIG_2))
 		.byte	$00 ; XXX
 .endif

@@ -112,7 +112,7 @@ UNFNC:
 .ifdef CONFIG_NO_POKE
 		keyword_addr "VER", VER
 .else
-.ifdef KIM
+.ifdef CONFIG_RAM
 		keyword_addr "USR", IQERR
 .else
 		keyword_addr "USR", USR

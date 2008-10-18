@@ -22,7 +22,7 @@ PRINT2:
         cmp     #','
 ; Pre-KIM had no CLC. KIM added the CLC
 ; here. Post-KIM moved the CLC up...
-.ifdef KIM
+.if .def(CONFIG_11A) && (!.def(CONFIG_2))
         clc
 .endif
         beq     L29DE
@@ -142,9 +142,9 @@ L29D9:
         pla
         tax
   .else
-    .ifdef APPLE
+    .ifndef CONFIG_2
         lda     #$00
-        sta     $50
+        sta     POSX
     .endif
         eor     #$FF
   .endif
@@ -196,7 +196,7 @@ L29F5:
         plp
         bcc     L2A09
 .else
-  .ifdef APPLE
+  .ifdef CONFIG_11
         beq     L1185
         jmp     SYNERR
 L1185:
@@ -205,7 +205,7 @@ L1185:
   .endif
         pla
         cmp     #TOKEN_TAB
-  .ifdef APPLE
+  .ifdef CONFIG_11
         bne     L2A09
   .else
         bne     L2A0A
