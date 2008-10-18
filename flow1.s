@@ -142,11 +142,11 @@ NEWSTT2:
 EXECUTE_STATEMENT:
 .ifndef CONFIG_11A
         beq     RET1
-.ifndef APPLE; ???
-        sec
-.endif
 .else
         beq     RET2
+.endif
+.ifndef CONFIG_11
+        sec
 .endif
 EXECUTE_STATEMENT1:
         sbc     #$80
