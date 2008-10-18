@@ -23,8 +23,7 @@ LOWTRX = LOWTR
 ;Z17             := $0017
 ;Z18             := $0018
 ;LINNUM          := $0019
-
-INPUTBUFFER     := $001B
+;INPUTBUFFER     := $001B
 
 TXPSV           := $0019
 INPUTBUFFERX    := $0000

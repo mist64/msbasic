@@ -44,7 +44,7 @@ USR				:= $0000
 ;Z15             := $0004
 ;POSX            := $0005
 ;LINNUM          := $0008
-INPUTBUFFER     := $000A
+;INPUTBUFFER     := $000A
 
 TXPSV			:= $0008
 INPUTBUFFERX    := $0000

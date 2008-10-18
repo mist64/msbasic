@@ -29,7 +29,7 @@ USR				:= $0021
 ;Z17             := $0031
 ;Z18             := $0032
 ;LINNUM          := $0033
-INPUTBUFFER     := $0035
+;INPUTBUFFER     := $0035
 
 TXPSV           := $00BA
 INPUTBUFFERX    := $0000

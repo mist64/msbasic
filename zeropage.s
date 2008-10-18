@@ -30,6 +30,9 @@ Z18:
 	.res 1
 LINNUM:
 	.res 2
+.ifndef INPUTBUFFER
+INPUTBUFFER:
+.endif
 
 .ifdef ZP_START1
 .org ZP_START1
