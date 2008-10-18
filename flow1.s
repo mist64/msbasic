@@ -274,6 +274,7 @@ L271C:
         sty     CURLIN+1
 RET1:
         rts
+
 .ifdef KBD
 PRT:
         jsr     GETBYT
@@ -293,6 +294,7 @@ LE68E:
         bpl     LE68E
         rts
 .endif
+
 .if .def(CONFIG_NULL) || .def(CBM1)
 ; CBM1 has the keyword removed,
 ; but the code is still here

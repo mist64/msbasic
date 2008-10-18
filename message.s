@@ -24,7 +24,7 @@ QT_IN:
 .ifdef KBD
 		.byte	$54,$D2 ; ???
 OKPRT:
-		jsr     LDE42
+		jsr     PRIMM
         .byte   CR,CR,">>",CR,LF
 		.byte	0
         rts

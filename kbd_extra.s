@@ -9,7 +9,8 @@
         sta     TXTTAB+1
         jsr     SCRTCH
         sta     STACK+255
-        jsr     LDE42
+LFD81:
+        jsr     PRIMM
         .byte   $1B,$06,$01,$0C
 		.byte	"INTELLIVISION BASIC"
         .byte	$0D,$0A,$0A
@@ -21,7 +22,7 @@
         lda     #$FF
         sta     ($04),y
         jsr     LDE8C
-        .byte   $0C
+        .byte   $0C	; NOP $xxxx
         jmp     RESTART
 OUTQUESSP:
         jsr     OUTQUES
@@ -326,6 +327,9 @@ LFFED:
         bne     LFFB6
         rts
         .byte   $FF
+; NMI
         .addr   LC000
+; RESET
         .addr   LC000
+; IRQ
         .addr   LC009

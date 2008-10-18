@@ -9,9 +9,9 @@ FNDLIN2:
 ; ----------------------------------------------------------------------------
 COLD_START:
 .ifdef KBD
-        lda     #$81
+        lda     #<LFD81
         sta     $03A0
-        lda     #$FD
+        lda     #>LFD81
         sta     $03A1
         lda     #$20
         sta     $0480
