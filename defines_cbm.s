@@ -14,10 +14,6 @@ CONFIG_DATAFLAG := 1
 CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
 CONFIG_SPC_IS_CRSR_RIGHT := 1; always print CRSR RIGHT for SPC() (otherwise only for screen output)
 .else
-CONFIG_10A := 1
-CONFIG_11 := 1
-CONFIG_11A := 1
-CONFIG_2 := 1
 CONFIG_2A := 1
 
 CONFIG_DATAFLAG := 1

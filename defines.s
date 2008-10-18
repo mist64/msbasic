@@ -21,6 +21,25 @@ MICROTAN := 1
 .include "defines_microtan.s"
 .endif
 
+.ifdef CONFIG_2C
+CONFIG_2B := 1
+.endif
+.ifdef CONFIG_2B
+CONFIG_2A := 1
+.endif
+.ifdef CONFIG_2A
+CONFIG_2 := 1
+.endif
+.ifdef CONFIG_2
+CONFIG_11A := 1
+.endif
+.ifdef CONFIG_11A
+CONFIG_11 := 1
+.endif
+.ifdef CONFIG_11
+CONFIG_10A := 1
+.endif
+
 .ifdef CONFIG_SMALL
 BYTES_FP		:= 4
 .else

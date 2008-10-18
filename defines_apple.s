@@ -1,8 +1,8 @@
 ; http://apple2.org.za/gswv/a2zine/GS.WorldView/Resources/GS.TECH.INFO/AppleSoft/
 
 ; configuration
-CONFIG_10A := 1
 CONFIG_11 := 1
+
 CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
 CONFIG_PRINT_CR := 1 ; print CR when line end reached
 CONFIG_SAFE_NAMENOTFOUND := 1

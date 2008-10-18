@@ -1,9 +1,4 @@
 ; configuration
-CONFIG_10A := 1
-CONFIG_11 := 1
-CONFIG_11A := 1
-CONFIG_2 := 1
-CONFIG_2A := 1
 CONFIG_2B := 1
 
 CONFIG_NO_POKE := 1
