@@ -63,7 +63,7 @@ COLD_START2:
         sta     USR
   .endif
 
-  .ifndef KIM
+  .ifndef CONFIG_RAM
     .ifdef APPLE
           lda     #<USR_FUNC
           ldy     #>USR_FUNC
@@ -289,7 +289,7 @@ L4129:
         sta     Z18
 .endif
 L4136:
-.ifdef KIM /* RAM? */
+.ifdef CONFIG_RAM
         lda     #<QT_WANT
         ldy     #>QT_WANT
         jsr     STROUT
@@ -383,7 +383,9 @@ L4192:
         jmp     (GORESTART+1)
 .endif
 
-.if .def(KIM) || .def(OSI)
+.if .def(CONFIG_RAM) || .def(OSI)
+; OSI is compiled for ROM, but but includes
+; this unused string
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
         .byte   $00
