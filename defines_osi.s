@@ -28,12 +28,6 @@ RAMSTART2		:= $0300
 
 ; magic memory locations
 L0200           := $0200
-LD000			:= $D000
-LD300			:= $D300
-LD700			:= $D700
-LFB00			:= $FB00
-LFC00			:= $FC00
-LFFE0			:= $FFE0
 
 ; monitor functions
 MONRDKEY        := $FFEB
