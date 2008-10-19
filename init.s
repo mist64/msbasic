@@ -131,11 +131,7 @@ L4098:
   .endif
         pha
         sta     Z14
-  .ifdef CBM2
-        inx
-        stx     $01FD
-        stx     $01FC
-  .else
+  .ifndef CBM2
     .ifndef MICROTAN
         lda     #$03
         sta     DSCLEN
@@ -146,10 +142,15 @@ L4098:
     .endif
         jsr     CRDO
   .endif
+  .ifdef CBM2
+        inx
+        stx     INPUTBUFFER-3
+        stx     INPUTBUFFER-4
+  .endif
   .ifdef APPLE
         lda     #$01
-        sta     $01FD
-        sta     $01FC
+        sta     INPUTBUFFER-3
+        sta     INPUTBUFFER-4
   .endif
         ldx     #TEMPST
         stx     TEMPPT
@@ -370,38 +371,38 @@ L4192:
 ; this unused string
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
-        .byte   $00
+        .byte   0
   .endif
 QT_WRITTEN_BY:
   .ifndef CONFIG_CBM_ALL
     .ifdef APPLE
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
-		.byte	$0D,$00
+		.byte	CR,0
     .else
-        .byte   $0D,$0A,$0C
+        .byte   CR,LF,$0C
       .ifndef CONFIG_11
         .byte   "WRITTEN BY RICHARD W. WEILAND."
       .else
         .byte   "WRITTEN BY WEILAND & GATES"
       .endif
-        .byte   $0D,$0A,$00
+        .byte   CR,LF,0
     .endif
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
-        .byte   $00
+        .byte   0
 QT_TERMINAL_WIDTH:
         .byte   "TERMINAL WIDTH"
-        .byte   $00
+        .byte   0
   .endif
 QT_BYTES_FREE:
         .byte   " BYTES FREE"
   .ifdef CBM1
   .elseif .def(CBM2)
-        .byte   $0D,$00
+        .byte   CR,0
   .elseif .def(APPLE)
-        .byte   $00
+        .byte   0
   .else
-        .byte   $0D,$0A,$0D,$0A
+        .byte   CR,LF,CR,LF
   .endif
 QT_BASIC:
   .ifdef OSI
@@ -414,25 +415,25 @@ QT_BASIC:
         .byte   "MICROTAN BASIC"
   .endif
   .ifdef CBM1
-        .byte   $13
+        .byte   $13 ; HOME
         .byte   "*** COMMODORE BASIC ***"
-        .byte   $11,$11,$11,$00
+        .byte   $11,$11,$11,0 ; DOWN/DOWN/DOWN
   .endif
   .ifdef CBM2
         .byte   "### COMMODORE BASIC ###"
-        .byte   $0D,$0D,$00
+        .byte   CR,CR,0
   .endif
   .ifdef APPLE
-        .byte   $0A,$0D,$0A
+        .byte   LF,CR,LF
 		.byte	"APPLE BASIC V1.1"
   .endif
   .ifndef CONFIG_CBM_ALL
-        .byte   $0D,$0A
+        .byte   CR,LF
     .ifdef MICROTAN
-        .byte   "(C) 1980 MICROSOFT"            ; E1F2 28 43 29 20 31 39 38 30  (C) 1980
+        .byte   "(C) 1980 MICROSOFT"
     .else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
     .endif
-        .byte   $0D,$0A,$00
+        .byte   CR,LF,0
   .endif
 .endif /* KBD */

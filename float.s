@@ -33,29 +33,29 @@ FSUBT:
 ; ----------------------------------------------------------------------------
 .ifdef CONFIG_EASTER_EGG
 EASTER_EGG:
-        lda     $11
+        lda     LINNUM
         cmp     #<6502
         bne     L3628
-        lda     $12
+        lda     LINNUM+1
         sbc     #>6502
         bne     L3628
-        sta     $11
+        sta     LINNUM
         tay
         lda     #$80
-        sta     $12
+        sta     LINNUM+1
 LD758:
         ldx     #$0A
 LD75A:
         lda     MICROSOFT-1,x
         and     #$3F
-        sta     ($11),y
+        sta     (LINNUM),y
         iny
         bne     LD766
-        inc     $12
+        inc     LINNUM+1
 LD766:
         dex
         bne     LD75A
-        dec     $46
+        dec     FORPNT
         bne     LD758
         rts
 .endif

@@ -4,7 +4,7 @@ PATCH1:
         clc
         jmp     CONTROL_C_TYPED
 PATCH2:
-        bit     $B4
+        bit     FAC+4
         bpl     LE1AA
         cmp     #$54
         bne     LE1AA
@@ -12,7 +12,7 @@ PATCH2:
 LE1AA:
         rts
 PATCH3:
-        bit     $B4
+        bit     FAC+4
         bmi     LE1B2
         jmp     LCE90
 LE1B2:
@@ -27,8 +27,8 @@ PATCH4:
         jmp     LE1D9
 PATCH5:
         bpl     LE1C9
-        lda     $8E
-        ldy     $8F
+        lda     Z8C
+        ldy     Z8C+1
         rts
 LE1C9:
         ldy     #$FF
@@ -44,7 +44,7 @@ LE1CE:
 LE1D8:
         rts
 LE1D9:
-        stx     $C9
+        stx     TXTPTR
         pla
         pla
         tya
