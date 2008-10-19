@@ -152,10 +152,10 @@ L2866:
         iny
         cmp     #$22
 .ifndef CONFIG_11
-        beq     L285E
+        beq     L285E; old: swap & cont is faster
         bne     L2866
 .else
-        bne     L2866
+        bne     L2866; new: cont is faster
         beq     L285E
 .endif
 

@@ -525,9 +525,7 @@ FMULTT:
 .ifndef CONFIG_11
         beq     L3903
 .else
-        bne     L3876
-        jmp     L3903
-L3876:
+        jeq     L3903
 .endif
         jsr     ADD_EXPONENTS
         lda     #$00

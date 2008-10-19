@@ -197,9 +197,7 @@ L29F5:
         bcc     L2A09
 .else
   .ifdef CONFIG_11
-        beq     L1185
-        jmp     SYNERR
-L1185:
+        jne     SYNERR
   .else
         bne     SYNERR4
   .endif

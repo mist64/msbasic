@@ -111,7 +111,7 @@ COLD_START:
 .endif
 L4098:
         lda     GENERIC_CHRGET-1,x
-        sta     STRNG2+1,x
+        sta     CHRGET-1,x
         dex
         bne     L4098
 .ifdef CONFIG_2
@@ -193,18 +193,20 @@ L40D7:
         bne     L40DD
         inc     LINNUM+1
 .ifdef CBM1
+; CBM: hard RAM top limit is $8000
         lda     LINNUM+1
         cmp     #$80
         beq     L40FA
 .endif
 .ifdef CBM2
+; optimized version of the CBM1 code
         bmi     L40FA
 .endif
 L40DD:
 .ifdef CONFIG_2
-        lda     #$55
+        lda     #$55 ; 01010101 / 10101010
 .else
-        lda     #$92
+        lda     #$92 ; 10010010 / 00100100
 .endif
         sta     (LINNUM),y
         cmp     (LINNUM),y
@@ -216,10 +218,10 @@ L40DD:
         beq     L40D7
 .else
   .ifndef CONFIG_11
-        beq     L40D7
+        beq     L40D7; old: faster
         bne     L40FA
   .else
-        bne     L40FA
+        bne     L40FA; new: slower
         beq     L40D7
   .endif
 L40EE:

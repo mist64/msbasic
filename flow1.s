@@ -100,14 +100,14 @@ LC6D4:
 L2683:
         lda     (TXTPTR),y
 .ifndef CONFIG_11
-        beq     LA5DC
+        beq     LA5DC	; old: 1 cycle more on generic case
         cmp     #$3A
         beq     NEWSTT2
 SYNERR1:
         jmp     SYNERR
 LA5DC:
 .else
-        bne     COLON
+        bne     COLON; new: 1 cycle more on ":" case
 .endif
         ldy     #$02
         lda     (TXTPTR),y
@@ -151,9 +151,9 @@ EXECUTE_STATEMENT:
 EXECUTE_STATEMENT1:
         sbc     #$80
 .ifndef CONFIG_11
-        jcc     LET
+        jcc     LET	; old: 1 cycle more on instr.
 .else
-        bcc     LET1
+        bcc     LET1; new: 1 cycle more on assignment
 .endif
         cmp     #NUM_TOKENS
 .ifdef CONFIG_2
@@ -168,16 +168,19 @@ EXECUTE_STATEMENT1:
         lda     TOKEN_ADDRESS_TABLE,y
         pha
         jmp     CHRGET
+
 .ifdef CONFIG_11
 LET1:
         jmp     LET
+
 COLON:
         cmp     #$3A
         beq     NEWSTT2
 SYNERR1:
         jmp     SYNERR
 .endif
-.ifdef CONFIG_2
+
+.ifdef CONFIG_2; GO TO
 LC721:
         cmp     #TOKEN_GO-$80
         bne     SYNERR1
