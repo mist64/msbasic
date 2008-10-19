@@ -455,8 +455,8 @@ FRM_VARIABLE_CALL	= *-1
 LCE3B:
   .else
         ldx     #$00
-        stx     $6D
-        bit     $62
+        stx     STRNG1+1
+        bit     FAC+4
         bpl     LCE53
         cmp     #$54	; T
         bne     LCE53

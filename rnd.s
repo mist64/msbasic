@@ -10,8 +10,8 @@ RND:
         jsr     SIGN
         beq     LFC26
         bmi     LFC10
-        lda     $87
-        ldy     $88
+        lda     RNDSEED
+        ldy     RNDSEED+1
 LFBFA:
         sta     FAC+2
         sty     FAC+1
@@ -33,10 +33,10 @@ LFC10:
         lda     FAC+2
         dex
         bne     LFBFE
-        sta     $87
+        sta     RNDSEED
         sta     FAC+3
         lda     FAC+1
-        sta     $88
+        sta     RNDSEED+1
         lda     #$80
         sta     FAC
         stx     FACSIGN

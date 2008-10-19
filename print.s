@@ -101,7 +101,7 @@ CRDO:
 .if .def(CONFIG_PRINTNULLS) && .def(CONFIG_FILE)
         lda     CURDVC
         bne     LC9D8
-        sta     $05
+        sta     POSX
 LC9D8:
 .endif
         lda     #CRLF_1
@@ -116,7 +116,7 @@ CRDO2:
 PRINTNULLS:
 .ifdef KBD
         lda     #$00
-        sta     $10
+        sta     POSX
         eor     #$FF
 .else
   .if .def(CONFIG_NULL) || .def(CONFIG_PRINTNULLS)

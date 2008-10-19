@@ -2,58 +2,56 @@
 
         .byte   $00,$00
 LBEE4:
-        lda     LBF05
+        lda     LBF03+2
         lsr     a
         bcc     LBEE4
-        lda     $FB03
-        sta     $FB07
+        lda     LFB00+3
+        sta     LFB00+7
         and     #$7F
         rts
         pha
 LBEF4:
-        lda     $FB05
+        lda     LFB00+5
         bpl     LBEF4
         pla
-        sta     $FB04
+        sta     LFB00+4
         rts
-        lda     $FB06
+        lda     LFB00+6
         lda     #$FF
-        .byte   $8D
-        .byte   $05
-LBF05:
-        .byte   $FB
+LBF03:
+        sta     LFB00+5
         rts
 LBF07:
-        lda     $FC00
+        lda     LFC00
         lsr     a
         bcc     LBF07
-        lda     $FC01
+        lda     LFC00+1
         beq     LBF07
         and     #$7F
         rts
         pha
 LBF16:
-        lda     $FC00
+        lda     LFC00
         lsr     a
         lsr     a
         bcc     LBF16
         pla
-        sta     $FC01
+        sta     LFC00+1
         rts
         lda     #$03
-        sta     $FC00
+        sta     LFC00
         lda     #$B1
-        sta     $FC00
+        sta     LFC00
         rts
-        sta     $0202
+        sta     L0200+2
         pha
         txa
         pha
         tya
         pha
-        lda     $0202
+        lda     L0200+2
         beq     LBF6D
-        ldy     $0206
+        ldy     L0200+6
         beq     LBF47
 LBF3F:
         ldx     #$40
@@ -70,13 +68,13 @@ LBF47:
         jsr     LBFD5
         jmp     LBF6D
 LBF55:
-        sta     $0201
+        sta     L0200+1
         jsr     LBFC2
-        inc     $0200
-        lda     $FFE1
+        inc     L0200+0
+        lda     LFFE0+1
         clc
-        adc     $FFE0
-        cmp     $0200
+        adc     LFFE0+0
+        cmp     L0200+0
         bmi     LBF73
 LBF6A:
         jsr     LBFDE
@@ -91,70 +89,70 @@ LBF73:
         jsr     LBFD8
 LBF76:
         jsr     LBFC2
-        lda     $FFE0
+        lda     LFFE0
         and     #$E0
-        sta     $0202
+        sta     L0200+2
         ldx     #$07
 LBF83:
         lda     LBFF3,x
-        sta     L0207,x
+        sta     L0200+7,x
         dex
         bpl     LBF83
         ldx     LBFFB,y
         lda     #$20
-        ldy     $FFE1
+        ldy     LFFE0+1
         cpy     #$20
         bmi     LBF99
         asl     a
 LBF99:
-        sta     $0208
+        sta     L0200+8
         ldy     #$00
 LBF9E:
-        jsr     L0207
+        jsr     L0200+7
         bne     LBF9E
-        inc     $0209
-        inc     $020C
-        cpx     $0209
+        inc     L0200+9
+        inc     L0200+12
+        cpx     L0200+9
         bne     LBF9E
 LBFAE:
-        jsr     L0207
-        cpy     $0202
+        jsr     L0200+7
+        cpy     L0200+2
         bne     LBFAE
         lda     #$20
 LBFB8:
-        jsr     L020A
-        dec     $0208
+        jsr     L0200+10
+        dec     L0200+8
         bne     LBFB8
         beq     LBF6A
 LBFC2:
-        ldx     $0200
-        lda     $0201
+        ldx     L0200+0
+        lda     L0200+1
 LBFC8:
-        ldy     $FFE2
+        ldy     LFFE0+2
         bne     LBFD1
-        sta     $D300,x
+        sta     LD300,x
         rts
 LBFD1:
-        sta     $D700,x
+        sta     LD700,x
         rts
 LBFD5:
         jsr     LBFC2
 LBFD8:
-        lda     $FFE0
-        sta     $0200
+        lda     LFFE0
+        sta     L0200+0
 LBFDE:
-        ldx     $0200
-        lda     $D300,x
-        ldy     $FFE2
+        ldx     L0200+0
+        lda     LD300,x
+        ldy     LFFE0+2
         beq     LBFEC
-        lda     $D700,x
+        lda     LD700,x
 LBFEC:
-        sta     $0201
+        sta     L0200+1
         lda     #$5F
         bne     LBFC8
 LBFF3:
-        lda     $D000,y
-        sta     $D000,y
+        lda     LD000,y
+        sta     LD000,y
         iny
         rts
 LBFFB:

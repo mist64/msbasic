@@ -27,8 +27,13 @@ WIDTH2			:= 56
 RAMSTART2		:= $0300
 
 ; magic memory locations
-L0207           := $0207
-L020A           := $020A
+L0200           := $0200
+LD000			:= $D000
+LD300			:= $D300
+LD700			:= $D700
+LFB00			:= $FB00
+LFC00			:= $FC00
+LFFE0			:= $FFE0
 
 ; monitor functions
 MONRDKEY        := $FFEB
@@ -36,4 +41,3 @@ MONCOUT         := $FFEE
 MONISCNTC       := $FFF1
 LOAD            := $FFF4
 SAVE            := $FFF7
-

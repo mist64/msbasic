@@ -174,7 +174,7 @@ LBF83:
         txa
         sbc     FRETOP
         sta     $0521
-        lda     #$3F
+        lda     #>CONST_MEMSIZ
         sbc     FRETOP+1
         sta     $0522
         lda     FRETOP
@@ -236,9 +236,9 @@ LFF34:
         sta     HIGHTR
         lda     FRETOP+1
         sta     HIGHTR+1
-        lda     #$FF
+        lda     #<CONST_MEMSIZ
         sta     HIGHDS
-        lda     #$3F
+        lda     #>CONST_MEMSIZ
         sta     HIGHDS+1
         lda     $0523
         sta     FRETOP
