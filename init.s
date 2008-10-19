@@ -379,7 +379,7 @@ QT_WRITTEN_BY:
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
 		.byte	CR,0
     .else
-        .byte   CR,LF,$0C
+        .byte   CR,LF,$0C ; FORM FEED
       .ifndef CONFIG_11
         .byte   "WRITTEN BY RICHARD W. WEILAND."
       .else

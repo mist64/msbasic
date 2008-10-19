@@ -1,26 +1,3 @@
-;CONFIG_CBM1_PATCHES := 1 ; ** don't turn off! **
-;CONFIG_CBM_ALL := 1
-;CONFIG_DATAFLG := 1
-;CONFIG_EASTER_EGG := 1
-;CONFIG_FILE := 1; support PRINT#, INPUT#, GET#, CMD
-;CONFIG_IO_MSB := 1 ; all I/O has bit #7 set
-;CONFIG_MONCOUT_DESTROYS_Y := 1
-;CONFIG_NO_CR := 1; terminal doesn't need explicit CRs on line ends
-;CONFIG_NO_LINE_EDITING := 1; support for "@", "_", BEL etc.
-;CONFIG_NO_POKE := 1
-;CONFIG_NO_READ_Y_IS_ZERO_HACK := 1
-;CONFIG_NULL := 1
-;CONFIG_PEEK_SAVE_LINNUM := 1
-;CONFIG_PRINTNULLS := 1; whether PRINTNULLS does anything
-;CONFIG_PRINT_CR := 1 ; print CR when line end reached
-;CONFIG_RAM := 1
-;CONFIG_ROR_WORKAROUND := 1; doesn't work with CONFIG_SMALL!
-;CONFIG_SAFE_NAMENOTFOUND := 1
-;CONFIG_SCRTCH_ORDER := 1
-;CONFIG_SCRTCH_ORDER := 2
-;CONFIG_SCRTCH_ORDER := 3
-;CONFIG_SMALL := 1
-
 ; configuration
 ; oldest known version, no CONFIG_n
 

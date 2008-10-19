@@ -5,11 +5,6 @@
 * add AppleSoft comments
 * look for all " $", i.e. (zeropage) constants, replace them
   with symbols
-* check all .ifdef OSI; they might be .ifdef CONFIG_SMALL
-* check for KBD whether it's CONFIG_2 && CONFIG_SMALL (float
-  etc.)
-* there must be no platform ifdefs in generic files
+* convert platform ifdefs in generic files into feature ifdefs or macros
 * reconstruct pre-CBM1, i.e. CBM1 without the patches
 * add some comments to every file
-* clean up all CONFIG_*, maybe some should go away
-* look for all || and && and convert them into CONFIG_*
