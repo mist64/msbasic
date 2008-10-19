@@ -384,7 +384,7 @@ INPDONE:
         lda     INPTR
         ldy     INPTR+1
         ldx     INPUTFLG
-.ifdef OSI ; CONFIG_SMALL && !CONFIG_11
+.if .def(CONFIG_SMALL) && (!.def(CONFIG_11))
         beq     L2B94 ; INPUT
 .else
         bpl     L2B94; INPUT or GET

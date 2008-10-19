@@ -367,7 +367,7 @@ L4192:
 .endif
 
   .if .def(CONFIG_RAM) || .def(OSI)
-; OSI is compiled for ROM, but but includes
+; OSI is compiled for ROM, but includes
 ; this unused string
 QT_WANT:
         .byte   "WANT SIN-COS-TAN-ATN"
