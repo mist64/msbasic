@@ -129,7 +129,7 @@ LE2E4:
         sta     $BFC2
         sta     $15
         sta     $16
-        jmp     COLD_START2
+        jmp     COLD_START
 LE2FD:
         pha
         txa

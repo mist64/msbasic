@@ -9,4 +9,4 @@ ISCNTC:
         bcc     RET2
         jsr     GETLN
         cmp     #$03
-;!!! runs into "STOP"
+;!!! *used*to* run into "STOP"

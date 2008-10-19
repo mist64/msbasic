@@ -245,8 +245,8 @@ PROCESS_INPUT_ITEM:
 ; code had ldx/ldy/bne here, which was only
 ; correct for a non-ZP INPUTBUFFER. Commodore
 ; fixed it in CBMBASIC V1 by swapping the
-; ldx and the ldy. It was broken on OSI and
-; KIM, and okay on APPLE and CBM2, because
+; ldx and the ldy. It was broken on KIM
+; and okay on APPLE and CBM2, because
 ; these used a non-ZP INPUTBUFFER.
 ; Microsoft fixed this somewhere after KIM
 ; and before MICROTAN, by using beq instead

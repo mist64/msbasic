@@ -7,7 +7,7 @@ FNDLIN2:
 .endif
 
 ; ----------------------------------------------------------------------------
-COLD_START:
+PR_WRITTEN_BY:
 .ifdef KBD
         lda     #<LFD81
         sta     $03A0
@@ -25,7 +25,7 @@ COLD_START:
         ldy     #>QT_WRITTEN_BY
         jsr     STROUT
   .endif
-COLD_START2:
+COLD_START:
   .ifndef CBM2
         ldx     #$FF
         stx     CURLIN+1
@@ -35,8 +35,8 @@ COLD_START2:
   .endif
         txs
   .ifndef CONFIG_CBM_ALL
-        lda     #<COLD_START2
-        ldy     #>COLD_START2
+        lda     #<COLD_START
+        ldy     #>COLD_START
         sta     GORESTART+1
         sty     GORESTART+2
         sta     GOSTROUT+1
@@ -167,7 +167,7 @@ L4098:
         sty     TXTPTR+1
         jsr     CHRGET
         cmp     #$41
-        beq     COLD_START
+        beq     PR_WRITTEN_BY
         tay
         bne     L40EE
 .endif
