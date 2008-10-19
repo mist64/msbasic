@@ -8,6 +8,14 @@ FNDLIN2:
 
 ; ----------------------------------------------------------------------------
 PR_WRITTEN_BY:
+.ifndef KBD
+  .ifndef CONFIG_CBM_ALL
+        lda     #<QT_WRITTEN_BY
+        ldy     #>QT_WRITTEN_BY
+        jsr     STROUT
+  .endif
+.endif
+COLD_START:
 .ifdef KBD
         lda     #<LFD81
         sta     $03A0
@@ -20,12 +28,6 @@ PR_WRITTEN_BY:
         lda     $0353
         sta     $05
 .else
-  .ifndef CONFIG_CBM_ALL
-        lda     #<QT_WRITTEN_BY
-        ldy     #>QT_WRITTEN_BY
-        jsr     STROUT
-  .endif
-COLD_START:
   .ifndef CBM2
         ldx     #$FF
         stx     CURLIN+1
