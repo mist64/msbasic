@@ -20,6 +20,7 @@ ZP_START4 = $13
 
 ; extra/override ZP variables
 CURDVC			:= $000E
+TISTR			:= $008D
 Z96				:= $0096
 POSX			:= $00C6
 TXPSV			:= LASTOP

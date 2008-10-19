@@ -102,21 +102,19 @@ LETSTRING:
 PUTSTR:
 .ifdef CONFIG_CBM_ALL
         ldy     FORPNT+1
-.ifdef CBM1
-        cpy     #$D0
-.else
+  .ifdef CBM1
+        cpy     #$D0	; TI$
+  .else
         cpy     #$DE
-.endif
+  .endif
         bne     LC92B
         jsr     FREFAC
         cmp     #$06
-.ifdef CBM2
+  .ifdef CBM2
         bne     IQERR1
-.else
-        beq     LC8E2
-        jmp     IQERR
-LC8E2:
-.endif
+  .else
+        jne     IQERR
+  .endif
         ldy     #$00
         sty     FAC
         sty     FACSIGN
@@ -144,11 +142,7 @@ LC902:
         sei
 LC912:
         lda     FAC+2,x
-.ifdef CBM2
-        sta     $8D,x
-.else
-        sta     $0200,x
-.endif
+        sta     TISTR,x
         dex
         bpl     LC912
         cli

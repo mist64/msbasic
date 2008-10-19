@@ -42,6 +42,7 @@ ZP_START4 = $65
 
 ; extra ZP variables
 CURDVC			:= $0003
+TISTR			:= $0200
 Z96				:= $020C
 USR				:= GORESTART
 

@@ -14,8 +14,8 @@ LC74F:
         bpl     LC74F
         ldx     #$03
 LC757:
-        lda     $9A,x
-        sta     $1C,x
+        lda     TXTTAB,x
+        sta     GOSTROUT+2,x
         dex
         bpl     LC757
         jmp     LE219
@@ -49,9 +49,9 @@ LOAD:
         lda     #$4B
         jsr     LFE75
         jsr     LFE73
-        lda     $9C
+        lda     VARTAB
         tax
-        ldy     $9D
+        ldy     VARTAB+1
         jmp     FIX_LINKS
         nop
 LC7A5:
@@ -70,6 +70,6 @@ LC7AD:
         pla
         rts
         inc     $8A17
-        stx     $9C
-        sty     $9D
+        stx     VARTAB
+        sty     VARTAB+1
         jmp     FIX_LINKS

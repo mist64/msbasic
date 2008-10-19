@@ -59,10 +59,10 @@ LF45B:
         iny
         lda     (JMPADRS+1),y
         dey
-        cmp     $14
+        cmp     LINNUM+1
         bne     LF472
         lda     (JMPADRS+1),y
-        cmp     $13
+        cmp     LINNUM
 LF472:
         bcs     LF43A
         dey
