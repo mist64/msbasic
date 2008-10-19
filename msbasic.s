@@ -1,16 +1,16 @@
 ; Microsoft BASIC for 6502
 ;
-; This is a single integrated assembly source tree that can generate any of seven different
-; versions of Microsoft BASIC for 6502.
+; (first revision of this distribution, 20 Oct 2008, Michael Steil www.pagetable.com)
 ;
-; By running ./make.sh, this will generate all versions and compare them to the original
-; files byte by byte.
+; This is a single integrated assembly source tree that can generate seven different versions of
+; Microsoft BASIC for 6502.
 ;
-; The CC65 compiler suite is need to build this project.
+; By running ./make.sh, this will generate all versions and compare them to the original files
+; byte by byte. The CC65 compiler suite is need to build this project.
 ;
-; These are the first eight (knows) versions of Microsoft BASIC for 6502:
+; These are the first eight (known) versions of Microsoft BASIC for 6502:
 ;
-; Name                 Release   MS Version    ROM   9digit  INPUTBUFFER   extensions   comment
+; Name                 Release   MS Version    ROM   9digit  INPUTBUFFER   extensions   .define
 ;---------------------------------------------------------------------------------------------------
 ; Commodore BASIC 1     1977                    Y      Y          ZP          CBM
 ; OSI BASIC             1977     1.0 REV 3.2    Y      N          ZP            -        CONFIG_10A
@@ -27,8 +27,12 @@
 ; Commodore BASIC 1, as used on the original PET is the oldest known version of Microsoft BASIC
 ; for 6502. It contains some additions to Microsoft's version, like Commodore-style file I/O.
 ;
-; The CONFIG_n defines specify what Microsoft-version the OEM version is based on.  
-
+; The CONFIG_n defines specify what Microsoft-version the OEM version is based on. If CONFIG_2B
+; is defined, for example, CONFIG_2A, CONFIG_2, CONFIG_11A, CONFIG_11 and CONFIG_10A will be
+; defined as well, and all bugfixes up to version 2B will be enabled.
+;
+; The following symbols can be defined in addition:
+;
 ; CONFIG_CBM1_PATCHES				jump out into CBM1's binary patches instead of doing the right thing inline
 ; CONFIG_CBM_ALL					add all Commodore-specific additions except file I/O
 ; CONFIG_DATAFLG					?
@@ -49,6 +53,16 @@
 ; CONFIG_SAFE_NAMENOTFOUND			check both bytes of the caller's address in NAMENOTFOUND
 ; CONFIG_SCRTCH_ORDER				where in the init code to call SCRTCH
 ; CONFIG_SMALL						use 6 digit FP instead of 9 digit, use 2 character error messages, don't have GET
+;
+; Changing symbol definitions can alter an existing base configuration, but it not guaranteed to assemble
+; or work correctly.
+;
+; Credits:
+; * main work by Michael Steil
+; * function names and all uppercase taken from Bob Sander-Cederlof's excellent AppleSoft II disassembly:
+;   http://www.txbobsc.com/scsc/scdocumentor/
+; * Applesoft lite by Tom Greene http://cowgod.org/replica1/applesoft/ helped a lot, too.
+; * Thanks to Joe Zbicak for help with Intellision Keyboard BASIC
 
 .debuginfo +
 

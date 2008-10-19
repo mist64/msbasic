@@ -263,7 +263,7 @@ L3376:
 .endif
         iny
         lda     (INDEX),y
-.ifdef CBM1
+.ifdef CONFIG_CBM1_PATCHES
         jsr     LE7F3 ; XXX patch, call into screen editor
 .else
   .ifdef CONFIG_11
