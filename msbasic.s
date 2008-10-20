@@ -18,7 +18,7 @@
 ; KIM BASIC             1977     1.1            N      Y          ZP            -        CONFIG_11A
 ; AppleSoft II          1978                    Y      Y        $0200         Apple      CONFIG_2
 ; Commodore BASIC 2     1979                    Y      Y        $0200          CBM       CONFIG_2A
-; KBD BASIC             1980                    Y      N        $0700          KBD       CONFIG_2B
+; KBD BASIC             1982                    Y      N        $0700          KBD       CONFIG_2B
 ; MicroTAN              1980                    Y      Y          ZP            -        CONFIG_2C
 ;
 ; (Note that this assembly source cannot (yet) build AppleSoft II.)
@@ -36,7 +36,7 @@
 ; CONFIG_CBM1_PATCHES				jump out into CBM1's binary patches instead of doing the right thing inline
 ; CONFIG_CBM_ALL					add all Commodore-specific additions except file I/O
 ; CONFIG_DATAFLG					?
-; CONFIG_EASTER_EGG					include the CBM2 "MICROSOFT!" easter egg
+; CONFIG_EASTER_EGG					include the CBM2 "WAIT 6502" easter egg
 ; CONFIG_FILE						support Commodore PRINT#, INPUT#, GET#, CMD
 ; CONFIG_IO_MSB						all I/O has bit #7 set
 ; CONFIG_MONCOUT_DESTROYS_Y			Y needs to be preserved when calling MONCOUT 	

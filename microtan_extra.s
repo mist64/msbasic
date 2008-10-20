@@ -891,7 +891,7 @@ LE793:
         sta     $16
         ldx     #$06
 LE7B1:
-        lda     LE7DC,x
+        lda     LE7DC,x	; "PARITY"
         jsr     LFE75
         dex
         bpl     LE7B1

@@ -281,9 +281,7 @@ L23FA:
 .ifdef CONFIG_2
         beq     RET3
 .else
-        bne     L2403
-        jmp     L2351
-L2403:
+        jeq     L2351
 .endif
         ldy     #$04
 L2405:
@@ -701,7 +699,7 @@ L25A6X:
         lda     (LOWTRX),y
         beq     L25E5
 .ifdef MICROTAN
-        jmp     LE21F                           ; C5A6 4C 1F E2                 L..
+        jmp     LE21F
 LC5A9:
 .else
         jsr     ISCNTC

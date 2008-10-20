@@ -22,6 +22,7 @@ PRINT2:
         cmp     #','
 ; Pre-KIM had no CLC. KIM added the CLC
 ; here. Post-KIM moved the CLC up...
+; (makes no sense on KIM, liveness = 0)
 .if .def(CONFIG_11A) && (!.def(CONFIG_2))
         clc
 .endif

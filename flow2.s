@@ -79,7 +79,7 @@ L281E:
 POP:
         bne     L281E
         lda     #$FF
-.ifdef CONFIG_2
+.ifdef CONFIG_2A
         sta     FORPNT+1 ; bugfix, wrong in AppleSoft II
 .else
         sta     FORPNT

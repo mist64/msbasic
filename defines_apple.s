@@ -1,5 +1,3 @@
-; http://apple2.org.za/gswv/a2zine/GS.WorldView/Resources/GS.TECH.INFO/AppleSoft/
-
 ; configuration
 CONFIG_11 := 1
 
