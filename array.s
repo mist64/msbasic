@@ -338,7 +338,7 @@ L3124:
         sta     STRNG2+1
   .endif
         ldx     #BYTES_FP
-  .if .def(CONFIG_SMALL) && (.def(CONFIG_2))
+  .ifdef CONFIG_SMALL
         lda     VARNAM+1
   .else
         lda     VARNAM
@@ -346,7 +346,7 @@ L3124:
         bpl     L3135
         dex
 L3135:
-  .if .def(CONFIG_SMALL) && (.def(CONFIG_2))
+  .ifdef CONFIG_SMALL
         stx     RESULT+1
   .else
         lda     VARNAM+1
