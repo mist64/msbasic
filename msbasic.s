@@ -43,13 +43,13 @@
 ; CONFIG_NO_CR						terminal doesn't need explicit CRs on line ends
 ; CONFIG_NO_LINE_EDITING			disable support for Microsoft-style "@", "_", BEL etc.
 ; CONFIG_NO_POKE					don't support PEEK, POKE and WAIT
-; CONFIG_NO_READ_Y_IS_ZERO_HACK		don't do a ver volatile trick that saves one byte
+; CONFIG_NO_READ_Y_IS_ZERO_HACK		don't do a very volatile trick that saves one byte
 ; CONFIG_NULL						support for the NULL statement
 ; CONFIG_PEEK_SAVE_LINNUM			preserve LINNUM on a PEEK
 ; CONFIG_PRINTNULLS					whether PRINTNULLS does anything
 ; CONFIG_PRINT_CR					print CR when line end reached
 ; CONFIG_RAM						optimizations for RAM version of BASIC, only use on 1.x
-; CONFIG_ROR_WORKAROUND				use workaround for buggy 6502s from 1975/1976; doesn't work with CONFIG_SMALL!
+; CONFIG_ROR_WORKAROUND				use workaround for buggy 6502s from 1975/1976; not safe for CONFIG_SMALL!
 ; CONFIG_SAFE_NAMENOTFOUND			check both bytes of the caller's address in NAMENOTFOUND
 ; CONFIG_SCRTCH_ORDER				where in the init code to call SCRTCH
 ; CONFIG_SMALL						use 6 digit FP instead of 9 digit, use 2 character error messages, don't have GET
@@ -59,10 +59,11 @@
 ;
 ; Credits:
 ; * main work by Michael Steil
-; * function names and all uppercase taken from Bob Sander-Cederlof's excellent AppleSoft II disassembly:
+; * function names and all uppercase comments taken from Bob Sander-Cederlof's excellent AppleSoft II disassembly:
 ;   http://www.txbobsc.com/scsc/scdocumentor/
 ; * Applesoft lite by Tom Greene http://cowgod.org/replica1/applesoft/ helped a lot, too.
 ; * Thanks to Joe Zbicak for help with Intellision Keyboard BASIC
+; * This work is dedicated to the memory of my dear hacking pal Michael "acidity" Kollmann.
 
 .debuginfo +
 

@@ -190,7 +190,7 @@ FINDHIGHESTSTRING:
         ldy     #$00
         sty     FNCNAM+1
 .ifdef CONFIG_2
-        sty     FNCNAM
+        sty     FNCNAM	; GC bugfix!
 .endif
         lda     STREND
         ldx     STREND+1
@@ -223,7 +223,7 @@ L335A:
 L335F:
         sta     HIGHDS
         stx     HIGHDS+1
-        lda     #$03
+        lda     #$03	; OSI GC bugfix -> $04 ???
         sta     DSCLEN
 L3367:
         lda     HIGHDS
@@ -267,7 +267,7 @@ L3376:
         jsr     LE7F3 ; XXX patch, call into screen editor
 .else
   .ifdef CONFIG_11
-        ldy     #$00
+        ldy     #$00	; GC bugfix
   .endif
         asl     a
         adc     #$05
@@ -354,7 +354,7 @@ L33FA:
 ; ----------------------------------------------------------------------------
 MOVE_HIGHEST_STRING_TO_TOP:
 .ifdef CONFIG_2
-        lda     FNCNAM+1
+        lda     FNCNAM+1	; GC bugfix
         ora     FNCNAM
 .else
         ldx     FNCNAM+1
