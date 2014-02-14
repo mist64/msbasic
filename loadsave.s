@@ -9,3 +9,6 @@
 .ifdef MICROTAN
 .include "microtan_loadsave.s"
 .endif
+.ifdef AIM65
+.include "aim65_loadsave.s"
+.endif

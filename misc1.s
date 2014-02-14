@@ -203,7 +203,17 @@ L2963:
         iny
         lda     (DSCPTR),y
         sta     (FORPNT),y
+RET5:
         rts
+.ifdef AIM65
+LB89D:
+        cmp     #$21
+        bne     RET5
+        lda     #$80
+        sta     PRIFLG
+        jmp     CHRGET
+.endif
+
 .ifdef CONFIG_FILE
 PRINTH:
         jsr     CMD

@@ -6,7 +6,15 @@ L2420:
         jsr     OUTDO
   .endif
         dex
+  .ifdef AIM65
+        bmi     L2423
+        jsr     PSLS
+        jmp     INLIN2
+LB35F:
+        jsr     OUTDO
+  .else
         bpl     INLIN2
+  .endif
 L2423:
   .ifdef OSI
         jsr     OUTDO
@@ -39,6 +47,13 @@ L0C32:
         ldx     #$00
 INLIN2:
         jsr     GETLN
+    .ifdef AIM65
+        cmp     #$1A
+        bne     INLINAIM
+        jsr     DU13
+        jmp     INLIN
+INLINAIM:
+    .endif
     .ifndef CONFIG_NO_LINE_EDITING
         cmp     #$07
         beq     L2443
@@ -47,14 +62,25 @@ INLIN2:
         beq     L2453
     .ifndef CONFIG_NO_LINE_EDITING
         cmp     #$20
+      .ifdef AIM65
+        bcc     L244E
+      .else
         bcc     INLIN2
+      .endif
       .ifdef MICROTAN
         cmp     #$80
       .else
+        .ifdef AIM65
+        cmp     #$7F
+        beq     L2420
+        .endif
         cmp     #$7D
       .endif
         bcs     INLIN2
         cmp     #$40 ; @
+      .ifdef AIM65
+        beq     LB35F
+      .else
         beq     L2423
       .ifdef MICROTAN
         cmp     #$7F ; DEL
@@ -62,6 +88,7 @@ INLIN2:
         cmp     #$5F ; _
       .endif
         beq     L2420
+      .endif
 L2443:
       .ifdef MICROTAN
         cpx     #$4F
@@ -74,12 +101,16 @@ L2443:
         inx
     .ifdef OSI
         .byte   $2C
+    .elseif .def(AIM65)
+
+        .byte   $2C
     .else
         bne     INLIN2
     .endif
 L244C:
     .ifndef CONFIG_NO_LINE_EDITING
         lda     #$07 ; BEL
+L244E:
         jsr     OUTDO
         bne     INLIN2
     .endif
@@ -115,7 +146,7 @@ GETLN:
         nop
         and     #$7F
     .endif
-  .endif /* APPLE */
+  .endif
   .ifdef APPLE
 RDKEY:
         jsr     LFD0C
@@ -130,4 +161,4 @@ RDKEY:
         pla
 L2465:
         rts
-.endif /* KBD */
+.endif

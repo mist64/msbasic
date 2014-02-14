@@ -112,6 +112,11 @@ INPUT:
 .ifndef KBD
         lsr     Z14
 .endif
+.ifdef AIM65
+        lda     PRIFLG
+        sta     ZBE
+        jsr     LCFFA
+.endif
         cmp     #$22
         bne     L2A9E
         jsr     STRTXT
@@ -230,6 +235,8 @@ PROCESS_INPUT_ITEM:
 .ifndef CONFIG_SMALL ; GET
         bvc     L2AF0
   .ifdef MICROTAN
+        jsr     MONRDKEY2
+  .elseif .def(AIM65)
         jsr     MONRDKEY2
   .else
         jsr     MONRDKEY
@@ -392,6 +399,9 @@ INPDONE:
         jmp     SETDA
 L2B94:
         ldy     #$00
+.ifdef AIM65
+        jsr     LB8B1
+.endif
         lda     (INPTR),y
         beq     L2BA1
 .ifdef CONFIG_FILE

@@ -10,9 +10,11 @@ FNDLIN2:
 PR_WRITTEN_BY:
 .ifndef KBD
   .ifndef CONFIG_CBM_ALL
+    .ifndef AIM65
         lda     #<QT_WRITTEN_BY
         ldy     #>QT_WRITTEN_BY
         jsr     STROUT
+    .endif
   .endif
 .endif
 COLD_START:
@@ -34,6 +36,8 @@ COLD_START:
   .endif
   .ifdef CONFIG_NO_INPUTBUFFER_ZP
         ldx     #$FB
+  .elseif .def(AIM65)
+        ldx     #$FE
   .endif
         txs
   .ifndef CONFIG_CBM_ALL
@@ -41,6 +45,7 @@ COLD_START:
         ldy     #>COLD_START
         sta     GORESTART+1
         sty     GORESTART+2
+    .ifndef AIM65
         sta     GOSTROUT+1
         sty     GOSTROUT+2
         lda     #<AYINT
@@ -51,18 +56,25 @@ COLD_START:
         ldy     #>GIVAYF
         sta     GOGIVEAYF
         sty     GOGIVEAYF+1
+    .endif
   .endif
         lda     #$4C
   .ifdef CONFIG_CBM_ALL
         sta     JMPADRS
   .endif
         sta     GORESTART
+  .ifdef AIM65
+        sta     JMPADRS
+        sta     ATN
+        sta     GOSTROUT
+  .else
   .ifndef CONFIG_CBM_ALL
         sta     GOSTROUT
         sta     JMPADRS
   .endif
   .if (!.def(CONFIG_RAM)) && (!.def(CONFIG_CBM_ALL))
         sta     USR
+  .endif
   .endif
 
   .ifndef CONFIG_RAM
@@ -73,8 +85,15 @@ COLD_START:
           lda     #<IQERR
           ldy     #>IQERR
     .endif
+    .ifdef AIM65
+          sta     ATN+1
+          sty     ATN+2
+          sta     GOSTROUT+1
+          sty     GOSTROUT+2
+    .else
           sta     USR+1
           sty     USR+2
+    .endif
   .endif
   .ifndef CBM1
         lda     #WIDTH
@@ -82,7 +101,7 @@ COLD_START:
         lda     #WIDTH2
         sta     Z18
   .endif
-.endif /* KBD */
+.endif
 
 ; All non-CONFIG_SMALL versions of BASIC have
 ; the same bug here: While the number of bytes
@@ -125,8 +144,10 @@ L4098:
         sta     CURDVC
   .endif
         sta     LASTPT+1
+  .ifndef AIM65
   .if .defined(CONFIG_NULL) || .defined(CONFIG_PRINTNULLS)
         sta     Z15
+  .endif
   .endif
   .ifndef CONFIG_11
         sta     POSX
@@ -134,10 +155,12 @@ L4098:
         pha
         sta     Z14
   .ifndef CBM2
+   .ifndef AIM65
     .ifndef MICROTAN
         lda     #$03
         sta     DSCLEN
     .endif
+   .endif
     .ifndef CONFIG_11
         lda     #$2C
         sta     LINNUM+1
@@ -168,8 +191,10 @@ L4098:
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
+  .ifndef AIM65
         cmp     #$41
         beq     PR_WRITTEN_BY
+  .endif
         tay
         bne     L40EE
 .endif
@@ -201,6 +226,12 @@ L40D7:
 .ifdef CBM2
 ; optimized version of the CBM1 code
         bmi     L40FA
+.endif
+.if .def(AIM65)
+; AIM65: hard RAM top limit is $A000
+        lda     LINNUM+1
+        cmp     #$A0
+        beq     L40FA
 .endif
 L40DD:
 .ifdef CONFIG_2
@@ -236,7 +267,7 @@ L40FA:
         ldy     LINNUM+1
         sta     MEMSIZ
         sty     MEMSIZ+1
-.ifndef MICROTAN
+.if !(.def(MICROTAN) || .def(AIM65))
         sta     FRETOP
         sty     FRETOP+1
 .endif
@@ -267,10 +298,18 @@ L4106:
 L2829:
         sta     Z17
 L4129:
+  .ifdef AIM65
+        sbc     #$0A
+  .else
         sbc     #$0E
+  .endif
         bcs     L4129
         eor     #$FF
+  .ifdef AIM65
+        sbc     #$08
+  .else
         sbc     #$0C
+  .endif
         clc
         adc     Z17
         sta     Z18
@@ -355,6 +394,12 @@ L4192:
 .endif
 .ifdef CONFIG_CBM_ALL
         jmp     RESTART
+.elseif .def(AIM65)
+        lda     #<CRDO
+        ldy     #>CRDO
+        sta     GORESTART+1
+        sty     GORESTART+2
+        jmp     RESTART
 .else
         lda     #<STROUT
         ldy     #>STROUT
@@ -379,6 +424,7 @@ QT_WANT:
   .endif
 QT_WRITTEN_BY:
   .ifndef CONFIG_CBM_ALL
+  .ifndef AIM65
     .ifdef APPLE
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
 		.byte	CR,0
@@ -391,11 +437,15 @@ QT_WRITTEN_BY:
       .endif
         .byte   CR,LF,0
     .endif
+   .endif
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
         .byte   0
 QT_TERMINAL_WIDTH:
-        .byte   "TERMINAL WIDTH"
+    .ifndef AIM65
+        .byte   "TERMINAL "
+    .endif
+        .byte   "WIDTH"
         .byte   0
   .endif
 QT_BYTES_FREE:
@@ -418,6 +468,9 @@ QT_BASIC:
   .ifdef MICROTAN
         .byte   "MICROTAN BASIC"
   .endif
+  .ifdef AIM65
+        .byte   "  AIM 65 BASIC V1.1"
+  .endif
   .ifdef CBM1
         .byte   $13 ; HOME
         .byte   "*** COMMODORE BASIC ***"
@@ -435,9 +488,15 @@ QT_BASIC:
         .byte   CR,LF
     .ifdef MICROTAN
         .byte   "(C) 1980 MICROSOFT"
+    .elseif .def(AIM65)
+        .byte   0
+        .byte   "(C) 1978 MICROSOFT"
     .else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
     .endif
-        .byte   CR,LF,0
+        .byte   CR,LF
+      .ifndef AIM65
+        .byte   0
+      .endif
   .endif
-.endif /* KBD */
+.endif

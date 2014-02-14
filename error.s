@@ -1,6 +1,6 @@
 init_error_table
 
-.ifdef CONFIG_SMALL
+.ifdef CONFIG_SMALL_ERROR
 define_error ERR_NOFOR, "NF"
 define_error ERR_SYNTAX, "SN"
 define_error ERR_NOGOSUB, "RG"

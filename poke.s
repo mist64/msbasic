@@ -115,4 +115,4 @@ L362C:
         beq     L362C
 RTS3:
         rts
-.endif /* KBD */
+.endif

@@ -19,3 +19,7 @@
 .ifdef MICROTAN
 .include "microtan_extra.s"
 .endif
+
+.ifdef AIM65
+.include "aim65_extra.s"
+.endif

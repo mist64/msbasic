@@ -3,3 +3,8 @@
         jmp     LE68C
         .byte   $00,$13,$56
 .endif
+.ifdef AIM65
+        jmp     COLD_START
+        jmp     RESTART
+        .word   AYINT,GIVAYF
+.endif

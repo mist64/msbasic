@@ -19,6 +19,9 @@ KBD := 1
 .elseif .def(microtan)
 MICROTAN := 1
 .include "defines_microtan.s"
+.elseif .def(aim65)
+AIM65 := 1
+.include "defines_aim65.s"
 .endif
 
 .ifdef CONFIG_2C
@@ -42,6 +45,7 @@ CONFIG_10A := 1
 
 .ifdef CONFIG_SMALL
 BYTES_FP		:= 4
+CONFIG_SMALL_ERROR := 1
 .else
 BYTES_FP		:= 5
 .endif
@@ -60,6 +64,9 @@ MAX_EXPON = 10
 .endif
 
 STACK           := $0100
+.ifndef STACK2
+STACK2          := STACK
+.endif
 
 .ifdef INPUTBUFFER
   .if INPUTBUFFER >= $0100
