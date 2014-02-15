@@ -1,5 +1,6 @@
 .segment "CODE"
 
+.ifndef SYM1
 SIN_COS_TAN_ATN:
 ; ----------------------------------------------------------------------------
 ; "COS" FUNCTION
@@ -199,5 +200,6 @@ POLY_ATN:
 
 .if .def(CONFIG_11A) && (!.def(CONFIG_2))
 		.byte	$00 ; XXX
+.endif
 .endif
 .endif

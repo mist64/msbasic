@@ -29,7 +29,7 @@ STACK2          := $0200
 ; constants
 STACK_TOP		:= $FD
 SPACE_FOR_GOSUB := $44
-NULL_MAX		:= $F2 ; probably different in original version; the image I have seems 
+NULL_MAX		:= $F2
 CRLF_1 := CR
 CRLF_2 := LF
 WIDTH			:= 20

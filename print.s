@@ -104,7 +104,7 @@ L29B9:
         sty     INPUTBUFFER,x
         ldx     #LINNUM+1
     .endif
-    .ifdef MICROTAN
+    .if .def(MICROTAN) || .def(SYM1)
         bne     CRDO2
 	.endif
   .endif
@@ -132,11 +132,7 @@ CRDO2:
         jsr     OUTDO
 
 PRINTNULLS:
-.ifdef KBD
-        lda     #$00
-        sta     POSX
-        eor     #$FF
-.elseif .def(AIM65)
+.if .def(KBD) || .def(AIM65)
         lda     #$00
         sta     POSX
         eor     #$FF
@@ -154,7 +150,11 @@ PRINTNULLS:
         pha
         ldx     Z15
         beq     L29D9
+      .ifdef SYM1
+        lda     #$FF
+      .else
         lda     #$00
+      .endif
 L29D3:
         jsr     OUTDO
         dex

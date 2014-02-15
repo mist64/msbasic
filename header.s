@@ -8,3 +8,6 @@
         jmp     RESTART
         .word   AYINT,GIVAYF
 .endif
+.ifdef SYM1
+        jmp     PR_WRITTEN_BY
+.endif

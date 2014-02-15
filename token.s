@@ -116,7 +116,7 @@ UNFNC:
   .ifdef CONFIG_RAM
 		keyword_addr "USR", IQERR
   .else
-		keyword_addr "USR", USR
+		keyword_addr "USR", USR, TOKEN_USR
   .endif
 .endif
 		keyword_addr "FRE", FRE

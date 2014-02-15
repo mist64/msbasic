@@ -22,6 +22,9 @@ MICROTAN := 1
 .elseif .def(aim65)
 AIM65 := 1
 .include "defines_aim65.s"
+.elseif .def(sym1)
+SYM1 := 1
+.include "defines_sym1.s"
 .endif
 
 .ifdef CONFIG_2C

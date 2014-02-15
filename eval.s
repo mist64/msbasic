@@ -394,6 +394,16 @@ EQUOP:
         eor     #$FF
         jmp     GIVAYF
 L2D74:
+.ifdef SYM1
+        cmp     #TOKEN_USR
+        bne     LCC8A
+        jmp     LCDBD
+LCC8A:
+        cmp     #$26
+        bne     LCC91
+        jmp     LCDFE
+LCC91:
+.endif
         cmp     #TOKEN_FN
         bne     L2D7B
         jmp     L31F3
@@ -687,3 +697,92 @@ CMPDONE:
         lda     #$FF
 L2E99:
         jmp     FLOAT
+
+.ifdef SYM1
+LCDBD:
+        jsr     CHRGET
+        jsr     CHKOPN
+        jsr     FRMEVL
+        jsr     CHRGOT
+        cmp     #$29
+        beq     LCDF1
+        jsr     AYINT
+        lda     FAC+4
+        ldy     FAC+3
+        sta     USR+1
+        sty     USR+2
+LCDD8:
+        jsr     CHKCOM
+        jsr     FRMEVL
+        jsr     CHRGOT
+        cmp     #$29
+        beq     LCDF1
+        jsr     AYINT
+        lda     FAC+3
+        pha
+        lda     FAC+4
+        pha
+        jmp     LCDD8
+
+LCDF1:
+        jsr     CHRGET
+        jsr     AYINT
+        lda     FAC+3
+        ldy     FAC+4
+        jmp     USR
+
+LCDFE:
+        lda     ZD4
+        pha
+        lda     ZD3
+        pha
+        jsr     CHRGET
+        cmp     #$22
+        bne     LCE49
+        jsr     CHRGET
+        jsr     LCE2B
+        tax
+        jsr     CHRGOT
+        jsr     LCE2B
+        pha
+        jsr     CHRGOT
+        cmp     #$22
+        bne     LCE48
+        jsr     CHRGET
+        pla
+        tay
+        pla
+        pla
+        txa
+        jmp     GIVAYF
+
+LCE2B:
+        jsr     ASCNIB
+        bcs     LCE47
+        pha
+        jsr     CHRGET
+        jsr     ASCNIB
+        sta     FAC+4
+        bcs     LCE46
+        jsr     CHRGET
+        pla
+        asl     a
+        asl     a
+        asl     a
+        asl     a
+        ora     FAC+4
+        rts
+
+LCE46:
+        pla
+LCE47:
+        pla
+LCE48:
+        pla
+LCE49:
+        pla
+        sta     ZD3
+        pla
+        sta     ZD4
+        jmp     ZERO_FAC
+.endif

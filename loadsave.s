@@ -12,3 +12,6 @@
 .ifdef AIM65
 .include "aim65_loadsave.s"
 .endif
+.ifdef SYM1
+.include "sym1_loadsave.s"
+.endif

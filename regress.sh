@@ -5,7 +5,7 @@ if [ ! -d orig ]; then
 	exit;
 fi
 
-for i in cbmbasic1 cbmbasic2 kbdbasic osi kb9 applesoft microtan aim65; do
+for i in cbmbasic1 cbmbasic2 kbdbasic osi kb9 applesoft microtan aim65 sym1; do
 
 echo $i
 ca65 -D $i msbasic.s -o tmp/$i.o &&

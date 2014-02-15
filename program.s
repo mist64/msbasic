@@ -654,7 +654,7 @@ LB4BF:
         php
         jmp     LE21C ; patch
 LC57E:
-   .elseif .def(AIM65)
+   .elseif .def(AIM65) || .def(SYM1)
         php
         jsr     LINGET
 LC57E:
@@ -667,12 +667,12 @@ L2581:
         jsr     LINGET
   .endif
         jsr     FNDLIN
-  .if .def(MICROTAN) || .def(AIM65)
+  .if .def(MICROTAN) || .def(AIM65) || .def(SYM1)
         plp
         beq     L2598
   .endif
         jsr     CHRGOT
-  .if .def(MICROTAN) || .def(AIM65)
+  .if .def(MICROTAN) || .def(AIM65) || .def(SYM1)
         beq     L25A6
   .else
         beq     L2598
@@ -680,7 +680,7 @@ L2581:
         cmp     #TOKEN_MINUS
         bne     L2520
         jsr     CHRGET
-  .if .def(MICROTAN) || .def(AIM65)
+  .if .def(MICROTAN) || .def(AIM65) || .def(SYM1)
         beq     L2598
         jsr     LINGET
         beq     L25A6
@@ -690,7 +690,7 @@ L2581:
         bne     L2520
   .endif
 L2598:
-  .if !(.def(MICROTAN) || .def(AIM65))
+  .if !(.def(MICROTAN) || .def(AIM65) || .def(SYM1))
         pla
         pla
         lda     LINNUM
@@ -701,7 +701,7 @@ L2598:
         sta     LINNUM
         sta     LINNUM+1
 L25A6:
-  .if .def(MICROTAN) || .def(AIM65)
+  .if .def(MICROTAN) || .def(AIM65) || .def(SYM1)
         pla
         pla
   .endif
@@ -764,7 +764,7 @@ LA519:
         lda     (LOWTRX),y
         stx     LOWTRX
         sta     LOWTRX+1
-.if .def(MICROTAN) || .def(AIM65)
+.if .def(MICROTAN) || .def(AIM65) || .def(SYM1)
         bne     L25A6X
 .else
         bne     L25A6

@@ -11,13 +11,18 @@ PR_WRITTEN_BY:
 .ifndef KBD
   .ifndef CONFIG_CBM_ALL
     .ifndef AIM65
+      .ifndef SYM1
         lda     #<QT_WRITTEN_BY
         ldy     #>QT_WRITTEN_BY
         jsr     STROUT
+      .endif
     .endif
   .endif
 .endif
 COLD_START:
+.ifdef SYM1
+        jsr     ACCESS
+.endif
 .ifdef KBD
         lda     #<LFD81
         sta     $03A0
@@ -72,6 +77,11 @@ COLD_START:
         sta     GOSTROUT
         sta     JMPADRS
   .endif
+  .ifdef SYM1
+        sta     USR1
+        sta     USR3
+        sta     USR2
+  .endif
   .if (!.def(CONFIG_RAM)) && (!.def(CONFIG_CBM_ALL))
         sta     USR
   .endif
@@ -93,6 +103,18 @@ COLD_START:
     .else
           sta     USR+1
           sty     USR+2
+      .ifdef SYM1
+          sta     USR1+1
+          sty     USR1+2
+          lda     #<DUMPT
+          ldy     #>DUMPT
+          sta     USR2+1
+          sty     USR2+2
+          lda     #<L8C78
+          ldy     #>L8C78
+          sta     USR3+1
+          sty     USR3+2
+      .endif
     .endif
   .endif
   .ifndef CBM1
@@ -156,10 +178,12 @@ L4098:
         sta     Z14
   .ifndef CBM2
    .ifndef AIM65
+   .ifndef SYM1
     .ifndef MICROTAN
         lda     #$03
         sta     DSCLEN
     .endif
+   .endif
    .endif
     .ifndef CONFIG_11
         lda     #$2C
@@ -192,8 +216,10 @@ L4098:
         sty     TXTPTR+1
         jsr     CHRGET
   .ifndef AIM65
+    .ifndef SYM1
         cmp     #$41
         beq     PR_WRITTEN_BY
+    .endif
   .endif
         tay
         bne     L40EE
@@ -267,7 +293,7 @@ L40FA:
         ldy     LINNUM+1
         sta     MEMSIZ
         sty     MEMSIZ+1
-.if !(.def(MICROTAN) || .def(AIM65))
+.if !(.def(MICROTAN) || .def(AIM65) || .def(SYM1))
         sta     FRETOP
         sty     FRETOP+1
 .endif
@@ -424,7 +450,7 @@ QT_WANT:
   .endif
 QT_WRITTEN_BY:
   .ifndef CONFIG_CBM_ALL
-  .ifndef AIM65
+  .if !(.def(AIM65) || .def(SYM1))
     .ifdef APPLE
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
 		.byte	CR,0
@@ -442,7 +468,7 @@ QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
         .byte   0
 QT_TERMINAL_WIDTH:
-    .ifndef AIM65
+    .if !(.def(AIM65) || .def(SYM1))
         .byte   "TERMINAL "
     .endif
         .byte   "WIDTH"
@@ -471,6 +497,9 @@ QT_BASIC:
   .ifdef AIM65
         .byte   "  AIM 65 BASIC V1.1"
   .endif
+  .ifdef SYM1
+        .byte   "BASIC V1.1"
+  .endif
   .ifdef CBM1
         .byte   $13 ; HOME
         .byte   "*** COMMODORE BASIC ***"
@@ -491,6 +520,8 @@ QT_BASIC:
     .elseif .def(AIM65)
         .byte   0
         .byte   "(C) 1978 MICROSOFT"
+    .elseif .def(SYM1)
+        .byte   "COPYRIGHT 1978 SYNERTEK SYSTEMS CORP."
     .else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
     .endif

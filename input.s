@@ -8,6 +8,7 @@
 INPUTERR:
         lda     INPUTFLG
         beq     RESPERR	; INPUT
+.ifndef SYM1
 .ifndef CONFIG_SMALL
 .ifdef CONFIG_10A
 ; without this, it treats GET errors
@@ -16,6 +17,7 @@ INPUTERR:
         ldy     #$FF	; GET
         bne     L2A67
 L2A63:
+.endif
 .endif
 .endif
 .ifdef CONFIG_CBM1_PATCHES
@@ -52,6 +54,7 @@ RTS20:
 ; "GET" STATEMENT
 ; ----------------------------------------------------------------------------
 .ifndef CONFIG_SMALL
+.ifndef SYM1
 GET:
         jsr     ERRDIR
 ; CBM: if GET#, then switch input
@@ -83,6 +86,7 @@ LCAB6:
 .endif
         rts
 .endif
+.endif
 
 ; ----------------------------------------------------------------------------
 ; "INPUT#" STATEMENT
@@ -105,6 +109,12 @@ LCAD8:
 LCAE0:
 .endif
 
+.ifdef SYM1
+LC9B0:
+        jsr     OUTQUES	; '?'
+        jsr     OUTSP
+        jmp     L2A9E
+.endif
 ; ----------------------------------------------------------------------------
 ; "INPUT" STATEMENT
 ; ----------------------------------------------------------------------------
@@ -118,7 +128,11 @@ INPUT:
         jsr     LCFFA
 .endif
         cmp     #$22
+.ifdef SYM1
+        bne     LC9B0
+.else
         bne     L2A9E
+.endif
         jsr     STRTXT
         lda     #$3B
         jsr     SYNCHR
@@ -130,6 +144,8 @@ L2A9E:
 LCAF8:
 .ifdef APPLE
         jsr     INLINX
+.elseif .def(SYM1)
+        jsr     INLIN
 .else
         jsr     NXIN
 .endif
@@ -233,6 +249,7 @@ PROCESS_INPUT_ITEM:
         bne     INSTART
         bit     INPUTFLG
 .ifndef CONFIG_SMALL ; GET
+ .ifndef SYM1
         bvc     L2AF0
   .ifdef MICROTAN
         jsr     MONRDKEY2
@@ -271,6 +288,7 @@ PROCESS_INPUT_ITEM:
         bne     L2AF8	; always
   .endif
 L2AF0:
+ .endif
 .endif
         bmi     FINDATA
 .ifdef CONFIG_FILE
@@ -294,6 +312,7 @@ INSTART:
         bit     VALTYP
         bpl     L2B34
 .ifndef CONFIG_SMALL ; GET
+ .ifndef SYM1
         bit     INPUTFLG
         bvc     L2B10
   .ifdef CONFIG_CBM1_PATCHES
@@ -308,6 +327,7 @@ INSTART:
         beq     L2B1C
   .endif
 L2B10:
+ .endif
 .endif
         sta     CHARAC
         cmp     #$22

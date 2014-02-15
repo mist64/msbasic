@@ -99,10 +99,7 @@ L2443:
     .endif
         sta     INPUTBUFFER,x
         inx
-    .ifdef OSI
-        .byte   $2C
-    .elseif .def(AIM65)
-
+    .if .def(OSI) || .def(AIM65)
         .byte   $2C
     .else
         bne     INLIN2
@@ -152,7 +149,11 @@ RDKEY:
         jsr     LFD0C
         and     #$7F
   .endif
+    .ifdef SYM1
+        cmp     #$14
+    .else
         cmp     #$0F
+    .endif
         bne     L2465
         pha
         lda     Z14

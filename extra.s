@@ -23,3 +23,7 @@
 .ifdef AIM65
 .include "aim65_extra.s"
 .endif
+
+.ifdef SYM1
+        .byte   0,0,0
+.endif

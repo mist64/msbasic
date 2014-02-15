@@ -1197,6 +1197,12 @@ L3B6F:
         dex
         bpl     L3B6F
         bcc     FIN2
+.ifdef SYM1
+        cmp     #$26
+        bne     LDABB
+        jmp     LCDFE
+LDABB:
+.endif
         cmp     #$2D
         bne     L3B7E
         stx     SERLEN

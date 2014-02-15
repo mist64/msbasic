@@ -23,4 +23,7 @@
 .ifdef AIM65
 .include "aim65_iscntc.s"
 .endif
+.ifdef SYM1
+.include "sym1_iscntc.s"
+.endif
 ;!!! runs into "STOP"
