@@ -102,11 +102,7 @@ LETSTRING:
 PUTSTR:
 .ifdef CONFIG_CBM_ALL
         ldy     FORPNT+1
-  .ifdef CBM1
-        cpy     #$D0	; TI$
-  .else
-        cpy     #$DE
-  .endif
+        cpy     #>C_ZERO        ; ONLY TI$ CAN BE THIS ON ASSIG.
         bne     LC92B
         jsr     FREFAC
         cmp     #$06
