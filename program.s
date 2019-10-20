@@ -437,7 +437,7 @@ L24DB:
 ; ---END OF LINE------------------
 L24EA:
         sta     INPUTBUFFER-3,y
-.ifdef CONFIG_NO_INPUTBUFFER_ZP
+.if <INPUTBUFFER = 0
         dec     TXTPTR+1
 .endif
         lda     #<INPUTBUFFER-1
