@@ -774,7 +774,7 @@ FDIVT:
         jsr     ADD_EXPONENTS
         inc     FAC
         beq     JOV
-        ldx     #-MANTISSA_BYTES
+        ldx     #<-MANTISSA_BYTES
         lda     #$01
 L39A1:
         ldy     ARG+1
@@ -1452,9 +1452,9 @@ L3C8C:
         ldy     #>CON_BILLION
         jsr     FMULT
 .ifdef CONFIG_SMALL
-        lda     #-6 ; exponent adjustment
+        lda     #<-6 ; exponent adjustment
 .else
-        lda     #-9
+        lda     #<-9
 .endif
 L3C95:
         sta     INDX

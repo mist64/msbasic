@@ -136,7 +136,7 @@ L2300:
         dex
         bpl     L2300
         jsr     GARBAG
-        ldx     #TEMP1-FAC+1
+        ldx     #<(TEMP1-FAC+1)
 L230B:
         pla
         sta     FAC,x

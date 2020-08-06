@@ -440,7 +440,7 @@ L24EA:
 .ifdef CONFIG_NO_INPUTBUFFER_ZP
         dec     TXTPTR+1
 .endif
-        lda     #<INPUTBUFFER-1
+        lda     #<(INPUTBUFFER-1)
         sta     TXTPTR
         rts
 

@@ -1,4 +1,3 @@
-.feature force_range
 .debuginfo +
 
 .setcpu "6502"
