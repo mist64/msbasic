@@ -2,7 +2,7 @@
 
 This is a single integrated assembly source tree that can generate nine different versions of Microsoft BASIC for 6502.
 
-By running ./make.sh, this will generate all versions and compare them to the original files byte by byte. The CC65 compiler suite is need to build this project.
+By running ./make.sh, this will generate all versions and compare them to the original files byte by byte. The CC65 compiler suite is needed to build this project.
 
 These are the first ten (known) versions of Microsoft BASIC for 6502:
 
