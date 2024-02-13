@@ -11,3 +11,6 @@
 .ifdef SYM1
         jmp     PR_WRITTEN_BY
 .endif
+.ifdef VM6502
+        jmp COLD_START
+.endif

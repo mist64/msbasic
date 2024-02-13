@@ -24,6 +24,10 @@
 .include "aim65_extra.s"
 .endif
 
+.ifdef VM6502
+.include "vm6502_extra.s"
+.endif
+
 .ifdef SYM1
         .byte   0,0,0
 .endif
