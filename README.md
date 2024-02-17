@@ -58,6 +58,9 @@ or work correctly.
 
 More information on the differences of the respective versions can be found on this blog entry: [Create your own Version of Microsoft BASIC for 6502](http://www.pagetable.com/?p=46).
 
+Also, Ben Eater has an published excellent video demonstrating how to port BASIC to a new system: [Running MSBASIC on my breadboard 6502 computer
+](https://www.youtube.com/watch?v=XlbPnihCM0E)
+
 ## License
 
 2-clause BSD
