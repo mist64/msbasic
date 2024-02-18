@@ -38,8 +38,8 @@ INLIN1:
 L0C32:
         lda     #$00
         sta     INPUTBUFFER,x
-        ldx     #<INPUTBUFFER-1
-        ldy     #>INPUTBUFFER-1
+        ldx     #<(INPUTBUFFER-1)
+        ldy     #>(INPUTBUFFER-1)
         rts
   .endif
 
