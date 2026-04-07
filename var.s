@@ -149,7 +149,7 @@ NAMENOTFOUND:
         cmp     #>FRM_VARIABLE_CALL
         bne     MAKENEWVARIABLE
 .endif
-LD015:
+LDZR:
         lda     #<C_ZERO
         ldy     #>C_ZERO
         rts
@@ -170,18 +170,18 @@ MAKENEWVARIABLE:
 .ifdef CONFIG_CBM_ALL
         lda     VARNAM
         ldy     VARNAM+1
-        cmp     #$54
+        cmp     #$54    ; T
         bne     LD02F
-        cpy     #$C9
-        beq     LD015
-        cpy     #$49
+        cpy     #$C9    ; I$
+        beq     LDZR
+        cpy     #$49    ; I
         bne     LD02F
 LD02C:
         jmp     SYNERR
 LD02F:
-        cmp     #$53
+        cmp     #$53    ; S
         bne     LD037
-        cpy     #$54
+        cpy     #$54    ; T
         beq     LD02C
 LD037:
 .endif
